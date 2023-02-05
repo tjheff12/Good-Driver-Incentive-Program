@@ -1,0 +1,2 @@
+We will be using pip as our Python package manager. More information can be found here: https://pypi.org/project/pip/
+Using pip, we can install Django like so:   ~ python -m pip install Django
