@@ -1,2 +1,14 @@
 We will be using pip as our Python package manager. More information can be found here: https://pypi.org/project/pip/
 Using pip, we can install Django like so:   ~ python -m pip install Django
+-------------------- Commit 1 --------------------
+
+As for our overall tech stack for this project to be a functioning web application, we will need these tools:
+- Git (Cheatsheet: https://education.github.com/git-cheat-sheet-education.pdf)
+- IDE, VSCode is perfect
+- Python w/ pip (Windows installation tutorial: https://www.tomshardware.com/how-to/install-python-on-windows-10-and-11#:~:text=Open%20a%20browser%20to%20the%20Python%20website%20and%20download%20the%20Windows%20installer.&text=2.,on%20Install%20now%20to%20begin.)
+- Django (Python web framework)
+- Virtual Environment (venv: https://docs.python.org/3/library/venv.html)
+- Nginx (Open source web server/Load Balancer)
+- AWS RDS w/ MySQL
+- MySQL Workbench (https://www.mysql.com/products/workbench/), or an equivalent MySQL tool
+-------------------- Commit 2 --------------------
