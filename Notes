@@ -1,0 +1,123 @@
+Django packages
+- https://ordinarycoders.com/blog/article/django-python-packages
+- Django Security
+    - https://pypi.org/project/django-security/
+    - Can help with SQL injection
+- Django Mobile
+    - https://pypi.org/project/django-mobile/
+- Django Debug Toolbar
+    - https://django-debug-toolbar.readthedocs.io/en/latest/
+- Django Allauth
+    - https://django-allauth.readthedocs.io/en/latest/
+    - Deals with athentication, registration, account management, also 3rd party authentication
+- Django Excel
+    - https://pypi.org/project/django-excel/
+    - Being able to download files into a csv file
+- Django Dark
+    - https://pypi.org/project/django-dark/
+    - Implement a dark mode
+- Django Argon2
+    - https://pypi.org/project/argon2-cffi/
+    - Password Encryption
+- Django eBay Catalog
+    - Need credentials from developers program
+- Django iTunes Catalog
+    - https://developer.apple.com/documentation/applemusicapi/
+- Django Amazon Catalog
+    - https://docs.aws.amazon.com/marketplace-catalog/latest/api-reference/welcome.html
+
+Django User Management
+- https://realpython.com/django-user-management/
+- Django 3.0 and Python 3.6
+- Commands to Run
+    - For Linux and macOS
+        - $ python3 -m venv venv
+        - $ source venv/bin/activate
+        - (venv) $ python -m pip install --upgrade pip
+        - (venv) $ python -m pip install django
+- Virtual Enviroment Command for Windows
+    - C:\> venv\Scripts\activate
+- Creating an enviroment and an application to store all user management code:
+    - (venv) $ django-admin startproject awesome_website
+    - (venv) $ cd awesome_website
+    - (venv) $ python manage.py startapp users
+- Able to create a dashboard view
+- Offer an authentication system
+    - accounts/login/ is used to log a user into your application. Refer to it by the name "login".
+    - accounts/logout/ is used to log a user out of your application. Refer to it by the name "logout".
+    - accounts/password_change/ is used to change a password. Refer to it by the name "password_change".
+    - accounts/password_change/done/ is used to show a confirmation that a password was changed. Refer to it by the name "password_change_done".
+    - accounts/password_reset/ is used to request an email with a password reset link. Refer to it by the name "password_reset".
+    - accounts/password_reset/done/ is used to show a confirmation that a password reset email was sent. Refer to it by the name "password_reset_done".
+    - accounts/reset/<uidb64>/<token>/ is used to set a new password using a password reset link. Refer to it by the name "password_reset_confirm".
+    - accounts/reset/done/ is used to show a confirmation that a password was reset. Refer to it by the name "password_reset_complete"
+- Ability to create a login and logout page
+- Ability to change passwords
+- Ability to send password reset links
+- Ability to reset passwords
+- Ability to change email templates
+- Ability to register new users
+
+React Front End 
+- https://radixweb.com/blog/react-js-for-frontend-development-features-benefits
+- Component Based
+    - Modular
+- Declarative
+    - Allow for faster development and easier debugging
+- Javascript Syntax Extension
+- Virtual DOM
+    - In the event when the state of an object is changed, the VDOM changes that individual object in the real DOM and not all the other existing objects
+- Faster Performance
+- One-way Data Binding
+- Backward Compatability
+- Easy Debugging
+- Can be use for:
+    - Dashboards
+    - eCommerce
+    - Cross-platform mobile apps
+    - Social networks
+
+Django vs. React
+- https://cloudinfrastructureservices.co.uk/django-vs-react-whats-the-difference/
+- Pros of Django
+    - Django is quick to install and can run operations faster.
+    - The administrative features have an intuitive user interface.
+    - Create and build multilingual websites using its in built internationalization system.
+    - Assists in developing dynamic HTML pages.
+    - Integrated unit testing system and a fully featured administration interface.
+    - Offers low cost for hosting services and manual maintenance.
+    - Highly secure and supports policies for throttling and permissions.
+    - Unlike other frameworks, Django provides support for foundational technologies, templates, tools, and plugins
+    - Customizable and helps developers in defining models for the Application URLs.
+- Cons of Django
+    - Django follows a monolithic working style that can complicate things.
+    - Auto reload feature that can restart your entire server.
+    - The Django framework allows only one request at a time.
+    - Errors in the template default to silent failure.
+    - Experience and basic knowledge are necessary before using this framework.
+    - The high end framework has various functions, thus making it not a great option for simple projects.
+    - Django serves a very large codebase size and it may get more complication for it uses URL dispatching through controller regex.
+    - The supporting documentation does not address real world scenarios.
+- Pros of React
+    - React.js builds a custom virtual DOM that helps enhance the performance of apps. A JavaScript virtual DOM is quicker than a conventional DOM.
+    - Component and Data patterns supported by the framework aid in improving readability, great for large apps.
+    - ReactJS is SEO friendly, offers several helpful developer toolsets, and has a strong community. 
+    - Notable features include the acceptance of HTML code and the facilitation of sub component rendering.
+    - Compatible with other frameworks and has the ability to update UI faster than other libraries.
+    - Awesome UI may be created with ReactJS.
+    - Allows redistributing similar digital objects that help boost productivity.
+    - Easy to learn and  helps developers to complete projects faster.
+- Cons of React
+    - Does not offer enough documentation for guidance.
+    - React cannot be used to construct an entire app. 
+    - Not a good option for a larger project or one that has many components.
+    - Do not support server side rendering.
+    - It is not great in terms of deployment and scaling for it does not offer many features
+
+Debugging Documentation
+- Django
+    - https://django-debug-toolbar.readthedocs.io/en/latest/
+- Python
+    - https://docs.python.org/3/library/pdb.html
+- MySQL
+    - https://dev.mysql.com/doc/refman/8.0/en/debugging-server.html
