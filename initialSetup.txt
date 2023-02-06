@@ -66,4 +66,11 @@ That's it! You have successfully pushed and committed changes to the Azure DevOp
 
 WARNING: Before pushing changes, make sure that you have the latest version of the repository on your local machine by running "git pull" to avoid any merge conflicts.
 -------------------- End of Commit 5 --------------------
-    
+
+https://www.guguweb.com/2020/04/20/remote-debugging-a-django-project-in-vs-code/
+There are a couple of options for remote debugging of Django-based web applications, here are some of the popular ones:
+	1. Django Debug Toolbar: A configurable set of panels that display various debug information about the current request/response. (https://www.tutorialspoint.com/how-to-add-django-debug-toolbar-to-your-project)
+	2. Visual Studio Code over SSH: Another popular IDE with debugging support, including remote debugging for Django.
+It seems like based on our goals, the best debugger is the one we can use with the least amount of learning curve and downloads as possible. 
+	That leads me to the idea that #1, the Django Debug Toolbar, is our best choice currently.
+-------------------- End of Commit 6 --------------------
