@@ -114,6 +114,12 @@ Django vs. React
     - Do not support server side rendering.
     - It is not great in terms of deployment and scaling for it does not offer many features
 
+Documentation
+- Python 
+    - https://wiki.python.org/
+    Password Library (passlib)
+    - https://pypi.org/project/passlib/
+
 Debugging Documentation
 - Django
     - https://django-debug-toolbar.readthedocs.io/en/latest/
