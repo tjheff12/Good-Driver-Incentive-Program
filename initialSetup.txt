@@ -49,4 +49,7 @@ Tips for keeping our Python project organized:
         # or
         import another_directory.module
 -------------------- End of Commit 3 --------------------
+
+This is a test commit to see if I can push from my git CLI on my remote repo to DevOps
+-------------------- End of Commit 4 --------------------
     
