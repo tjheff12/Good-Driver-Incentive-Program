@@ -50,6 +50,20 @@ Tips for keeping our Python project organized:
         import another_directory.module
 -------------------- End of Commit 3 --------------------
 
-This is a test commit to see if I can push from my git CLI on my remote repo to DevOps
--------------------- End of Commit 4 --------------------
+After cloning an Azure DevOps repository to your local machine (with: git clone <repo>), you can make changes, stage them, and commit them to the repository. Here's the general process:
+
+1. Make changes to the files in the local repository.
+2. Stage the changes using the following command:
+	git add <file1> <file2> ... OR git add * (to add all)
+	Where <file1>, <file2>, etc., are the names of the files you want to stage.
+3. Commit the changes using the following command:
+	git commit -m "<message>"
+	Where <message> is a descriptive message about the changes you are committing.
+4. Push the committed changes to the remote repository using the following command:
+	git push origin <branch>
+	Where <branch> is the name of the branch you want to push your changes to. By default, this is usually the master branch.
+That's it! You have successfully pushed and committed changes to the Azure DevOps repository using Git.
+
+WARNING: Before pushing changes, make sure that you have the latest version of the repository on your local machine by running "git pull" to avoid any merge conflicts.
+-------------------- End of Commit 5 --------------------
     
