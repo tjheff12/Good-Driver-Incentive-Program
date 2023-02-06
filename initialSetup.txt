@@ -1,6 +1,6 @@
 We will be using pip as our Python package manager. More information can be found here: https://pypi.org/project/pip/
 Using pip, we can install Django like so:   ~ python -m pip install Django
--------------------- Commit 1 --------------------
+-------------------- End of Commit 1 --------------------
 
 As for our overall tech stack for this project to be a functioning web application, we will need these tools:
 - Git (Cheatsheet: https://education.github.com/git-cheat-sheet-education.pdf)
@@ -11,4 +11,42 @@ As for our overall tech stack for this project to be a functioning web applicati
 - Nginx (Open source web server/Load Balancer)
 - AWS RDS w/ MySQL
 - MySQL Workbench (https://www.mysql.com/products/workbench/), or an equivalent MySQL tool
--------------------- Commit 2 --------------------
+-------------------- End of Commit 2 --------------------
+
+https://towardsdatascience.com/the-good-way-to-structure-a-python-project-d914f27dfcc9
+Tips for keeping our Python project organized:
+- Using a virtual environment to keep dependencies/packages isolated
+    Once the directory is created, here is a summary of commands for Virtual Environment (venv):
+        1. python3 -m venv venv → creates a virtual environment
+        2. source venv/bin/activate → activates the environment
+        3. deactivate → deactivates the environment
+
+    In a nutshell, virtual environments allow you to:
+    1. Maintain dependencies isolated. This avoids situations where you have projects using different package versions and you globally 
+        uninstalling/reinstalling what you need every time you need to run a project.
+    2. Share your dependencies with other people.
+
+    Once you have installed all the packages that your project needs, you can run:
+        pip freeze > requirements.txt
+    pip freeze is “freezing” all the packages/versions currently being used. Then you are piping (i.e., saving) the output of pip freeze via a txt file.
+    Other people using your program will then run:
+        pip install -r requirements.txt
+
+- Create different directories/folders for content
+    To keep things separated, put __init__.py (empty) files
+        __init__.py is used to mark directories as Python package directories
+        TIP: If you remove the __init__.py file, Python will no longer look for submodules 
+            inside that directory. Hence, if you try to import the module somewhere else, it will fail.
+
+    To access other modules/code from another python file or folder:
+        If we have a file structure something like this:
+        another_directory/__init__.py
+        another_directory/module.py
+
+        Python code:
+        # you can import the code in module.py as
+        from another_directory import module
+        # or
+        import another_directory.module
+-------------------- End of Commit 3 --------------------
+    
