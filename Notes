@@ -25,6 +25,13 @@ Django packages
     - https://developer.apple.com/documentation/applemusicapi/
 - Django Amazon Catalog
     - https://docs.aws.amazon.com/marketplace-catalog/latest/api-reference/welcome.html
+- Django Password Library
+    - https://docs.djangoproject.com/en/4.1/topics/auth/passwords/
+- Django Database API
+    - https://docs.djangoproject.com/en/4.1/topics/db/queries/
+
+Python Wiki
+- https://wiki.python.org/
 
 Django User Management
 - https://realpython.com/django-user-management/
@@ -114,11 +121,6 @@ Django vs. React
     - Do not support server side rendering.
     - It is not great in terms of deployment and scaling for it does not offer many features
 
-Documentation
-- Python 
-    - https://wiki.python.org/
-    Password Library (passlib)
-    - https://pypi.org/project/passlib/
 
 Debugging Documentation
 - Django
