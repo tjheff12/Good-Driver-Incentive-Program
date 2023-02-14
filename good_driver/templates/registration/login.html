@@ -1,3 +1,12 @@
+<style>
+    .login{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+</style>
 <!DOCTYPE html>
 <html lang="en">
 {% load static %}
@@ -8,13 +17,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LoginSystem</title> 
 </head>
-<body class="login">
-    <form method="post">
-        {% csrf_token %}
-        {{form.as_p}}
-        <input type="submit" value="Login"/>
-        
-    </form>
+<body>
+    <div class="login">
+        <form method="post">
+            <h2 class="title"> Good Driver </h2>
+            {% csrf_token %}
+            {{form.as_p}}
+            <input type="submit" value="Reset Password"/>
+            <input type="submit" value="Login"/>
+            
+        </form>
+    </div>
 
 </body>
 </html>
