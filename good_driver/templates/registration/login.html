@@ -1,3 +1,12 @@
+<style>
+    .login{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+</style>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,12 +16,15 @@
     <title>LoginSystem</title> 
 </head>
 <body>
-    <form method="post">
-        {% csrf_token %}
-        {{form.as_p}}
-        <input type="submit" value="Login"/>
-        
-    </form>
+    <div class="login">
+        <form method="post">
+            <h2 class="title"> Good Driver </h2>
+            {% csrf_token %}
+            {{form.as_p}}
+            <input type="submit" value="Login"/>
+            
+        </form>
+    </div>
 
 </body>
 </html>
