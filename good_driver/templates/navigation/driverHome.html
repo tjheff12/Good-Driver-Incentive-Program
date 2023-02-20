@@ -2,13 +2,13 @@
     .centeredColumns {
         display: flex;
         justify-content: center;
-        width: 600px;
+        width: 400px;
         margin: 0 auto;
     }
     
     .column {
         text-align: center;
-        width: 300px;
+        width: 200px;
         list-style-type: none;
         line-height: 2;
     }
@@ -26,26 +26,24 @@
 </head>
 <body>
     <div class="centeredColumns">
-        <form method ="post"></form>
             <div class="column">
-                <input type="button" value="Points History"/>
+                <input type="button" onclick="window.location.href={% url 'pointHistory' %}"; value="Point History"; tabindex="1";>
                 <br>
                 <br>
-                <input type="button" value="Orders"/>
+                <input type="button" value="Catalog"tabindex="3";/>
                 <br>
                 <br>
-                <input type="button" value="Catalog"/>
+                <input type="button" value="Change Username" tabindex="5";/>
             </div>
             <div class="column">
-                <input type="button" value="Submit Application"/>
+                <input type="button" value="Orders" tabindex="2";/>
                 <br>
                 <br>
-                <input type="button" value="Change Username"/>
+                <input type="button" value="Submit Application" tabindex="4";/>
                 <br>
                 <br>
-                <input type="button" value="Change Password"/>
+                <input type="button" onclick="window.location.href={% url 'resetPassword' %}"; value="Change Password" tabindex="6";/>
             </div>
-        </form>
     </div>
 
 </body>
