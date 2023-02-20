@@ -1,0 +1,36 @@
+</style>
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<link rel="stylesheet" href="{% static 'pointHistory.css' %}">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SponsorView</title> 
+</head>
+<body>
+    <div class="pointHistory">
+        <form method="post">
+            <h2 class="title"> Point History </h2>
+            <input type="submit" value="Driver Management"/>
+            <input type="submit" value="Create New Sponsor"/>
+            <br>
+            <br>
+            <input type="submit" value="Catalog Settings"/>
+            <input type="submit" value="Generate Reports"/>
+            <br>
+            <br>
+            <input type="submit" value="Change Username"/>
+            <input type="submit" value="Change Password"/>
+            <br>
+            <br>
+            <input type="submit" value="Logout"/>
+        </form>
+    </div>
+    
+    <div class="home">
+        <img src="{% static 'images/home.png' %}" alt="My Image" >
+    </div>
+</body>
+</html>
