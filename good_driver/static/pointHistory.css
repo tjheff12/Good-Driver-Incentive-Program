@@ -1,0 +1,13 @@
+.pointHistory {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.home {
+    background-color: blue;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
