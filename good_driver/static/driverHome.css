@@ -1,0 +1,11 @@
+.centeredColumns {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    height: 100vh;
+}
+
+.column {
+    float: left;
+    width: 50%;
+}

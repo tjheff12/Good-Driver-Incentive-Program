@@ -1,0 +1,52 @@
+<style>
+    .centeredColumns {
+        display: flex;
+        justify-content: center;
+        width: 600px;
+        margin: 0 auto;
+    }
+    
+    .column {
+        text-align: center;
+        width: 300px;
+        list-style-type: none;
+        line-height: 2;
+    }
+</style>
+
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<link rel="stylesheet" href="{% static 'driverHome.css' %}">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driver Home</title> 
+</head>
+<body>
+    <div class="centeredColumns">
+        <form method ="post"></form>
+            <div class="column">
+                <input type="button" value="Points History"/>
+                <br>
+                <br>
+                <input type="button" value="Orders"/>
+                <br>
+                <br>
+                <input type="button" value="Catalog"/>
+            </div>
+            <div class="column">
+                <input type="button" value="Submit Application"/>
+                <br>
+                <br>
+                <input type="button" value="Change Username"/>
+                <br>
+                <br>
+                <input type="button" value="Change Password"/>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>
