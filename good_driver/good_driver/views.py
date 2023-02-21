@@ -16,3 +16,6 @@ def catalog(request):
 
 def pointHistory(request):
     return render(request, 'pointHistory.html')
+
+def driverManagement(request):
+    return render(request, 'driverManagement.html')

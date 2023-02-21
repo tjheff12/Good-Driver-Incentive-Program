@@ -1,0 +1,35 @@
+</style>
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<link rel="stylesheet" href="{% static 'driverManagement.css' %}">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SponsorView</title> 
+</head>
+<body>
+    <div class="driverManagement">
+        <form method="post">
+            <h2 class="title"> Point History </h2>
+            <input type="submit" class="accountManagementButton" value="Driver Account Management"/>
+            <br>
+            <br>
+            <input type="submit" class="pendingApplicationsButton" value="See Pending Applications"/>
+            <br>
+            <br>
+            <input type="submit" class="addSubPointsButton" value="Add or Subtract Points"/>
+        </form>
+    </div>
+
+    <div class="home">
+        <img src="{% static 'images/home.png' %}" alt="My Image" >
+    </div>
+
+    <div class="switchView">
+        <input type="button" value="Light Mode"/>
+        <input type="button" value="Dark Mode"/>
+    </div>
+</body>
+</html>

@@ -1,11 +1,3 @@
-<style>
-    .login{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-}
-
 </style>
 <!DOCTYPE html>
 <html lang="en">
@@ -23,9 +15,11 @@
             <h2 class="title"> Good Driver </h2>
             {% csrf_token %}
             {{form.as_p}}
-            <input type="submit" value="Reset Password"/>
-            <input type="submit" value="Login"/>
-            
+            <input type="submit" class="loginButton" value="Login"/>
+            <br>
+            <br>
+            <input type="submit" class="createAccountButton" value="Create Account"/>
+            <input type="submit" class="resetPasswordButton" value="Reset Password"/>
         </form>
     </div>
 
