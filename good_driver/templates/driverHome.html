@@ -6,18 +6,18 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SponsorView</title> 
+    <title>Driver Home</title> 
 </head>
 <body>
     <div class="sponsorView">
         <form method="post">
-            <h2 class="title"> Sponsor Interface </h2>
-            <input type="button" class="button" value="Driver Management"/>
-            <input type="button" class="button" value="Create New Sponsor"/>
+            <h2 class="title"> Driver Interface </h2>
+            <input type="button" class="button" onclick="window.location.href={% url 'pointHistory' %}" value="Driver Management"/>
+            <input type="button" class="button" value="Orders"/>
             <br>
             <br>
-            <input type="button" class="button" value="Catalog Settings"/>
-            <input type="button" class="button" value="Generate Reports"/>
+            <input type="button" class="button" value="Catalog"/>
+            <input type="button" class="button" value="Submit Application"/>
             <br>
             <br>
             <input type="button" class="button" value="Change Username"/>
@@ -35,9 +35,6 @@
     <div class="switchView">
         <input type="button" value="Light Mode"/>
         <input type="button" value="Dark Mode"/>
-        <br>
-        <br>
-        <input type="button" value="Driver View"/>
     </div>
 </body>
 </html>

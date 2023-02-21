@@ -6,8 +6,27 @@
 }
 
 .home {
-    background-color: blue;
     position: absolute;
     top: 0;
     left: 0;
+}
+
+.switchView {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.button {
+    width: 220px;
+}
+
+.logoutButton {
+    width: 445px;
+}
+
+.title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

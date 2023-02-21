@@ -1,0 +1,67 @@
+<style>
+.centeredColumns {
+    display: flex;
+    justify-content: center;
+    width: 400px;
+    margin: 0 auto;
+}
+
+.column {
+    text-align: center;
+    width: 200px;
+    line-height: 2;
+}
+.home {
+    background-color: blue;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+</style>
+
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<link rel="stylesheet" href="{% static 'driverHome.css' %}">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sponsor Home</title> 
+</head>
+
+
+<body>
+    <div class="centeredColumns">
+        <div class="column">
+            <input type="button" class="button" onclick="window.location.href={% url 'pointHistory' %}"; value="Driver Management"; tabindex="1";>
+            <br>
+            <br>
+            <input type="button" value="Catalog Settings"tabindex="3";/>
+            <br>
+            <br>
+            <input type="button" value="Change Username" tabindex="5";/>
+            <br>
+            <br>
+            <input type="button" value="Logout" tabindex="7";/>
+        </div>
+        <div class="column">
+            <input type="button" value="Create New Sponsor" tabindex="2";/>
+            <br>
+            <br>
+            <input type="button" value="Generate Reports" tabindex="4";/>
+            <br>
+            <br>
+            <input type="button" onclick="window.location.href={% url 'resetPassword' %}"; value="Change Password" tabindex="6";/>
+        </div>
+        <!-- <div class="centerColumn">
+            <input type="button" value="Logout" tabindex="7";/>
+        </div> -->
+    </div>
+
+    <div class="home">
+        <img src="{% static 'images/home.png' %}" alt="My Image" >
+    </div>
+
+</body>
+</html>
