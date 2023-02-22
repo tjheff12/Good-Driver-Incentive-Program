@@ -13,24 +13,32 @@
     <div class="sponsorView">
         <form method="post">
             <h2 class="title"> Sponsor Interface </h2>
-            <input type="submit" value="Driver Management"/>
-            <input type="submit" value="Create New Sponsor"/>
+            <input type="submit" class="button" value="Driver Management"/>
+            <input type="submit" class="button" value="Create New Sponsor"/>
             <br>
             <br>
-            <input type="submit" value="Catalog Settings"/>
-            <input type="submit" value="Generate Reports"/>
+            <input type="submit" class="button" value="Catalog Settings"/>
+            <input type="submit" class="button" value="Generate Reports"/>
             <br>
             <br>
-            <input type="submit" value="Change Username"/>
-            <input type="submit" value="Change Password"/>
+            <input type="submit" class="button" value="Change Username"/>
+            <input type="submit" class="button" value="Change Password"/>
             <br>
             <br>
-            <input type="submit" value="Logout"/>
+            <input type="submit" class="logoutButton" value="Logout"/>
         </form>
     </div>
 
     <div class="home">
         <img src="{% static 'images/home.png' %}" alt="My Image" >
+    </div>
+
+    <div class="switchView">
+        <input type="button" value="Light Mode"/>
+        <input type="button" value="Dark Mode"/>
+        <br>
+        <br>
+        <input type="button" value="Driver View"/>
     </div>
 </body>
 </html>

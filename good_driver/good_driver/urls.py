@@ -34,4 +34,7 @@ urlpatterns = [
     path('catalog/', views.catalog, name='catalog'),
 
     path('pointHistory/', views.pointHistory, name='pointHistory'),
+
+    path('driverManagement', views.driverManagement, name='driverManagement')
+
 ]

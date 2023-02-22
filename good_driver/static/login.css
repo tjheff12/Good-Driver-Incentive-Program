@@ -5,3 +5,15 @@
     align-items: center;
     height: 100vh;
 }
+
+.loginButton {
+    width: 220px;
+}
+
+.createAccountButton{
+    width: 110px;
+}
+
+.resetPasswordButton{
+    width: 110px;
+}
