@@ -16,3 +16,12 @@ def catalog(request):
 
 def pointHistory(request):
     return render(request, 'pointHistory.html')
+
+def driverHome(request):
+    return render(request, 'driverHome.html')
+
+def sponsorHome(request):
+    return render(request, 'sponsorHome.html')
+
+def adminHome(request):
+    return render(request, 'adminHome.html')

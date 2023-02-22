@@ -6,17 +6,17 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SponsorView</title> 
+    <title>Admin Home</title> 
 </head>
 <body>
     <div class="sponsorView">
         <form method="post">
-            <h2 class="title"> Sponsor Interface </h2>
-            <input type="button" class="button" value="Driver Management"/>
-            <input type="button" class="button" value="Create New Sponsor"/>
+            <h2 class="title"> Admin Interface </h2>
+            <input type="button" class="button" value="Drivers"/>
+            <input type="button" class="button" value="Sponsors"/>
             <br>
             <br>
-            <input type="button" class="button" value="Catalog Settings"/>
+            <input type="button" class="button" value="Admins"/>
             <input type="button" class="button" value="Generate Reports"/>
             <br>
             <br>
@@ -29,7 +29,7 @@
     </div>
 
     <div class="home">
-        <img src="{% static 'images/home.png' %}" alt="My Image" >
+        <a href="{% url 'home' %}"><img src="{% static 'images/home.png' %}" alt="Home" ></a>
     </div>
 
     <div class="switchView">
@@ -37,7 +37,8 @@
         <input type="button" value="Dark Mode"/>
         <br>
         <br>
-        <input type="button" value="Driver View"/>
+        <a href="{% url 'driverHome' %}"><input type="button" value="Driver View"/></a>
+        <a href="{% url 'sponsorHome' %}"><input type="button" value="Sponsor View"/></a>
     </div>
 </body>
 </html>

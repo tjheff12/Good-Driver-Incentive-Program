@@ -25,11 +25,17 @@ urlpatterns = [
   
     path('resetPassword/', views.resetPassword, name='resetPassword'),
 
-    path('sponsorView/', views.sponsorView, name='sponsorView'),
-
     path('pointChange/', views.pointChange, name='pointChange'),
 
     path('catalog/', views.catalog, name='catalog'),
 
     path('pointHistory/', views.pointHistory, name='pointHistory'),
+
+    path('driverHome/', views.driverHome, name='driverHome'),
+
+    path('sponsorHome/', views.sponsorHome, name='sponsorHome'),
+
+    path('home/', views.driverHome, name="home"),
+
+    path('adminHome/', views.adminHome, name="adminHome"),
 ]

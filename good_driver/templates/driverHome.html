@@ -12,7 +12,7 @@
     <div class="sponsorView">
         <form method="post">
             <h2 class="title"> Driver Interface </h2>
-            <input type="button" class="button" onclick="window.location.href={% url 'pointHistory' %}" value="Driver Management"/>
+            <input type="button" class="button" onclick="window.location.href={% url 'pointHistory' %}" value="Point History"/>
             <input type="button" class="button" value="Orders"/>
             <br>
             <br>
@@ -29,7 +29,7 @@
     </div>
 
     <div class="home">
-        <img src="{% static 'images/home.png' %}" alt="My Image" >
+        <a href="{% url 'home' %}"></a><img src="{% static 'images/home.png' %}" alt="Home" >
     </div>
 
     <div class="switchView">

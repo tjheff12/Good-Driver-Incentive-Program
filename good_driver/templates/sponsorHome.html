@@ -1,67 +1,43 @@
-<style>
-.centeredColumns {
-    display: flex;
-    justify-content: center;
-    width: 400px;
-    margin: 0 auto;
-}
-
-.column {
-    text-align: center;
-    width: 200px;
-    line-height: 2;
-}
-.home {
-    background-color: blue;
-    position: absolute;
-    top: 0;
-    left: 0;
-}
-</style>
-
 <!DOCTYPE html>
 <html lang="en">
 {% load static %}
-<link rel="stylesheet" href="{% static 'driverHome.css' %}">
+<link rel="stylesheet" href="{% static 'sponsorView.css' %}">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sponsor Home</title> 
 </head>
-
-
 <body>
-    <div class="centeredColumns">
-        <div class="column">
-            <input type="button" class="button" onclick="window.location.href={% url 'pointHistory' %}"; value="Driver Management"; tabindex="1";>
+    <div class="sponsorView">
+        <form method="post">
+            <h2 class="title"> Sponsor Interface </h2>
+            <input type="button" class="button" value="Driver Management"/>
+            <input type="button" class="button" value="Create New Sponsor"/>
             <br>
             <br>
-            <input type="button" value="Catalog Settings"tabindex="3";/>
+            <input type="button" class="button" value="Catalog Settings"/>
+            <input type="button" class="button" value="Generate Reports"/>
             <br>
             <br>
-            <input type="button" value="Change Username" tabindex="5";/>
+            <input type="button" class="button" value="Change Username"/>
+            <input type="button" class="button" value="Change Password"/>
             <br>
             <br>
-            <input type="button" value="Logout" tabindex="7";/>
-        </div>
-        <div class="column">
-            <input type="button" value="Create New Sponsor" tabindex="2";/>
-            <br>
-            <br>
-            <input type="button" value="Generate Reports" tabindex="4";/>
-            <br>
-            <br>
-            <input type="button" onclick="window.location.href={% url 'resetPassword' %}"; value="Change Password" tabindex="6";/>
-        </div>
-        <!-- <div class="centerColumn">
-            <input type="button" value="Logout" tabindex="7";/>
-        </div> -->
+            <input type="button" class="logoutButton" value="Logout"/>
+        </form>
     </div>
 
     <div class="home">
-        <img src="{% static 'images/home.png' %}" alt="My Image" >
+        <a href="{% url 'home' %}"><img src="{% static 'images/home.png' %}" alt="Home" ></a>
     </div>
 
+    <div class="switchView">
+        <input type="button" value="Light Mode"/>
+        <input type="button" value="Dark Mode"/>
+        <br>
+        <br>
+        <a href="{% url 'driverHome' %}"><input type="button" value="Driver View"/></a>
+    </div>
 </body>
 </html>

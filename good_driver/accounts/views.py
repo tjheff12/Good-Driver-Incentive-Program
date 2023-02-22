@@ -32,3 +32,7 @@ def register(request):
             return redirect(register)
     else:
         return render(request, 'registration.html')
+    
+    
+def driverHome(request):
+    return render(request, 'navigation/driverHome.html')
