@@ -1,5 +1,4 @@
-
-.login{
+.login {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -10,10 +9,12 @@
     width: 220px;
 }
 
-.createAccountButton{
-    width: 110px;
+.buttonPress {
+    width: 108px;
 }
 
-.resetPasswordButton{
-    width: 110px;
+.loginTitle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

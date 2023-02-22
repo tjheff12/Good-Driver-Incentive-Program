@@ -11,21 +11,18 @@
     right: 10px;
 }
 
-.accountManagementButton{
-    width: 220px;
-}
-
-.pendingApplicationsButton{
-    width: 220px;
-}
-
-.addSubPointsButton{
+.buttonFormat {
     width: 220px;
 }
 
 .home {
-    background-color: blue;
     position: absolute;
     top: 0;
     left: 0;
+}
+
+.title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 {% load static %}
-<link rel="stylesheet" href="{% static 'pointHistory.css' %}">
+<link rel="stylesheet" href="{% static 'driverManagement.css' %}">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,27 +10,17 @@
     <title>SponsorView</title> 
 </head>
 <body>
-    <div class="pointHistory">
-        <form method="post">
-            <h2 class="title"> Point History </h2>
-            <input type="submit" value="Driver Management"/>
-            <input type="submit" value="Create New Sponsor"/>
-            <br>
-            <br>
-            <input type="submit" value="Catalog Settings"/>
-            <input type="submit" value="Generate Reports"/>
-            <br>
-            <br>
-            <input type="submit" value="Change Username"/>
-            <input type="submit" value="Change Password"/>
-            <br>
-            <br>
-            <input type="submit" value="Logout"/>
-        </form>
-    </div>
-    
     <div class="home">
         <img src="{% static 'images/home.png' %}" alt="My Image" >
     </div>
+
+    <div class="switchView">
+        <input type="button" value="Light Mode"/>
+        <input type="button" value="Dark Mode"/>
+    </div>
+
+    <h2 class="title"> Point History </h2>
+    <h2 class="currentPointsTitle"> Current Points </h2>
+    <h2 class="pointStatusTitle"> Point Status </h2>
 </body>
 </html>
