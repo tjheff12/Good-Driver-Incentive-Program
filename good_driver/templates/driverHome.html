@@ -16,12 +16,12 @@
             <input type="button" class="button" value="Orders"/>
             <br>
             <br>
-            <input type="button" class="button" value="Catalog"/>
+            <input type="button" class="button" onclick="window.location.href={% url 'catalog' %}" value="Catalog"/>
             <input type="button" class="button" value="Submit Application"/>
             <br>
             <br>
             <input type="button" class="button" value="Change Username"/>
-            <input type="button" class="button" value="Change Password"/>
+            <input type="button" class="button" onclick="window.location.href={% url 'resetPassword' %}" value="Change Password"/>
             <br>
             <br>
             <input type="button" class="logoutButton" value="Logout"/>
@@ -29,7 +29,7 @@
     </div>
 
     <div class="home">
-        <a href="{% url 'home' %}"></a><img src="{% static 'images/home.png' %}" alt="Home" >
+        <a href="{% url 'home' %}"><img src="{% static 'images/home.png' %}" alt="Home" ></a>
     </div>
 
     <div class="switchView">

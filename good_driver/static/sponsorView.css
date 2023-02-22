@@ -30,3 +30,9 @@
     justify-content: center;
     align-items: center;
 }
+
+.switchView {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
