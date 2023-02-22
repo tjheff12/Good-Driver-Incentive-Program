@@ -20,7 +20,9 @@ from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
     
+    path('', include("accounts.urls")),
     path('login/', auth_views.LoginView.as_view(), name='login'),
   
     path('resetPassword/', views.resetPassword, name='resetPassword'),

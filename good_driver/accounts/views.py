@@ -2,6 +2,7 @@
 # Create your views here.
 from django.contrib import messages
 from django.shortcuts import render, redirect
+from . import models
 
 def register(request):
     if request.method == 'POST':
@@ -31,4 +32,28 @@ def register(request):
             messages.info(request, 'Both passwords are not matching')
             return redirect(register)
     else:
+        return render(request, 'registration.html')
+    
+
+from django.views.generic import TemplateView
+
+def resetPassword(request):
+    return render(request, 'resetPassword.html')
+
+def sponsorView(request):
+    return render(request, 'sponsorView.html')
+
+def pointChange(request):
+    return render(request, 'pointChange.html')
+
+def catalog(request):
+    return render(request, 'catalog.html')
+
+def pointHistory(request):
+    return render(request, 'pointHistory.html')
+
+def test(request):
+    if request.method == "GET":
+        new_item = models.Item( item_desc="Apple Ipohne", item_price=2.00)
+        new_item.save()
         return render(request, 'registration.html')

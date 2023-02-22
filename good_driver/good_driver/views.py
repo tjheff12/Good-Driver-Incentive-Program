@@ -1,6 +1,6 @@
 from django.shortcuts import render
-
 from django.views.generic import TemplateView
+
 
 def resetPassword(request):
     return render(request, 'resetPassword.html')
