@@ -19,3 +19,6 @@ def pointHistory(request):
 
 def driverManagement(request):
     return render(request, 'driverManagement.html')
+
+def done(request):
+    return render(request, 'done.html')

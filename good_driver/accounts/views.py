@@ -5,27 +5,35 @@ from django.shortcuts import render, redirect
 from . import models
 
 def register(request):
+    import hashlib
+
     if request.method == 'POST':
         first_name = request.POST['first_name']
         last_name = request.POST['last_name']
+        ##username is the email
         username = request.POST['username']
-        email = request.POST['email']
         password = request.POST['password']
         confirm_password = request.POST['confirm_password']
-
+        street_addr = request.POST['street_address']
+        city = request.POST['city']
+        zip_code = request.POST['zip_code']
+        phone_num = request.POST['phone_num']
+        
+        password_hash = hashlib.md5(password.encode()).hexdigest()
+        print(password_hash)
+    
         if password==confirm_password:
-            if User.objects.filter(username=username).exists():
+            if models.Users.objects.filter(email=username).exists():
                 messages.info(request, 'Username is already taken')
                 return redirect(register)
-            elif User.objects.filter(email=email).exists():
-                messages.info(request, 'Email is already taken')
-                return redirect(register)
+            
+                
             else:
-                user = User.objects.create_user(username=username, password=password, 
-                                        email=email, first_name=first_name, last_name=last_name)
+                user = models.Users(email=username, password=password_hash, 
+                                         first_name=first_name, last_name=last_name, street_address=street_addr, street_address_2=street_addr, city=city, zip_code=zip_code, phone_number=phone_num, user_type='Driver')
                 user.save()
                 
-                return redirect('login_user')
+                return redirect('done')
 
 
         else:

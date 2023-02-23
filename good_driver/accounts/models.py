@@ -127,6 +127,8 @@ class SponsorUser(models.Model):
 
 class Users(models.Model):
     user_id = models.AutoField(db_column='User_ID', primary_key=True)  # Field name made lowercase.
+    email = models.CharField(db_column='Email', max_length=100)
+    password = models.CharField(db_column='Password', max_length=100)
     first_name = models.CharField(db_column='First_Name', max_length=20)  # Field name made lowercase.
     last_name = models.CharField(db_column='Last_Name', max_length=20)  # Field name made lowercase.
     street_address = models.CharField(db_column='Street_Address', max_length=80, blank=True, null=True)  # Field name made lowercase.
