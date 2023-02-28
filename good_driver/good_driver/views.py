@@ -22,3 +22,27 @@ def driverManagement(request):
 
 def done(request):
     return render(request, 'done.html')
+
+def pointTracking(request):
+    return render(request, 'pointTracking.html')
+
+def driverSales(request):
+    return render(request, 'driverSales.html')
+
+def sponsorSales(request):
+    return render(request, 'sponsorSales.html')
+
+def invoice(request):
+    return render(request, 'invoice.html')
+
+def audit(request):
+    return render(request, 'audit.html')
+
+def sponsorReport(request):
+    return render(request, 'sponsorReport.html')
+
+def adminReport(request):
+    return render(request, 'adminReport.html')
+
+def adminInfo(request):
+    return render(request, 'adminInfo.html')
