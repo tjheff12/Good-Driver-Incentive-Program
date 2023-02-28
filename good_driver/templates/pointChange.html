@@ -2,28 +2,56 @@
 <!DOCTYPE html>
 <html lang="en">
 {% load static %}
-<link rel="stylesheet" href="{% static 'pointHistory.css' %}">
+<link rel="stylesheet" href="{% static 'pointChange.css' %}">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SponsorView</title> 
+    <title>PointChange</title> 
 </head>
 <body>
-    <div class="pointChangeHome">
+    <div class="pointChange">
+        <form method="post">
+            <h2 class="title"> Point Change </h2>
+            <div class="driverOptions">
+                <label class="driverListTitle">Drivers:</label>
+                <select class="formatting">
+                    <option>Josiah</option>
+                    <option>Kevin</option>
+                </select>
+            </div>   
+            <br>
+            <div class="pointOptions">
+                <label class="pointListTitle">Points:</label>
+                <select class="formattingOperator">
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                    <option>5</option>
+                </select>
+            </div>  
+            <br>
+            <div class="operatorOptions">
+                <label class="driverListTitle">Add or Subtract:</label>
+                <select class="formattingOperator">
+                    <option>+</option>
+                    <option>-</option>
+                </select>
+            </div>  
+            <br>
+            <textarea class="reason" name="my_textarea" rows="4" cols="40">Reason</textarea>
+            <br>
+            <div class="submit">
+                <input type="submit" value="Submit" > 
+            </div>
+    </div>
+    <div class="home">
         <img src="{% static 'images/home.png' %}" alt="My Image" >
     </div>
-
-    <div class="title"> 
-        <h2>Point Change</h2>
-    </div>
-
     <div class="switchView">
         <input type="button" value="Light Mode"/>
         <input type="button" value="Dark Mode"/>
     </div>
-
-    <h2 class="listDrivers"> Driver </h2>
-    <h2 class="pointStatusTitle"> Point Status </h2>
 </body>
 </html>
