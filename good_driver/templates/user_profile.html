@@ -1,0 +1,31 @@
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+  Hi {{ user.email }}!
+  <br>
+  Your attirbutes are:
+  <br>
+  Username-{{user.email}}
+  <br>
+  First Name-{{user.first_name}}
+  <br>
+  Last Name-{{user.last_name}}
+  <br>
+  Street Address 1-{{user.street_address}}  
+  <br>
+  City-{{user.city}}
+  <br>
+  Zip Code-{{user.zip_code}}
+  <br>
+  Phone Number-{{user.phone_number}}
+  <br>
+  User Type-{{user.user_type}}
+
+{% else %}
+  <p>You are not logged in</p>
+  <a class="btn btn-dark" href="../login" role="button">Go To Login</a>
+ 
+{% endif %}
+{% endblock %}
