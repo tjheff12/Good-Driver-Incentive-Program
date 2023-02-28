@@ -101,3 +101,7 @@ def test(request):
         new_item = models.Item( item_desc="Apple Ipohne", item_price=2.00)
         new_item.save()
         return render(request, 'registration.html')
+    
+def create_new_account_as_admin(request):
+    if request.user.user_type == "Admin":
+        
