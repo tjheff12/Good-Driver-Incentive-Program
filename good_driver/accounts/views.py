@@ -1,7 +1,9 @@
 
 # Create your views here.
 from django.contrib import messages
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
+from . import backends
 from . import models
 
 def register(request):
@@ -20,7 +22,7 @@ def register(request):
         phone_num = request.POST['phone_num']
         
         password_hash = hashlib.md5(password.encode()).hexdigest()
-        print(password_hash)
+        
     
         if password==confirm_password:
             if models.Users.objects.filter(email=username).exists():
@@ -43,8 +45,38 @@ def register(request):
         return render(request, 'registration.html')
     
 
-from django.views.generic import TemplateView
-
+def login(request):
+    
+    
+    if request.method == "POST":
+        print(request.POST)
+        email = request.POST.get('username')
+        password = request.POST.get('password')
+        print(email)
+        print(password)
+        user = backends.CustomAuthBackend.authenticate( username=email, password=password)
+        if user is not None:
+            auth_login(request, user)
+            message = 'You are logged in!'
+            print("IT WORKS I PORMISE")
+            return render(request, 'registration/login.html', {"message":message})
+        else:
+            message = 'user is None!'
+            print(message)
+            return render(request, 'registration/login.html', {"message":message})
+    elif request.method == "GET":
+        print("Get")
+        return render(request, 'registration/login.html')
+    
+def logout(request):
+    if request.method == "POST":
+        auth_logout(request)
+        
+        return render(request, 'registration/login.html', {"message":"you logged out"})
+        
+    elif request.method == "GET":
+        return render(request, 'registration/logout.html' )
+    
 def resetPassword(request):
     return render(request, 'resetPassword.html')
 
@@ -59,6 +91,10 @@ def catalog(request):
 
 def pointHistory(request):
     return render(request, 'pointHistory.html')
+
+
+def user_profile(request):
+    return render(request, 'user_profile.html')
 
 def test(request):
     if request.method == "GET":

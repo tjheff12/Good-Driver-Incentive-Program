@@ -1,4 +1,4 @@
-from django.db import models
+
 
 # Create your models here.
 # This is an auto-generated Django model module.
@@ -9,7 +9,7 @@ from django.db import models
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
-
+from django.contrib.auth.models import AbstractBaseUser, UserManager
 
 class AdminUser(models.Model):
     user = models.OneToOneField('Users', models.DO_NOTHING, db_column='User_ID', primary_key=True)  # Field name made lowercase.
@@ -125,9 +125,13 @@ class SponsorUser(models.Model):
         db_table = 'sponsor_user'
 
 
-class Users(models.Model):
+class Users(AbstractBaseUser):
+    REQUIRED_FIELDS = ('password',)
+    USERNAME_FIELD = 'email'
+    is_authenticated = True
+    is_anonymous = False
     user_id = models.AutoField(db_column='User_ID', primary_key=True)  # Field name made lowercase.
-    email = models.CharField(db_column='Email', max_length=100)
+    email = models.CharField(db_column='Email', max_length=100, blank=False, unique=True)
     password = models.CharField(db_column='Password', max_length=100)
     first_name = models.CharField(db_column='First_Name', max_length=20)  # Field name made lowercase.
     last_name = models.CharField(db_column='Last_Name', max_length=20)  # Field name made lowercase.
@@ -137,6 +141,8 @@ class Users(models.Model):
     zip_code = models.IntegerField(db_column='ZIP_Code', blank=True, null=True)  # Field name made lowercase.
     phone_number = models.CharField(db_column='Phone_Number', max_length=15, blank=True, null=True)  # Field name made lowercase.
     user_type = models.CharField(db_column='User_Type', max_length=15)  # Field name made lowercase.
+
+    objects = UserManager()
 
     class Meta:
         managed = False

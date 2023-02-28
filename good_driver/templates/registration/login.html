@@ -12,14 +12,22 @@
 <body>
     <div class="login">
         <form method="post">
-            <h2 class="title"> Good Driver </h2>
             {% csrf_token %}
-            {{form.as_p}}
+            <h2 class="title"> Good Driver </h2>
+            <label for="username_input">Username</label>
+            <input type="text"  id="username_input" name="username">
+            <br>
+            <br>
+            <label for="password_input">Password</label>
+            <input type="password" id="password_input" name="password">
+            <br>
+            <br>
             <input type="submit" class="loginButton" value="Login"/>
             <br>
             <br>
-            <input type="submit" class="createAccountButton" value="Create Account"/>
-            <input type="submit" class="resetPasswordButton" value="Reset Password"/>
+            <a href="../register" role="button">Create Account</a>
+            <a role="button">Reset Password</a>
+            
         </form>
     </div>
 
