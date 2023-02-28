@@ -16,7 +16,8 @@ CREATE TABLE users (
    City VARCHAR(30),
    ZIP_Code INTEGER,
    Phone_Number VARCHAR(15),
-   User_Type VARCHAR(15) NOT NULL  
+   User_Type VARCHAR(15) NOT NULL,
+   last_login DATETIME 
 );
 
 /*User Subtypes*/
