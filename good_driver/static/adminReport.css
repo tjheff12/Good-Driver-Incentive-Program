@@ -1,0 +1,28 @@
+.adminReport {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.switchView {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.buttonFormat {
+    width: 220px;
+}
+
+.home {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
