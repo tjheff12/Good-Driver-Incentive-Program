@@ -36,6 +36,23 @@ urlpatterns = [
 
     path('pointHistory/', views.pointHistory, name='pointHistory'),
 
-    path('driverManagement', views.driverManagement, name='driverManagement')
+    path('driverManagement', views.driverManagement, name='driverManagement'),
 
+    path('sponsorReport/pointTracking/', views.pointTracking, name='pointTracking'),
+
+    path('adminReport/driverSales/', views.driverSales, name='driverSales'),
+
+    path('adminReport/sponsorSales/', views.sponsorSales, name='sponsorSales'),
+
+    path('adminReport/invoice/', views.invoice, name='invoice'),
+
+    path('sponsorReport/audit/', views.audit, name='sponsorAudit'),
+
+    path('adminReport/audit/', views.audit, name='adminAudit'),
+
+    path('sponsorReport/', views.sponsorReport, name='sponsorReport'),
+
+    path('adminReport/', views.adminReport, name='adminReport'),
+
+    path('adminInfo/', views.adminInfo, name='adminInfo'),
 ]
