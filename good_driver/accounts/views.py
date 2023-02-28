@@ -44,6 +44,10 @@ def register(request):
     else:
         return render(request, 'registration.html')
     
+    
+def driverHome(request):
+    return render(request, 'navigation/driverHome.html')
+    
 
 def login(request):
     

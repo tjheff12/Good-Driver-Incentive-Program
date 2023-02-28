@@ -1,0 +1,26 @@
+.centeredColumns {
+    display: flex;
+    justify-content: center;
+    width: 400px;
+    margin: 0 auto;
+}
+
+.column {
+    text-align: center;
+    width: 200px;
+    line-height: 2;
+}
+.centerColumn{
+    display: flex;
+    width: 400px;
+    line-height: 2;
+}
+.home {
+    background-color: blue;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.button{
+    width: 180px;
+}

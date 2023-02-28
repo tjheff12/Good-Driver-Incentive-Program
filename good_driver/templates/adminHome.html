@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<link rel="stylesheet" href="{% static 'sponsorView.css' %}">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Home</title> 
+</head>
+<body>
+    <div class="sponsorView">
+        <form method="post">
+            <h2 class="title"> Admin Interface </h2>
+            <input type="button" class="button" value="Drivers"/>
+            <input type="button" class="button" value="Sponsors"/>
+            <br>
+            <br>
+            <input type="button" class="button" value="Admins"/>
+            <input type="button" class="button" value="Generate Reports"/>
+            <br>
+            <br>
+            <input type="button" class="button" value="Change Username"/>
+            <input type="button" class="button" onclick="window.location.href={% url 'resetPassword' %}" value="Change Password"/>
+            <br>
+            <br>
+            <input type="button" class="logoutButton" value="Logout"/>
+        </form>
+    </div>
+
+    <div class="home">
+        <a href="{% url 'home' %}"><img src="{% static 'images/home.png' %}" alt="Home" ></a>
+    </div>
+
+    <div class="switchView">
+        <input type="button" value="Light Mode"/>
+        <input type="button" value="Dark Mode"/>
+        <br>
+        <br>
+        <a href="{% url 'driverHome' %}"><input type="button" value="Driver View"/></a>
+        <a href="{% url 'sponsorHome' %}"><input type="button" value="Sponsor View"/></a>
+    </div>
+</body>
+</html>
