@@ -18,7 +18,8 @@ CREATE TABLE users (
    Phone_Number VARCHAR(15),
    Email VARCHAR(100) NOT NULL,
    "Password" VARCHAR(100) NOT NULL,
-   User_Type VARCHAR(15) NOT NULL  
+   User_Type VARCHAR(15) NOT NULL,
+   last_login DATETIME
 );
 
 /*User Subtypes*/
