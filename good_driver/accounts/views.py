@@ -50,7 +50,7 @@ def driverHome(request):
     
 
 def login(request):
-    
+    from time import sleep
     
     if request.method == "POST":
         print(request.POST)
@@ -62,21 +62,22 @@ def login(request):
         if user is not None:
             auth_login(request, user)
             message = 'You are logged in!'
-            print("IT WORKS I PORMISE")
-            return render(request, 'registration/login.html', {"message":message})
+            messages.info(request, message)
+            
+            return render(request, 'user_profile.html', {"message":message})
         else:
-            message = 'user is None!'
-            print(message)
-            return render(request, 'registration/login.html', {"message":message})
+            message = 'Username or Password Incorrect'
+            messages.info(request, message)
+            return redirect(login)
     elif request.method == "GET":
-        print("Get")
+        
         return render(request, 'registration/login.html')
     
 def logout(request):
     if request.method == "POST":
         auth_logout(request)
         
-        return render(request, 'registration/login.html', {"message":"you logged out"})
+        return redirect(login)
         
     elif request.method == "GET":
         return render(request, 'registration/logout.html' )

@@ -27,6 +27,16 @@
             <br>
             <a href="../register" role="button">Create Account</a>
             <a role="button">Reset Password</a>
+            <a href="../logout" role="button">Got to Logout</a>
+            <br>
+            <br>
+            <div >
+                {% for message in messages %}
+                <div role="alert">
+                    {{message}}
+                </div>
+                {% endfor %}
+            </div>
             
         </form>
     </div>

@@ -22,7 +22,17 @@
   Phone Number-{{user.phone_number}}
   <br>
   User Type-{{user.user_type}}
-
+  <br>
+  <a href="../logout" role="button">Got to Logout</a>
+  <br>
+  <br>
+  <div >
+    {% for message in messages %}
+    <div role="alert">
+        {{message}}
+    </div>
+    {% endfor %}
+</div>
 {% else %}
   <p>You are not logged in</p>
   <a class="btn btn-dark" href="../login" role="button">Go To Login</a>
