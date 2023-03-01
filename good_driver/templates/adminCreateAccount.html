@@ -10,7 +10,25 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
 		integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
-	<title>New User Form (Any Type)</title>
+	<title>New User (Any Type)</title>
+
+	<script type="text/javascript">
+		function CheckUserType(val) {
+			var element = document.getElementById('sponsor');
+			var elementLabel = document.getElementById('sponsorLabel');
+			if (val == 'Sponsor') {
+				element.style.display = 'block';
+				elementLabel.style.display = 'block';
+				element.setAttribute('required', '');
+			}
+			else {
+				element.style.display = 'none';
+				elementLabel.style.display = 'none';
+				element.removeAttribute('required');
+			}
+		}
+
+	</script>
 </head>
 
 <body>
@@ -19,7 +37,7 @@
 		<div class="mx-auto" style="width: 400px;">
 
 			<div class="col-xs-8 col-xs-offset-4">
-				<h2 style="text-align:center;">New User Form (Any Type)</h2>
+				<h2 style="text-align:center;">New User (Any Type)</h2>
 			</div>
 			<hr />
 			<div class="form-group">
@@ -54,28 +72,33 @@
 			</div>
 			<div class="form-group">
 				<label for="city">City</label>
-				<input type="text" class="form-control" name="city" id="city"
-					placeholder="Enter City" Required>
+				<input type="text" class="form-control" name="city" id="city" placeholder="Enter City" Required>
 			</div>
 			<div class="form-group">
 				<label for="zip_code">Zip Code</label>
-				<input type="text" class="form-control" name="zip_code" id="zip_code"
-					placeholder="Enter Zip Code" Required>
+				<input type="text" class="form-control" name="zip_code" id="zip_code" placeholder="Enter Zip Code"
+					Required>
 			</div>
 			<div class="form-group">
 				<label for="phone_num">Phone Number</label>
-				<input type="text" class="form-control" name="phone_num" id="phone_num"
-					placeholder="Enter Phone Number" Required>
+				<input type="text" class="form-control" name="phone_num" id="phone_num" placeholder="Enter Phone Number"
+					Required>
 			</div>
-            <div class="form-group">
+			<div class="form-group">
 				<label for="user_type">User Type</label>
-                <select id="user_type" name="user_type" required>
-                    <option value="Driver">Driver</option>
-                    <option value="Sponsor">Sponsor</option>
-                    <option value="Admin">Admin</option>
-                </select>
+				<select id="user_type" name="user_type" onchange='CheckUserType(this.value);' required>
+					<option value="Sponsor">Sponsor</option>
+					<option value="Driver">Driver</option>
+					<option value="Admin">Admin</option>
+				</select>
 			</div>
-			<button type="submit" class="btn btn-primary">SIGNUP</button>
+			<div class="form-group">
+				<label for="sponsor" id="sponsorLabel">Sponsor Name<br>*If this Organization does not currently exist, a
+					new one will be created.</label>
+				<input type="text" class="form-control" name="sponsor" id="sponsor" placeholder="Enter Sponsor Name"
+					required>
+			</div>
+			<button type="submit" class="btn btn-primary">Create Account</button>
 		</div>
 	</form>
 	<div class="form-group">

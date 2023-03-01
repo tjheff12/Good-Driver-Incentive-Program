@@ -160,11 +160,24 @@ def admin_create_account(request):
                         adminUser = models.AdminUser(user=user)
                         adminUser.save()
                     elif user.user_type == 'Sponsor':
-                        sponsorUser = models.SponsorUser(user=user, sponsor=Sponsor)
+                        print('here')
+                        sponsor = request.POST['sponsor']
+                        # Check if the organization exists
+                        if models.Sponsor.objects.filter(name=sponsor).exists():
+                            organization = models.Sponsor.objects.get(name=sponsor)
+                        # if not, make it, if so make it equal to organization
+                        else:
+                            organization = models.Sponsor(point_value=0.0, name=sponsor)
+                            organization.save()
+
+                        sponsorUser = models.SponsorUser(user=user, sponsor=organization)
                         sponsorUser.save()
                     elif user.user_type == 'Driver':
-                        driverUser = models.SponsorUser(user=user, sponsor=Sponsor)
+                        # HAD TO MAKE sponsor=-1 SINCE WE SHOULDNT EVEN HAVE THAT FIELD (USELESS)
+                        driverUser = models.DriverUser(user=user, sponsor_id=-1)
                         driverUser.save()
+                        '''driverSponsorCombo = models.DriverSponsor(user=driverUser, sponsor=Sponsor)
+                        driverSponsorCombo.save()'''
 
                     return redirect('done')
             else:
@@ -214,6 +227,10 @@ def admin_delete_account(request):
         elif request.method == "POST":
             username = request.POST['username']
 
+            if request.user.email == username:
+                messages.info(request, 'You cannot delete your own account while signed-in to it!')
+                return redirect(admin_delete_account)
+
             if models.Users.objects.filter(email=username).exists():
                 # Gets the User object for the specified person
                 User = models.Users.objects.get(email=username)
@@ -246,10 +263,10 @@ def sponsor_panel(request):
     # Denies permission to ANYONE who is NOT signed in
     if request.user.is_anonymous == True:
         raise PermissionDenied
-    # Logic for if a user is signed in AND is of the 'Admin' type
+    # Logic for if a user is signed in AND is of the 'Sponsor' type
     elif request.user.user_type == "Sponsor":
         if request.method == "GET":
-            # Give page with button options of letting the admin choose what action they want to take:
+            # Give page with button options of letting the sponsor choose what action they want to take:
                 #   - Create Account (Sponsor)
             return render(request, 'sponsorPanel.html')
         else: raise Http404
@@ -260,7 +277,7 @@ def sponsor_create_account(request):
     # Denies permission to ANYONE who is NOT signed in
     if request.user.is_anonymous == True:
         raise PermissionDenied
-    # Logic for if a user is signed in AND is of the 'Admin' type
+    # Logic for if a user is signed in AND is of the 'Sponsor' type
     elif request.user.user_type == "Sponsor":
         if request.method == "GET":
             # Give page with basically a registration page, but with more details available
@@ -301,6 +318,42 @@ def sponsor_create_account(request):
             else:
                 messages.info(request, 'Both passwords are not matching')
                 return redirect(sponsor_create_account)
+        else: raise Http404
+    # Returns 403 Error (Permission Denied)    
+    else: raise PermissionDenied
+
+# Removes driver from the sponsor
+def sponsor_remove_driver(request):
+    # Denies permission to ANYONE who is NOT signed in
+    if request.user.is_anonymous == True:
+        raise PermissionDenied
+    # Logic for if a user is signed in AND is of the 'Sponsor' type
+    elif request.user.user_type == "Sponsor":
+        if request.method == "GET":
+            # Give page with basically a registration page, but with more details available
+            return render(request, 'sponsorRemoveDriver.html')
+        elif request.method == "POST":
+            username = request.POST['username']
+
+            # Checks that this user even exists within the shared table | Also counts as a check that the user is of "Driver" considering only drivers should be in this table
+            if models.Users.objects.filter(email=username).exists() and models.DriverUser.objects.filter(user=models.Users.objects.get(email=username)).exists():
+                # Gets the DriverUser object for the specified person
+                User = models.DriverUser.objects.get(user=models.Users.objects.get(email=username))
+                # Gets the User object for the requester (Sponsor user, not typed tho; just plain User)
+                RequestingUser = models.Users.objects.get(email=request.user.email)
+
+                # Make sure that exisiting user that sponsor wants to remove is within THEIR organization already
+                #    by checking the bridge table entity Driver_Sponsor
+                if not models.DriverSponsor.objects.filter(user=User, sponsor=models.SponsorUser.objects.get(user=RequestingUser).sponsor).exists():
+                    messages.info(request, 'Username given is not associated with your Organization!')
+                    return redirect(sponsor_remove_driver)
+
+                # Delete all records from DriverSponsor table that has the specified user associated with the sponsor's sponsor id
+                models.DriverSponsor.objects.filter(user=User, sponsor_id=models.SponsorUser.objects.get(user=RequestingUser).sponsor).delete()
+                return redirect('done')
+            else:
+                messages.info(request, 'Username does not exist')
+                return redirect(sponsor_remove_driver)
         else: raise Http404
     # Returns 403 Error (Permission Denied)    
     else: raise PermissionDenied

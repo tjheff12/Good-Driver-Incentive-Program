@@ -29,7 +29,6 @@ CREATE TABLE admin_user (
 );
 CREATE TABLE driver_user (
    User_ID INTEGER PRIMARY KEY,
-   Sponsor_ID INTEGER NOT NULL,
    FOREIGN KEY  (User_ID) REFERENCES users(User_ID)
 );
 CREATE TABLE sponsor_user (
