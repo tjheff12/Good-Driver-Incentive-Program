@@ -11,6 +11,7 @@ urlpatterns = [
     path('adminPanel/', views.admin_panel, name='adminPanel'),
     path('adminCreateAccount/', views.admin_create_account, name='adminCreateAccount'),
     path('adminDeleteAccount/', views.admin_delete_account, name='adminDeleteAccount'),
+    path('adminCreateSponsor/', views.admin_create_sponsor, name='adminCreateSponsor'),
     path('sponsorPanel/', views.sponsor_panel, name='sponsorPanel'),
     path('sponsorCreateAccount/', views.sponsor_create_account, name='sponsorCreateAccount')
     #path("login_user", views.login_user, name="login_user"),

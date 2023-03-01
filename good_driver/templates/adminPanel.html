@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 
 <body>
-    <h1>Administration Panel:<br><h2>Choose from the options below to get started</h2></h1>
+    <h1>Administration Panel:<br>
+        <h2>Choose from the options below to get started</h2>
+    </h1>
     <form method="POST">
         {% csrf_token %}
         <a class="btn btn-dark" href="../adminCreateAccount" role="button">Create Account</a>
@@ -10,6 +12,11 @@
     <form method="POST">
         {% csrf_token %}
         <a class="btn btn-dark" href="../adminDeleteAccount" role="button">Delete Account</a>
+    </form>
+    <br>
+    <form method="POST">
+        {% csrf_token %}
+        <a class="btn btn-dark" href="../adminCreateSponsor" role="button">Create Sponsor Entity</a>
     </form>
 </body>
 

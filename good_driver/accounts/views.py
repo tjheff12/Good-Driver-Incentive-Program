@@ -155,6 +155,17 @@ def admin_create_account(request):
                                             street_address_2=street_addr, city=city, zip_code=zip_code, 
                                             phone_number=phone_num, user_type=user_type)
                     user.save()
+                    
+                    if user.user_type == 'Admin':
+                        adminUser = models.AdminUser(user=user)
+                        adminUser.save()
+                    elif user.user_type == 'Sponsor':
+                        sponsorUser = models.SponsorUser(user=user, sponsor=Sponsor)
+                        sponsorUser.save()
+                    elif user.user_type == 'Driver':
+                        driverUser = models.SponsorUser(user=user, sponsor=Sponsor)
+                        driverUser.save()
+
                     return redirect('done')
             else:
                 messages.info(request, 'Both passwords are not matching')
@@ -163,6 +174,33 @@ def admin_create_account(request):
     # Returns 403 Error (Permission Denied)    
     else: raise PermissionDenied
     
+# Creates a SPONSOR COMPANY in the sponsor table, NOT a sponsor USER ACCOUNT
+def admin_create_sponsor(request):
+    # Denies permission to ANYONE who is NOT signed in
+    if request.user.is_anonymous == True:
+        raise PermissionDenied
+    # Logic for if a user is signed in AND is of the 'Admin' type
+    elif request.user.user_type == "Admin":
+        if request.method == "GET":
+            # Give page with basically a registration page, but with more details available
+            return render(request, 'adminCreateSponsor.html')
+        elif request.method == "POST":
+
+            sponsor_name = request.POST['name']
+            point_value = request.POST['point_value']
+            
+            # Ensures a new sponsor is being created
+            if not models.Sponsor.objects.filter(name=sponsor_name).exists():
+                new_sponsor = models.Sponsor(point_value=point_value, name=sponsor_name)
+                new_sponsor.save()
+
+                return redirect('done')
+            else:
+                messages.info(request, 'Sponsor Company Name Already Taken! Please Try a Different Name.')
+                return redirect(admin_create_sponsor)
+        else: raise Http404
+    # Returns 403 Error (Permission Denied)    
+    else: raise PermissionDenied
 
 def admin_delete_account(request):
     # Denies permission to ANYONE who is NOT signed in
@@ -177,7 +215,24 @@ def admin_delete_account(request):
             username = request.POST['username']
 
             if models.Users.objects.filter(email=username).exists():
-                models.Users.objects.filter(email=username).delete()
+                # Gets the User object for the specified person
+                User = models.Users.objects.get(email=username)
+
+                # Logic block to delete from all exterior (non base-user) tables
+                if User.user_type == 'Admin' and models.AdminUser.objects.get(user=User).exists():
+                    models.AdminUser.objects.get(user=User).delete()
+                elif User.user_type == 'Sponsor' and models.SponsorUser.objects.get(user=User).exists():
+                    models.SponsorUser.objects.get(user=User).delete()
+                elif User.user_type == 'Driver':
+                    if models.DriverSponsor.objects.filter(user=User).exists():
+                        models.DriverSponsor.objects.filter(user=User).delete()
+                    if models.Points.objects.filter(user=User).exists():
+                        models.Points.objects.filter(user=User).delete()
+                    if models.DriverUser.objects.get(user=User).exists():
+                        models.DriverUser.objects.get(user=User).delete()
+
+                # Delete from base Users table
+                User.delete()
                 return redirect('done')
             else:
                 messages.info(request, 'Username does not exist')
@@ -239,7 +294,6 @@ def sponsor_create_account(request):
                     user.save()
 
                     # Get user id just created from auto-increment, and create a new entry matching it inside sponsor users table
-                    usersID = models.Users.objects.get(email=username).user_id
                     sponsorUser = models.SponsorUser(user=user, sponsor=Sponsor)
                     sponsorUser.save()
                     
