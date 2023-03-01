@@ -3,6 +3,8 @@
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
+from django.core.exceptions import PermissionDenied
+from django.http import Http404
 from . import backends
 from . import models
 
@@ -102,6 +104,85 @@ def test(request):
         new_item.save()
         return render(request, 'registration.html')
     
-def create_new_account_as_admin(request):
-    if request.user.user_type == "Admin":
-        
+def admin_panel(request):
+    # Denies permission to ANYONE who is NOT signed in
+    if request.user.is_anonymous == True:
+        raise PermissionDenied
+    # Logic for if a user is signed in AND is of the 'Admin' type
+    elif request.user.user_type == "Admin":
+        if request.method == "GET":
+            # Give page with button options of letting the admin choose what action they want to take:
+                #   - Create Account (Driver, Sponsor, Admin)
+                #   - Delete Account (Sponsor)
+            return render(request, 'adminPanel.html')
+        else: raise Http404
+    # Returns 403 Error (Permission Denied)    
+    else: raise PermissionDenied
+
+def admin_create_account(request):
+    # Denies permission to ANYONE who is NOT signed in
+    if request.user.is_anonymous == True:
+        raise PermissionDenied
+    # Logic for if a user is signed in AND is of the 'Admin' type
+    elif request.user.user_type == "Admin":
+        if request.method == "GET":
+            # Give page with basically a registration page, but with more details available
+            return render(request, 'adminCreateAccount.html')
+        elif request.method == "POST":
+            import hashlib
+
+            first_name = request.POST['first_name']
+            last_name = request.POST['last_name']
+            ##username is the email
+            username = request.POST['username']
+            password = request.POST['password']
+            confirm_password = request.POST['confirm_password']
+            street_addr = request.POST['street_address']
+            city = request.POST['city']
+            zip_code = request.POST['zip_code']
+            phone_num = request.POST['phone_num']
+            user_type = request.POST['user_type']
+            
+            password_hash = hashlib.md5(password.encode()).hexdigest()
+            
+            if password==confirm_password:
+                if models.Users.objects.filter(email=username).exists():
+                    messages.info(request, 'Username is already taken')
+                    return redirect(admin_create_account)
+                else:
+                    user = models.Users(email=username, password=password_hash, 
+                                            first_name=first_name, last_name=last_name, street_address=street_addr, 
+                                            street_address_2=street_addr, city=city, zip_code=zip_code, 
+                                            phone_number=phone_num, user_type=user_type)
+                    user.save()
+                    return redirect('done')
+            else:
+                messages.info(request, 'Both passwords are not matching')
+                return redirect(admin_create_account)
+        else: raise Http404
+    # Returns 403 Error (Permission Denied)    
+    else: raise PermissionDenied
+    
+
+def admin_delete_account(request):
+    # Denies permission to ANYONE who is NOT signed in
+    if request.user.is_anonymous == True:
+        raise PermissionDenied
+    # Logic for if a user is signed in AND is of the 'Admin' type
+    elif request.user.user_type == "Admin":
+        if request.method == "GET":
+            # Give page with option to enter a user's info to delete from the db
+            return render(request, 'adminDeleteAccount.html')
+        elif request.method == "POST":
+            username = request.POST['username']
+
+            if models.Users.objects.filter(email=username).exists():
+                models.Users.objects.filter(email=username).delete()
+                return redirect('done')
+            else:
+                messages.info(request, 'Username does not exist')
+                return redirect(admin_delete_account)
+        else: 
+            raise Http404
+    # Returns 403 Error (Permission Denied)    
+    else: raise PermissionDenied
