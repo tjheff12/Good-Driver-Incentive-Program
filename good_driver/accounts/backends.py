@@ -7,15 +7,11 @@ class CustomAuthBackend(object):
 	def authenticate( username=None, password=None):
 		import hashlib
 		""" Authenticate a user based on email address as the user name. """
-		print(username)
-		print(password)
+		
 		password_hash = hashlib.md5(password.encode()).hexdigest()
 		try:
 			user = models.Users.objects.get(email=username)
-			print("AAAAAA")
-			print(user)
-			print(user.password)
-			print("AAAAAAA")
+			
 			if user.password == password_hash:
 				return user
 		except models.Users.DoesNotExist:
