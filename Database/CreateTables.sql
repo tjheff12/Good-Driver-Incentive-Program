@@ -45,7 +45,7 @@ CREATE TABLE driver_application (
    Date_Time DATETIME NOT NULL,
    Status VARCHAR(15) NOT NULL,
    Reason VARCHAR(30),
-   FOREIGN KEY  (Driver_ID) REFERENCES driver_user(User_ID),
+   FOREIGN KEY  (Driver_ID) REFERENCES users(User_ID),
    FOREIGN KEY  (Sponsor_ID) REFERENCES sponsor(Sponsor_ID)
 );
 
