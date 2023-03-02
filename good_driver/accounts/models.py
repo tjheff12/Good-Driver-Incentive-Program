@@ -65,7 +65,7 @@ class LoginAttempt(models.Model):
     attempt_id = models.AutoField(db_column='Attempt_ID', primary_key=True)  # Field name made lowercase.
     user = models.ForeignKey('Users', models.DO_NOTHING, db_column='User_ID')  # Field name made lowercase.
     date_time = models.DateTimeField(db_column='Date_Time')  # Field name made lowercase.
-    was_accepted = models.TextField(db_column='Was_Accepted')  # Field name made lowercase. This field type is a guess.
+    was_accepted = models.IntegerField(db_column='Was_Accepted')  # Field name made lowercase. This field type is a guess.
 
     class Meta:
         managed = False

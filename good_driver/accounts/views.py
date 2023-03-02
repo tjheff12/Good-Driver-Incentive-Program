@@ -50,14 +50,13 @@ def driverHome(request):
     
 
 def login(request):
-    from time import sleep
+    from datetime import datetime
     
     if request.method == "POST":
-        print(request.POST)
+        
         email = request.POST.get('username')
         password = request.POST.get('password')
-        print(email)
-        print(password)
+        
         user = backends.CustomAuthBackend.authenticate( username=email, password=password)
         if user is not None:
             auth_login(request, user)
@@ -66,7 +65,17 @@ def login(request):
             
             return render(request, 'user_profile.html', {"message":message})
         else:
+            if models.Users.objects.filter(email=email).exists():
+                user_id_queryset = models.Users.objects.filter(email=email).values('user_id')
+                ##gets id from query
+                user_id = user_id_queryset[0]['user_id']
+                CURRENT_TIME = datetime.now()
+                new_login_attempt = models.LoginAttempt(user_id = user_id, date_time=CURRENT_TIME, was_accepted=0)
+                new_login_attempt.save()
+                #models.LoginAttempt.save(user_id=user_obj, date_time=CURRENT_TIME,was_accepted=0)
+            
             message = 'Username or Password Incorrect'
+            ##saves message to html template
             messages.info(request, message)
             return redirect(login)
     elif request.method == "GET":
