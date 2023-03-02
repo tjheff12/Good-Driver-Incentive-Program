@@ -1,4 +1,4 @@
-.pointChange {
+.audit {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -9,10 +9,6 @@
     position: absolute;
     top: 10px;
     right: 10px;
-}
-
-.buttonFormat {
-    width: 220px;
 }
 
 .home {
@@ -31,44 +27,48 @@
     width: 220px;
 }
 
-.driverOptions {
+.download {
+    width: 220px;
+    margin: 0 auto;
+    display: block;
+}
+
+.sponsorOptions {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.driverListTitle {
+.dates {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.start {
+    display: block;
+}
+
+.end {
+    display: block;
+    margin-left: 10px;
+}
+
+.formatting {
+    padding: 5px;
+}
+
+.sponsorListTitle {
     margin-right: 10px;
 }
 
-.operatorOptions {
+.categoryOptions {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.reason {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.submit {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.formattingOperator {
-    width: 50px;
-}
-
-.pointOptions {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.pointListTitle {
+.categoryListTitle {
     margin-right: 10px;
 }
+
