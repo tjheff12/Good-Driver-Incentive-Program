@@ -7,6 +7,7 @@ from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from . import backends
 from . import models
+from . import forms
 
 def register(request):
     import hashlib
@@ -112,11 +113,6 @@ def pointHistory(request):
 def user_profile(request):
     return render(request, 'user_profile.html')
 
-def test(request):
-    if request.method == "GET":
-        new_item = models.Item( item_desc="Apple Ipohne", item_price=2.00)
-        new_item.save()
-        return render(request, 'registration.html')
     
 def admin_panel(request):
     # Denies permission to ANYONE who is NOT signed in
@@ -371,3 +367,26 @@ def sponsor_remove_driver(request):
         else: raise Http404
     # Returns 403 Error (Permission Denied)    
     else: raise PermissionDenied
+
+def application(request):
+    from datetime import datetime
+    if request.user.is_anonymous == True:
+        messages.info(request, 'You must be logged in to apply to a sponsor')
+        return redirect(login)
+    elif request.user.user_type == 'Driver':
+        if request.method == "GET":
+            form = forms.SponsorForm()
+            return render(request,'application.html', {'form': form})
+        elif request.method == "POST":
+            user_id = request.user.user_id
+            user_obj = models.Users.objects.get(user_id=user_id)
+            sponsor_obj = models.Sponsor.objects.get(name=request.POST['sponsor_name'])
+            
+            CURRENT_TIME = datetime.now()
+            
+            ##gets id from query
+            
+            new_Application = models.DriverApplication(driver=user_obj,sponsor=sponsor_obj,date_time=CURRENT_TIME,status="Pending",reason=None)
+            new_Application.save()
+            messages.info(request, 'You applied successfully')
+            return redirect(application)

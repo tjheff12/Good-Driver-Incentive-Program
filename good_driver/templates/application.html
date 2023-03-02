@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<head>
+    <title>Apply!</title>
+</head>
+<body>
+    <h1>Apply for Sponsorship Today</h1>
+    <form method="POST" class="sponsorForm">
+        {% csrf_token %}
+        {{form}}
+        <br>
+        <br>
+        <button type="submit">Submit</button>
+    </form>
+    <br>
+    <br>
+    <input type="button" class="button" value="Return Home" onclick="window.location.href='../driverHome'"/>
+    <div >
+        {% for message in messages %}
+        <div role="alert">
+            {{message}}
+        </div>
+        {% endfor %}
+    </div>
+
+</body>
+
+
+
+
+</html>

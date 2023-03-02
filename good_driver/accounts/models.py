@@ -21,7 +21,7 @@ class AdminUser(models.Model):
 
 class DriverApplication(models.Model):
     application_id = models.AutoField(db_column='Application_ID', primary_key=True)  # Field name made lowercase.
-    driver = models.ForeignKey('DriverUser', models.DO_NOTHING, db_column='Driver_ID')  # Field name made lowercase.
+    driver = models.ForeignKey('Users', models.DO_NOTHING, db_column='Driver_ID')  # Field name made lowercase.
     sponsor = models.ForeignKey('Sponsor', models.DO_NOTHING, db_column='Sponsor_ID')  # Field name made lowercase.
     date_time = models.DateTimeField(db_column='Date_Time')  # Field name made lowercase.
     status = models.CharField(db_column='Status', max_length=15)  # Field name made lowercase.
@@ -114,6 +114,7 @@ class Sponsor(models.Model):
     class Meta:
         managed = False
         db_table = 'sponsor'
+        
 
 
 class SponsorUser(models.Model):
