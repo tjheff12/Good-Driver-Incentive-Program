@@ -16,7 +16,7 @@ CREATE TABLE users (
    City VARCHAR(30),
    ZIP_Code INTEGER,
    Phone_Number VARCHAR(15),
-   Email VARCHAR(100) NOT NULL,
+   Email VARCHAR(100) NOT NULL UNIQUE,
    "Password" VARCHAR(100) NOT NULL,
    User_Type VARCHAR(15) NOT NULL,
    last_login DATETIME
@@ -29,7 +29,6 @@ CREATE TABLE admin_user (
 );
 CREATE TABLE driver_user (
    User_ID INTEGER PRIMARY KEY,
-   Sponsor_ID INTEGER NOT NULL,
    FOREIGN KEY  (User_ID) REFERENCES users(User_ID)
 );
 CREATE TABLE sponsor_user (
