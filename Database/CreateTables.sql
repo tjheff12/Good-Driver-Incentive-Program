@@ -96,3 +96,12 @@ CREATE TABLE points (
    FOREIGN KEY  (User_ID) REFERENCES driver_user(User_ID),
    FOREIGN KEY  (Purchase_ID) REFERENCES purchase(Purchase_ID)
 );
+
+CREATE TABLE application_state_change (
+	State_Change_ID INTEGER PRIMARY KEY AUTO_INCREMENT,
+	Application_ID INT NOT NULL,
+	Date_Time DATETIME NOT NULL,
+	New_Status VARCHAR(15) NOT NULL,
+	New_Reason VARCHAR(30),
+	FOREIGN KEY (Application_ID) REFERENCES driver_application(Application_ID)
+);
