@@ -53,7 +53,7 @@ CREATE TABLE driver_sponsor (
    User_ID INTEGER NOT NULL,
    Sponsor_ID INTEGER NOT NULL,
    PRIMARY KEY(User_ID, Sponsor_ID),
-   FOREIGN KEY (User_ID) REFERENCES driver_user(User_ID),
+   FOREIGN KEY (User_ID) REFERENCES users(User_ID),
    FOREIGN KEY (Sponsor_ID) REFERENCES sponsor(Sponsor_ID)
 );
 
