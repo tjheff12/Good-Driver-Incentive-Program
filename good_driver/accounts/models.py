@@ -19,6 +19,18 @@ class AdminUser(models.Model):
         db_table = 'admin_user'
 
 
+class ApplicationStateChange(models.Model):
+    state_change_id = models.AutoField(db_column='State_Change_ID', primary_key=True)  # Field name made lowercase.
+    application = models.ForeignKey('DriverApplication', models.DO_NOTHING, db_column='Application_ID')  # Field name made lowercase.
+    date_time = models.DateTimeField(db_column='Date_Time')  # Field name made lowercase.
+    new_status = models.CharField(db_column='New_Status', max_length=15)  # Field name made lowercase.
+    new_reason = models.CharField(db_column='New_Reason', max_length=30, blank=True, null=True)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'application_state_change'
+
+
 class DriverApplication(models.Model):
     application_id = models.AutoField(db_column='Application_ID', primary_key=True)  # Field name made lowercase.
     driver = models.ForeignKey('Users', models.DO_NOTHING, db_column='Driver_ID')  # Field name made lowercase.
@@ -33,7 +45,7 @@ class DriverApplication(models.Model):
 
 
 class DriverSponsor(models.Model):
-    user = models.OneToOneField('DriverUser', models.DO_NOTHING, db_column='User_ID', primary_key=True)  # Field name made lowercase.
+    user = models.ForeignKey('Users', models.DO_NOTHING, db_column='User_ID')  # Field name made lowercase.
     sponsor = models.ForeignKey('Sponsor', models.DO_NOTHING, db_column='Sponsor_ID')  # Field name made lowercase.
 
     class Meta:

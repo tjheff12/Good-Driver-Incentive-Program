@@ -375,18 +375,72 @@ def application(request):
         return redirect(login)
     elif request.user.user_type == 'Driver':
         if request.method == "GET":
+            ## gets sponsor form from forms.py and puts it in application.html
             form = forms.SponsorForm()
             return render(request,'application.html', {'form': form})
         elif request.method == "POST":
             user_id = request.user.user_id
             user_obj = models.Users.objects.get(user_id=user_id)
             sponsor_obj = models.Sponsor.objects.get(name=request.POST['sponsor_name'])
-            
+            print(sponsor_obj)
+            sponsor_id = getattr(sponsor_obj, 'sponsor_id')
+            print(sponsor_id)
+            ##prevents duplicate application while original app is still pending
+            if(models.DriverApplication.objects.filter(driver=user_id,sponsor=sponsor_id,status='Pending').exists()):
+                messages.info(request,"You already applied to " + request.POST['sponsor_name'])
+                return redirect(application)
+            if(models.DriverSponsor.objects.filter(user=user_id,sponsor=sponsor_obj).exists()):
+                messages.info(request,"You are already sponsored by " + request.POST['sponsor_name'])
+                return redirect(application)
+
             CURRENT_TIME = datetime.now()
             
+
             ##gets id from query
             
             new_Application = models.DriverApplication(driver=user_obj,sponsor=sponsor_obj,date_time=CURRENT_TIME,status="Pending",reason=None)
             new_Application.save()
             messages.info(request, 'You applied successfully')
+            return redirect(application)
+    elif(request.user.user_type == "Sponsor"):
+        if request.method == "GET":
+            user_sponsor_obj = models.SponsorUser.objects.get(user_id=request.user.user_id)
+            sponsor_id = getattr(user_sponsor_obj, 'sponsor_id')
+            sponsor_obj = models.Sponsor.objects.get(sponsor_id=sponsor_id)
+            sponsor_name = getattr(sponsor_obj, 'name')
+            
+            ##select related gets the necessary Users objects so the database only needs to be queried once
+            app_list = models.DriverApplication.objects.select_related('driver').filter(sponsor=sponsor_obj,status='Pending')
+            
+            list_of_apps = []
+            for app in app_list:
+                first_name = app.driver.first_name
+                last_name = app.driver.last_name
+                street_address = app.driver.street_address
+                city = app.driver.city
+                zip_code = app.driver.zip_code
+                phone_number = app.driver.phone_number
+                new_dict = {'first_name':first_name,'last_name':last_name,'street_address':street_address,'city':city,'zip_code':zip_code, 'phone_number':phone_number, 'status':app.status, 'reason':app.reason, 'date_time':app.date_time, 'application_id': app.application_id}
+                list_of_apps.append(new_dict)
+            
+            
+            return render(request, 'application.html', {'app_list': list_of_apps, 'sponsor_name':sponsor_name})
+        elif request.method == "POST":
+            print(request.POST)
+            application_obj = models.DriverApplication.objects.select_related('sponsor').get(application_id=request.POST['application_id'])
+            print(application_obj.driver)
+            print(application_obj.sponsor)
+            if(request.POST['decision'] == "Accept"):
+                new_DriverSponsor = models.DriverSponsor(user=application_obj.driver, sponsor=application_obj.sponsor)
+                new_DriverSponsor.save()
+                application_obj.status = "Accepted"
+                application_obj.reason = request.POST['reason_input']
+                application_obj.save()
+                messages.info(request, "Successfully Accepted Application Number" + request.POST['application_id'])
+            elif(request.POST['decision'] == "Reject"):
+                application_obj.status = "Rejected"
+                application_obj.reason = request.POST['reason_input']
+                application_obj.save()
+                messages.info(request, "Successfully Rejected Application Number " + request.POST['application_id'])
+
             return redirect(application)

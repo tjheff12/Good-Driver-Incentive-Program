@@ -1,4 +1,7 @@
 <!DOCTYPE html>
+{% block content %}
+{% if user.user_type == 'Driver' %}
+
 <head>
     <title>Apply!</title>
 </head>
@@ -25,6 +28,72 @@
 </body>
 
 
+{% endif %}
+{%if user.user_type == 'Sponsor' %}
+<style>th, td{
+    padding:15px;
+}
+.app_id{
+    border: 0;
+    text-align: center;
+}
+h1{
+    text-align: center;
+}
+</style>
+<head>
+    <title>Applications</title>
+</head>
+<body>
+    <h1>Pending Applications for {{sponsor_name}}</h1>
+    <br>
+    <br>
+    <table>
+        <tr>
+            <th>Application ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Street Address</th>
+            <th>City</th>
+            <th>Zip Code</th>
+            <th>Phone Number</th>
+            <th>Status</th>
+            <th>Reason</th>
+            <th>Time Applied</th>
+        </tr>
+        
+    {% for application in app_list %}
+        <tr>
+            <form method="POST">
+                {% csrf_token %}
+            <td ><input type="number" class="app_id" name='application_id' value={{application.application_id}} readonly></td>
+            <td>{{application.first_name}}</td>
+            <td>{{application.last_name}}</td>
+            <td>{{application.street_address}}</td>
+            <td>{{application.city}}</td>
+            <td>{{application.zip_code}}</td>
+            <td>{{application.phone_number}}</td>
+            <td>{{application.status}}</td>
+            <td>{{application.reason}}</td>
+            <td>{{application.date_time}}</td>
+            <td><input type="submit" name="decision" value="Accept"></td>
+            <td><input type="submit" name="decision" value="Reject"></td>
+            <td><input type="text" id = 'reason_input' name="reason_input"></td>
+            </form>
+        </tr>
+    {% endfor %}
+    
+    </table>
+    <div >
+        {% for message in messages %}
+        <div role="alert">
+            {{message}}
+        </div>
+        {% endfor %}
+    </div>
+</body>
+{% endif %}
+{% endblock %}
 
 
 </html>

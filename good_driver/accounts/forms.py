@@ -7,6 +7,8 @@ def get_all_sponsors():
     all_sponsors_list = [(entry['name'],entry['name']) for entry in all_sponsors]
     
     return all_sponsors_list
+
+
 class SponsorForm(forms.Form):
     
 
