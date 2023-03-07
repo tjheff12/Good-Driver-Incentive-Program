@@ -66,7 +66,7 @@ def login(request):
             message = 'You are logged in!'
             messages.info(request, message)
             
-            return render(request, 'user_profile.html', {"message":message})
+            return redirect(user_profile)
         else:
             if models.Users.objects.filter(email=email).exists():
                 user_id_queryset = models.Users.objects.filter(email=email).values('user_id')
@@ -436,7 +436,7 @@ def application(request):
                 application_obj.status = "Accepted"
                 application_obj.reason = request.POST['reason_input']
                 application_obj.save()
-                messages.info(request, "Successfully Accepted Application Number" + request.POST['application_id'])
+                messages.info(request, "Successfully Accepted Application Number " + request.POST['application_id'])
             elif(request.POST['decision'] == "Reject"):
                 application_obj.status = "Rejected"
                 application_obj.reason = request.POST['reason_input']
