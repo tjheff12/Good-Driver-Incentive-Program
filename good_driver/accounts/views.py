@@ -269,6 +269,44 @@ def admin_delete_account(request):
     # Returns 403 Error (Permission Denied)    
     else: raise PermissionDenied
 
+def admin_change_user_password(request):
+    import hashlib
+
+    # Denies permission to ANYONE who is NOT signed in
+    if request.user.is_anonymous == True:
+        raise PermissionDenied
+    # Logic for if a user is signed in AND is of the 'Admin' type
+    elif request.user.user_type == "Admin":
+        if request.method == "GET":
+            # Give page with option to enter a user's info to delete from the db
+            return render(request, 'adminChangeUserPassword.html')
+        elif request.method == "POST":
+            username = request.POST['username']
+            password = request.POST['password']
+            confirm_password = request.POST['confirm_password']
+
+            if password != confirm_password:
+                messages.info(request, 'Both passwords do not match!')
+                return redirect(admin_change_user_password)
+            elif password == "":
+                messages.info(request, 'Password cannot be blank!')
+                return redirect(admin_change_user_password)
+
+            password_hash = hashlib.md5(password.encode()).hexdigest()
+
+            if models.Users.objects.filter(email=username).exists():
+                userToUpdate = models.Users.objects.get(email=username)
+                userToUpdate.password = password_hash
+                userToUpdate.save()
+                return redirect('done')
+            else:
+                messages.info(request, 'Username does not exist')
+                return redirect(admin_change_user_password)
+        else: 
+            raise Http404
+    # Returns 403 Error (Permission Denied)    
+    else: raise PermissionDenied
+
 def sponsor_panel(request):
     # Denies permission to ANYONE who is NOT signed in
     if request.user.is_anonymous == True:
