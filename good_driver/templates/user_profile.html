@@ -1,41 +1,55 @@
-
 {% block title %}Home{% endblock %}
 
 {% block content %}
 {% if user.is_authenticated %}
-  Hi {{ user.email }}!
-  <br>
-  Your attirbutes are:
-  <br>
-  Username-{{user.email}}
-  <br>
+Hi {{ user.email }}!
+<br>
+Your attirbutes are:
+<br>
+Username-{{user.email}}
+<br>
+<form action="/user_profile/" method="POST" class="form-horizontal">
+  {% csrf_token%}
   First Name-{{user.first_name}}
+  <input type="text" id="first_name" name="first_name">
+  <button type="submit" class="btn btn-primary" hidden="hidden">Change First Name</button>
   <br>
   Last Name-{{user.last_name}}
+  <input type="text" id="last_name" name="last_name">
+  <button type="submit" class="btn btn-primary" hidden="hidden">Change Last Name</button>
   <br>
-  Street Address 1-{{user.street_address}}  
+  Street Address 1-{{user.street_address}}
+  <input type="text" id="street_address" name="street_address">
+  <button type="submit" class="btn btn-primary" hidden="hidden">Change Address</button>
   <br>
   City-{{user.city}}
+  <input type="text" id="city" name="city">
+  <button type="submit" class="btn btn-primary" hidden="hidden">Change City</button>
   <br>
   Zip Code-{{user.zip_code}}
+  <input type="text" id="zip_code" name="zip_code">
+  <button type="submit" class="btn btn-primary" hidden="hidden">Change Zip</button>
   <br>
   Phone Number-{{user.phone_number}}
+  <input type="text" id="phone_number" name="phone_number">
+  <button type="submit" class="btn btn-primary" hidden="hidden">Change Phone</button>
   <br>
-  User Type-{{user.user_type}}
-  <br>
-  <a href="../logout" role="button">Got to Logout</a>
-  <br>
-  <br>
-  <div >
-    {% for message in messages %}
-    <div role="alert">
-        {{message}}
-    </div>
-    {% endfor %}
+</form>
+User Type-{{user.user_type}}
+<br>
+<a href="../logout" role="button">Got to Logout</a>
+<br>
+<br>
+<div>
+  {% for message in messages %}
+  <div role="alert">
+    {{message}}
+  </div>
+  {% endfor %}
 </div>
 {% else %}
-  <p>You are not logged in</p>
-  <a class="btn btn-dark" href="../login" role="button">Go To Login</a>
- 
+<p>You are not logged in</p>
+<a class="btn btn-dark" href="../login" role="button">Go To Login</a>
+
 {% endif %}
 {% endblock %}
