@@ -11,10 +11,10 @@ urlpatterns = [
     path('adminCreateAccount/', views.admin_create_account, name='adminCreateAccount'),
     path('adminDeleteAccount/', views.admin_delete_account, name='adminDeleteAccount'),
     path('adminCreateSponsor/', views.admin_create_sponsor, name='adminCreateSponsor'),
+    path('adminEditAccount/', views.admin_edit_account, name='adminEditAccount'),
     path('sponsorPanel/', views.sponsor_panel, name='sponsorPanel'),
     path('sponsorCreateAccount/', views.sponsor_create_account, name='sponsorCreateAccount'),
     path('sponsorRemoveDriver/', views.sponsor_remove_driver, name='sponsorRemoveDriver'),
-    path('application/', views.application,name='application'),
-    
+    path('application/', views.application,name='application'),    
     #path("home", views.home, name="home")
 ]
