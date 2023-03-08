@@ -86,6 +86,15 @@ CREATE TABLE purchase_item (
 );
 
 CREATE TABLE points (
+   Points_ID INTEGER PRIMARY KEY AUTO_INCREMENT,
+   User_ID INTEGER NOT NULL,
+   Sponsor_ID INTEGER NOT NULL,
+   Point_Total INTEGER NOT NULL,
+   FOREIGN KEY  (User_ID) REFERENCES users(User_ID),
+   FOREIGN KEY (Sponsor_ID) REFERENCES sponsor(Sponsor_ID)
+   
+);
+CREATE TABLE points_old (
    Transaction_ID INTEGER PRIMARY KEY AUTO_INCREMENT,
    User_ID INTEGER NOT NULL,
    Point_Total INTEGER NOT NULL,
