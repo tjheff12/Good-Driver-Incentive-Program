@@ -134,6 +134,8 @@ def user_profile(request):
             user.city = city
         if zip_code != "" and zip_code.isnumeric():
             user.zip_code = int(zip_code)
+        elif zip_code != "" and not zip_code.isnumeric():
+            messages.info(request, 'Zip Code must be a number')
         if phone_num != "":
             user.phone_number = phone_num
 
