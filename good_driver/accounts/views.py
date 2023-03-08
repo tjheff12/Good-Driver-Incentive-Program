@@ -93,9 +93,30 @@ def logout(request):
         
     elif request.method == "GET":
         return render(request, 'registration/logout.html' )
-    
+
 def resetPassword(request):
-    return render(request, 'resetPassword.html')
+    import hashlib
+    if request.method == 'POST':
+        username = request.POST['username']
+        new_password = request.POST['new_password']
+        confirm_password = request.POST['confirm_password']
+        
+        if new_password == confirm_password:
+            # Hash the new password
+            hashed_password = hashlib.md5(new_password.encode()).hexdigest()
+            print(hashed_password)
+            user = models.Users.objects.get(email=username)
+            user.password = hashed_password
+            user.save()
+            return redirect('done')
+        
+        else:
+            message = "New password and confirm password do not match"
+            messages.info(request, message)
+            return render(request, 'resetPassword.html', {"message":message})
+            
+    else:
+        return render(request, 'resetPassword.html')
 
 def sponsorView(request):
     return render(request, 'sponsorView.html')
@@ -444,3 +465,35 @@ def application(request):
                 messages.info(request, "Successfully Rejected Application Number " + request.POST['application_id'])
 
             return redirect(application)
+
+def sponsorHome(request):
+    return render(request, 'sponsorHome.html')
+
+def adminHome(request):
+    return render(request, 'adminHome.html')
+def driverManagement(request):
+    return render(request, 'driverManagement.html')
+
+def pointTracking(request):
+    return render(request, 'pointTracking.html')
+
+def driverSales(request):
+    return render(request, 'driverSales.html')
+
+def sponsorSales(request):
+    return render(request, 'sponsorSales.html')
+
+def invoice(request):
+    return render(request, 'invoice.html')
+
+def audit(request):
+    return render(request, 'audit.html')
+
+def sponsorReport(request):
+    return render(request, 'sponsorReport.html')
+
+def adminReport(request):
+    return render(request, 'adminReport.html')
+
+def adminInfo(request):
+    return render(request, 'adminInfo.html')

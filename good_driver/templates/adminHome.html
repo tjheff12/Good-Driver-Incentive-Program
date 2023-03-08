@@ -12,19 +12,13 @@
     <div class="sponsorView">
         <form method="post">
             <h2 class="title"> Admin Interface </h2>
-            <input type="button" class="button" value="Drivers"/>
-            <input type="button" class="button" value="Sponsors"/>
+            <a href='adminReport'><input type="button" class="button" value="Generate Reports"/></a>
             <br>
             <br>
-            <input type="button" class="button" value="Admins"/>
-            <input type="button" class="button" value="Generate Reports"/>
-            <br>
-            <br>
-            <input type="button" class="button" value="Change Username"/>
             <input type="button" class="button" onclick="window.location.href={% url 'resetPassword' %}" value="Change Password"/>
             <br>
             <br>
-            <input type="button" class="logoutButton" value="Logout"/>
+            <input type="button" class="button" onclick="window.location.href = '../logout'" value="Logout"/>
         </form>
     </div>
 
