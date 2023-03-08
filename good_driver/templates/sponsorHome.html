@@ -12,24 +12,23 @@
     <div class="sponsorView">
         <form method="post">
             <h2 class="title"> Sponsor Interface </h2>
-            <input type="button" class="button" value="Driver Management"/> <!--Link-->
+            <a href='driverManagement'><input type="button" class="button" value="Driver Management"/></a> <!--Link-->
             <input type="button" class="button" value="Create New Sponsor"/>
             <br>
             <br>
             <input type="button" class="button" value="Catalog Settings"/>
-            <input type="button" class="button" value="Generate Reports"/>
+            <a href='sponsorReport'><input type="button" class="button" value="Generate Reports"/></a>
             <br>
             <br>
-            <input type="button" class="button" value="Change Username"/>
-            <input type="button" class="button" onclick="window.location.href={% url 'resetPassword' %}" value="Change Password"/>
+            <input type="button" class="logoutButton" onclick="window.location.href={% url 'resetPassword' %}" value="Change Password"/>
             <br>
             <br>
-            <input type="button" class="logoutButton" value="Logout"/>
+            <input type="button" class="logoutButton" value="Logout"/ onclick="window.location.href = '../logout'"/>
         </form>
     </div>
 
     <div class="home">
-        <a href="{% url 'home' %}"><img src="{% static 'images/home.png' %}" alt="Home" ></a>
+        <a href="{% url 'sponsorHome' %}"><img src="{% static 'images/home.png' %}" alt="Home" ></a>
     </div>
 
     <div class="switchView">

@@ -26,39 +26,7 @@ urlpatterns = [
     path('', include("accounts.urls")),
     
   
-    path('resetPassword/', views.resetPassword, name='resetPassword'),
+    
 
-    path('pointChange/', views.pointChange, name='pointChange'),
 
-    path('catalog/', views.catalog, name='catalog'),
-
-    path('pointHistory/', views.pointHistory, name='pointHistory'),
-
-    path('driverHome/', views.driverHome, name='driverHome'),
-
-    path('sponsorHome/', views.sponsorHome, name='sponsorHome'),
-
-    path('home/', views.driverHome, name="home"),
-
-    path('adminHome/', views.adminHome, name="adminHome"),
-
-    path('driverManagement', views.driverManagement, name='driverManagement'),
-
-    path('sponsorReport/pointTracking/', views.pointTracking, name='pointTracking'),
-
-    path('adminReport/driverSales/', views.driverSales, name='driverSales'),
-
-    path('adminReport/sponsorSales/', views.sponsorSales, name='sponsorSales'),
-
-    path('adminReport/invoice/', views.invoice, name='invoice'),
-
-    path('sponsorReport/audit/', views.audit, name='sponsorAudit'),
-
-    path('adminReport/audit/', views.audit, name='adminAudit'),
-
-    path('sponsorReport/', views.sponsorReport, name='sponsorReport'),
-
-    path('adminReport/', views.adminReport, name='adminReport'),
-
-    path('adminInfo/', views.adminInfo, name='adminInfo'),
 ]
