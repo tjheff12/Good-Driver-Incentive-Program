@@ -11,6 +11,7 @@ urlpatterns = [
     path('adminCreateAccount/', views.admin_create_account, name='adminCreateAccount'),
     path('adminDeleteAccount/', views.admin_delete_account, name='adminDeleteAccount'),
     path('adminCreateSponsor/', views.admin_create_sponsor, name='adminCreateSponsor'),
+    path('adminChangeUserPassword/', views.admin_change_user_password, name='adminChangeUserPassword'),
     path('sponsorPanel/', views.sponsor_panel, name='sponsorPanel'),
     path('sponsorCreateAccount/', views.sponsor_create_account, name='sponsorCreateAccount'),
     path('sponsorRemoveDriver/', views.sponsor_remove_driver, name='sponsorRemoveDriver'),

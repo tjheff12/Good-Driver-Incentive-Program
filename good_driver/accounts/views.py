@@ -111,7 +111,36 @@ def pointHistory(request):
 
 
 def user_profile(request):
-    return render(request, 'user_profile.html')
+    if request.method == "GET":
+
+        return render(request, 'user_profile.html')
+    elif request.method == "POST":
+        # Take in new edits
+        first_name = request.POST['first_name']
+        last_name = request.POST['last_name']
+        street_addr = request.POST['street_address']
+        city = request.POST['city']
+        zip_code = request.POST['zip_code']
+        phone_num = request.POST['phone_number']
+
+        user = models.Users.objects.get(user_id=request.user.user_id)
+        if first_name != "":
+            user.first_name = first_name
+        if last_name != "":
+            user.last_name = last_name
+        if street_addr != "":
+            user.street_address = street_addr
+        if city != "":
+            user.city = city
+        if zip_code != "" and zip_code.isnumeric():
+            user.zip_code = int(zip_code)
+        elif zip_code != "" and not zip_code.isnumeric():
+            messages.info(request, 'Zip Code must be a number')
+        if phone_num != "":
+            user.phone_number = phone_num
+
+        user.save()
+        return render(request, 'user_profile.html')
 
     
 def admin_panel(request):
@@ -264,6 +293,47 @@ def admin_delete_account(request):
             else:
                 messages.info(request, 'Username does not exist')
                 return redirect(admin_delete_account)
+        else: 
+            raise Http404
+    # Returns 403 Error (Permission Denied)    
+    else: raise PermissionDenied
+
+def admin_change_user_password(request):
+    import hashlib
+
+    # Denies permission to ANYONE who is NOT signed in
+    if request.user.is_anonymous == True:
+        raise PermissionDenied
+    # Logic for if a user is signed in AND is of the 'Admin' type
+    elif request.user.user_type == "Admin":
+        if request.method == "GET":
+            # Give page with option to enter a user's info to delete from the db
+            return render(request, 'adminChangeUserPassword.html')
+        elif request.method == "POST":
+            username = request.POST['username']
+            password = request.POST['password']
+            confirm_password = request.POST['confirm_password']
+
+            # Make sure both passwords are the same
+            if password != confirm_password:
+                messages.info(request, 'Both passwords do not match!')
+                return redirect(admin_change_user_password)
+            # Ensures password isn't an empty string
+            elif password == "":
+                messages.info(request, 'Password cannot be blank!')
+                return redirect(admin_change_user_password)
+
+            password_hash = hashlib.md5(password.encode()).hexdigest()
+
+            # If the user does exist, it updates their password with the new one in the DB
+            if models.Users.objects.filter(email=username).exists():
+                userToUpdate = models.Users.objects.get(email=username)
+                userToUpdate.password = password_hash
+                userToUpdate.save()
+                return redirect('done')
+            else:
+                messages.info(request, 'Username does not exist')
+                return redirect(admin_change_user_password)
         else: 
             raise Http404
     # Returns 403 Error (Permission Denied)    
