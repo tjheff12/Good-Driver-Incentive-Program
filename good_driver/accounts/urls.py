@@ -15,11 +15,13 @@ urlpatterns = [
     path('sponsorPanel/', views.sponsor_panel, name='sponsorPanel'),
     path('sponsorCreateAccount/', views.sponsor_create_account, name='sponsorCreateAccount'),
     path('sponsorRemoveDriver/', views.sponsor_remove_driver, name='sponsorRemoveDriver'),
-    path('application/', views.application,name='application'),
+    path('application/', views.application, name='application'),
+    path('sponsorHome/driverManagement/application/', views.application,name='application'),
     path('resetPassword/', views.resetPassword, name='resetPassword'),
     path('sponsorHome/driverManagement/pointChange/', views.pointChange, name='pointChange'),
-
+    path('all_drivers', views.sponsor_see_all_drivers, name='all_drivers'),
     path('catalog/', views.catalog, name='catalog'),
+    path('home/', views.home, name='home'),
 
     path('pointHistory/', views.pointHistory, name='pointHistory'),
 
@@ -27,11 +29,12 @@ urlpatterns = [
 
     path('sponsorHome/', views.sponsorHome, name='sponsorHome'),
 
-    path('home/', views.driverHome, name="home"),
+    #path('home/', views.driverHome, name="home"),
 
     path('adminHome/', views.adminHome, name="adminHome"),
 
     path('sponsorHome/driverManagement/', views.driverManagement, name='driverManagement'),
+    
 
     path('sponsorHome/sponsorReport/pointTracking/', views.pointTracking, name='pointTracking'),
 
