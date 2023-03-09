@@ -655,3 +655,68 @@ def home(request):
         return render(request, 'sponsorHome.html')
     elif request.user.user_type == "Admin":
         return render(request, 'adminHome.html')
+def admin_edit_account(request):
+    # Denies permission to anyone who is not signed in as an Admin
+    if  request.user.is_anonymous == True or request.user.user_type != "Admin":
+        raise PermissionDenied
+
+    both_forms = {"form1": forms.getDriverEmail, "form2": forms.getDriverInfo}
+
+    if request.method == "GET":
+        return render(request, 'adminEditAccount.html', both_forms)
+    elif request.method == "POST":
+        form1 = forms.getDriverEmail(request.POST)
+        # make sure the form is valid
+        if form1.is_valid():
+            target_user_email = form1.cleaned_data['email']
+        else:
+            target_user_email = request.POST['email']
+
+        #make sure the user exists
+        if models.Users.objects.filter(email=target_user_email).exists():
+            print(models.Users.objects.filter(email=target_user_email))
+
+            #get the user from the database
+            target_user_queryset = models.Users.objects.filter(email=target_user_email).values('email', 'first_name', 'last_name', 'phone_number', 'street_address', 'street_address_2', 'user_type', 'zip_code', 'city')
+            target = target_user_queryset[0]
+
+            #this maps the fields from the database to the variables in adminEditAccounts.html
+            context_data =  {"form1": forms.getDriverEmail, "form2": forms.getDriverInfo, 'other_email': target['email'], 'other_first_name': target['first_name'], 'other_last_name':target['last_name'], 'other_street_address':target['street_address'], 'other_city':target['city'], 'other_zip_code':target['zip_code'], 'other_phone_number':target['phone_number'], 'other_user_type':target['user_type']}
+
+            #
+            #  If the "Update Provided Fields" button is pressed
+            #
+            if 'updateInfo' in request.POST:
+                #get form submission data
+
+                first_name = request.POST['first_name']
+                last_name = request.POST['last_name']
+                street_addr = request.POST['street_address']
+                city = request.POST['city']
+                zip_code = request.POST['zip_code']
+                phone_num = request.POST['phone_number']
+
+                #update queryset for updated info
+                if first_name != "":
+                    target_user_queryset.update(first_name=first_name)
+                    context_data['other_first_name'] = first_name 
+                if last_name != "":
+                    target_user_queryset.update(last_name=last_name)
+                    context_data['other_last_name'] = last_name
+                if street_addr != "":
+                    target_user_queryset.update(street_address=street_addr)
+                    context_data['other_street_address'] = street_addr
+                if city != "":
+                    target_user_queryset.update(city=city)
+                    context_data['other_city'] = city
+                if zip_code != "" and zip_code.isnumeric():
+                    target_user_queryset.update(zip_code=zip_code)
+                    context_data['other_zip_code'] = zip_code
+                if phone_num != "":
+                    target_user_queryset.update(phone_number=phone_num)
+                    context_data['other_phone_number'] = phone_num
+
+        else:
+            context_data = both_forms
+    
+    return render(request, 'adminEditAccount.html', context_data)
