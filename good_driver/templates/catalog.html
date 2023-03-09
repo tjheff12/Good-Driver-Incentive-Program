@@ -1,0 +1,54 @@
+</style>
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<link rel="stylesheet" href="{% static 'catalog.css' %}">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SponsorView</title> 
+</head>
+<body>
+    <div class="catalogContent">
+        <table>
+            <caption>Webkinz E-Store Calatog</caption>
+            <tr>
+                <th style="width: 20%">Name</th>
+                <th style="width: 10%">Availability</th>
+                <th style="width: 10%">Point Cost</th>
+                <th style="width: 50%">Description</th>
+            </tr>
+            <tr>
+                <th><a href="https://www.amazon.com/Webkinz-Midnight-Monster-by/dp/B014VE2M6K?source=ps-sl-shoppingads-lpcontext&ref_=fplfs&psc=1&smid=A15JJW6SG5GRME">Spooky Stuffy</a></td>
+                <td>45</td>
+                <td>35.5</td>
+                <td>Webkinz Midnight Monster by Webkinz </td>
+            </tr>
+            <tr>
+                <th><a href="https://www.ebay.com/itm/373240168524?hash=item56e6d9004c:g:ZS4AAOSwM6Vjwlvi&amdata=enc%3AAQAHAAAA0KNb%2B3UGj%2FYw5VKntFPc7R63NOV4ld8z%2BHnr4MR5sNvJ4Hi70N4km%2FbeLvlCoSt8%2FC27%2FiUHM52YLA6PDjoaxtigV%2B93xUHnBBsjHeqpIlNtuG%2BYrw1%2FzBK%2B%2BonOXQlaBjIAbfAVcbRcELgKfzIO7jaAOzqDj4VDWXUweu%2Fp8A2my1tJrZPv65O1Usa2gDUOTV8c8LvtuGCg1lsk%2FYGNr8wd6XSlpIgUNnT%2FbEFvyfTaQ7RwxwcIExsxNxf9i15QRc%2FPHwlKEeY5X1lGQOBCiM8%3D%7Ctkp%3ABk9SR4KMmqPPYQ">Hotwheels</a></td>
+                <td>9</td>
+                <td>28.7</td>
+                <td>Beat that!</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="home">
+        <a href="{% url 'home' %}"><img src="{% static 'images/home.png' %}" alt="Home" ></a>
+    </div>
+
+    <div class="switchView">
+        <input type="button" value="Light Mode"/>
+        <input type="button" value="Dark Mode"/>
+        <div class="points">
+            Points
+            <br>
+            56
+        </div>
+    </div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,72 @@
+</style>
+<!DOCTYPE html>
+<html lang="en">
+<style>th, td{
+        padding:10px;
+    }
+</style>
+{% load static %}
+<link rel="stylesheet" href="{% static 'pointHistory.css' %}">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PointHistory</title> 
+</head>
+<body>
+    <div style="text-align: center;" >
+        
+        <h1 > Points </h1>
+        <br>
+        <br>
+            <div >
+                <table style="margin-left: auto; margin-right: auto">
+                    <tr>
+                        <th>Sponsor</th>
+                        <th>Current Points</th>
+                    </tr>
+                    {% for points in point_list %}
+                    <tr>
+                        <td>{{points.Sponsor}}</td>
+                        <td>{{points.Points}}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                
+            </div>   
+        <br>
+        <br>
+            <div>
+                <h2>Point History</h2>
+                <table style="margin-left: auto; margin-right: auto">
+                    <tr>
+                        <th>Sponsor</th>
+                        <th>DateTime</th>
+                        <th>Point Change</th>
+                        <th>Reason</th>
+                    </tr>
+                    {% for point_hist in point_history_list %}
+                    <tr>
+                        <td>{{point_hist.sponsor}}</td>
+                        <td>{{point_hist.point_change}}</td>
+                        <td>{{point_hist.date_time}}</td>
+                        <td>{{point_hist.reason}}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+               
+            </div>
+            
+        
+    </div>
+
+    <div class="home">
+        <img src="{% static 'images/home.png' %}" alt="My Image" >
+    </div>
+
+    <div class="switchView">
+        <input type="button" value="Light Mode"/>
+        <input type="button" value="Dark Mode"/>
+    </div>
+</body>
+</html>

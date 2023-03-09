@@ -1,19 +1,27 @@
-.login {
+.driverManagement {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
 }
 
-.loginButton {
+.switchView {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.buttonFormat {
     width: 220px;
 }
 
-.buttonPress {
-    width: 108px;
+.home {
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
-.loginTitle {
+.title {
     display: flex;
     justify-content: center;
     align-items: center;

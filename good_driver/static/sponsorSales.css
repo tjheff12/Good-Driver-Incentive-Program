@@ -1,0 +1,64 @@
+.sponsorSales {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.switchView {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.home {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.formatting {
+    width: 220px;
+}
+
+.download {
+    width: 220px;
+    margin: 0 auto;
+    display: block;
+}
+
+.sponsorOptions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dates {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.start {
+    display: block;
+}
+
+.end {
+    display: block;
+    margin-left: 10px;
+}
+
+.formatting {
+    padding: 5px;
+}
+
+.sponsorListTitle {
+    margin-right: 10px;
+}
+

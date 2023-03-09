@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<link rel="stylesheet" href="{% static 'sponsorView.css' %}">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driver Home</title> 
+</head>
+<body>
+    <div class="sponsorView">
+        <form method="post">
+            <h2 class="title"> Driver Interface </h2>
+            <input type="button" class="button" onclick="window.location.href={% url 'pointHistory' %}" value="Point History"/>
+            <input type="button" class="button" value="Orders"/>
+            <br>
+            <br>
+            <input type="button" class="button" onclick="window.location.href={% url 'catalog' %}" value="Catalog"/>
+            <input type="button" class="button" value="Submit Application" onclick="window.location.href='../application'"/>
+            <br>
+            <br>
+            <input type="button" class="button" value="Change Username"/>
+            <input type="button" class="button" onclick="window.location.href={% url 'resetPassword' %}" value="Change Password"/>
+            <br>
+            <br>
+            <input type="button" class="logoutButton" value="Logout" onclick="window.location.href = '../logout'"/>
+        </form>
+    </div>
+
+    <div class="home">
+        <a href="{% url 'home' %}"><img src="{% static 'images/home.png' %}" alt="Home" ></a>
+    </div>
+
+    <div class="switchView">
+        <input type="button" value="Light Mode"/>
+        <input type="button" value="Dark Mode"/>
+    </div>
+</body>
+</html>

@@ -1,0 +1,32 @@
+</style>
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<link rel="stylesheet" href="{% static 'driverManagement.css' %}">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DriverManagement</title> 
+</head>
+<body>
+    <div class="driverManagement">
+        <form method="post">
+            <h2 class="title"> Driver Management </h2>
+            <a href='application'><input type="button" class="buttonFormat" onclick="window.location.href = '../logout'" value="See Pending Applications"/></a>
+            <br>
+            <br>
+            <a href='pointChange'><input type="button" class="buttonFormat" value="Add or Subtract Points"/></a>
+        </form>
+    </div>
+
+    <div class="home">
+        <img src="{% static 'images/home.png' %}" alt="My Image" >
+    </div>
+
+    <div class="switchView">
+        <input type="button" value="Light Mode"/>
+        <input type="button" value="Dark Mode"/>
+    </div>
+</body>
+</html>

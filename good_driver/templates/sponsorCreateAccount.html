@@ -10,16 +10,16 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
 		integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
-	<title>Registeration Form</title>
+	<title>New User Form (Sponsor)</title>
 </head>
 
 <body>
-	<form action="/register/" method="POST" class="form-horizontal">
+	<form action="/sponsorCreateAccount/" method="POST" class="form-horizontal">
 		{% csrf_token%}
 		<div class="mx-auto" style="width: 400px;">
 
 			<div class="col-xs-8 col-xs-offset-4">
-				<h2 style="text-align:center;">SIGN UP</h2>
+				<h2 style="text-align:center;">New User Form (Sponsor)</h2>
 			</div>
 			<hr />
 			<div class="form-group">
@@ -54,21 +54,19 @@
 			</div>
 			<div class="form-group">
 				<label for="city">City</label>
-				<input type="text" class="form-control" name="city" id="city"
-					placeholder="Enter City" Required>
+				<input type="text" class="form-control" name="city" id="city" placeholder="Enter City" Required>
 			</div>
 			<div class="form-group">
 				<label for="zip_code">Zip Code</label>
-				<input type="text" class="form-control" name="zip_code" id="zip_code"
-					placeholder="Enter Zip Code" Required>
+				<input type="text" class="form-control" name="zip_code" id="zip_code" placeholder="Enter Zip Code"
+					Required>
 			</div>
 			<div class="form-group">
 				<label for="phone_num">Phone Number</label>
-				<input type="text" class="form-control" name="phone_num" id="phone_num"
-					placeholder="Enter Phone Number" Required>
+				<input type="text" class="form-control" name="phone_num" id="phone_num" placeholder="Enter Phone Number"
+					Required>
 			</div>
-			<button type="submit" class="btn btn-primary">SIGNUP</button>
-			<a class="btn btn-dark" href="../login" role="button">LOGIN</a>
+			<button type="submit" class="btn btn-primary">Create Account</button>
 		</div>
 	</form>
 	<div class="form-group">
