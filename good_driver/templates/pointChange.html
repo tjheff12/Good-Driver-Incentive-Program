@@ -12,38 +12,43 @@
 <body>
     <div class="pointChange">
         <form method="post">
+            {% csrf_token %}
             <h2 class="title"> Point Change </h2>
             <div class="driverOptions">
                 <label class="driverListTitle">Drivers:</label>
-                <select class="formatting">
-                    <option>Josiah</option>
-                    <option>Kevin</option>
+                <select class="formatting" name="driver_id">
+                {% for driver in driver_list %}
+                    <option value={{driver.id}}>{{driver.Name}}</option>
+                {% endfor %}
                 </select>
             </div>   
             <br>
             <div class="pointOptions">
                 <label class="pointListTitle">Points:</label>
-                <select class="formattingOperator">
-                    <option>1</option>
-                    <option>2</option>
-                    <option>3</option>
-                    <option>4</option>
-                    <option>5</option>
-                </select>
+                <input type="number" name="point_amount" min="1" value="1">
             </div>  
             <br>
             <div class="operatorOptions">
-                <label class="driverListTitle">Add or Subtract:</label>
-                <select class="formattingOperator">
-                    <option>+</option>
-                    <option>-</option>
-                </select>
+                
+                <input type="radio" name="add_or_subtract" id="add" value="add" checked>
+                <label for="add" style="margin-right:50px">Add</label>
+                <input type="radio" name="add_or_subtract" id="deduct" value="deduct">
+                <label for="deduct">Deduct</label>
             </div>  
             <br>
-            <textarea class="reason" name="my_textarea" rows="4" cols="40">Reason</textarea>
+            
+            <textarea class="reason" name="reason" rows="4" cols="40" maxlength="50">Reason</textarea>
             <br>
             <div class="submit">
                 <input type="submit" value="Submit" > 
+            </div>
+            <br>
+            <div >
+                {% for message in messages %}
+                <div role="alert" style="color:rgb(255,0,0); text-align:center;">
+                    {{message}}
+                </div>
+                {% endfor %}
             </div>
     </div>
     <div class="home">

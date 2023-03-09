@@ -1,6 +1,10 @@
 </style>
 <!DOCTYPE html>
 <html lang="en">
+<style>th, td{
+        padding:10px;
+    }
+</style>
 {% load static %}
 <link rel="stylesheet" href="{% static 'pointHistory.css' %}">
 <head>
@@ -10,19 +14,50 @@
     <title>PointHistory</title> 
 </head>
 <body>
-    <div class="pointHistory">
-        <form method="post">
-            <h2 class="title"> Point History </h2>
-            <div class="driverOptions">
-                <label class="driverListTitle">Current Points:</label>
-                <select class="formatting">
-                    <option>Josiah</option>
-                    <option>Kevin</option>
-                </select>
+    <div style="text-align: center;" >
+        
+        <h1 > Points </h1>
+        <br>
+        <br>
+            <div >
+                <table style="margin-left: auto; margin-right: auto">
+                    <tr>
+                        <th>Sponsor</th>
+                        <th>Current Points</th>
+                    </tr>
+                    {% for points in point_list %}
+                    <tr>
+                        <td>{{points.Sponsor}}</td>
+                        <td>{{points.Points}}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                
             </div>   
-              
+        <br>
+        <br>
+            <div>
+                <h2>Point History</h2>
+                <table style="margin-left: auto; margin-right: auto">
+                    <tr>
+                        <th>Sponsor</th>
+                        <th>DateTime</th>
+                        <th>Point Change</th>
+                        <th>Reason</th>
+                    </tr>
+                    {% for point_hist in point_history_list %}
+                    <tr>
+                        <td>{{point_hist.sponsor}}</td>
+                        <td>{{point_hist.point_change}}</td>
+                        <td>{{point_hist.date_time}}</td>
+                        <td>{{point_hist.reason}}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+               
+            </div>
             
-        </form>
+        
     </div>
 
     <div class="home">

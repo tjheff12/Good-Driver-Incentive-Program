@@ -20,3 +20,16 @@ AFTER INSERT ON `driver_application`
 FOR EACH ROW INSERT INTO 
 application_state_change (Application_ID,Date_Time,New_Status,New_Reason) 
 VALUES (NEW.Application_ID,NEW.Date_Time,NEW.Status,NEW.Reason);
+
+DELIMITER $$
+CREATE TRIGGER update_points_table
+AFTER INSERT ON points_history
+FOR EACH ROW BEGIN 
+	
+	IF(SELECT COUNT(*) FROM points WHERE points.User_ID = NEW.User_ID and points.Sponsor_ID = NEW.Sponsor_ID) = 1
+	THEN 
+	UPDATE points SET Point_Total = POINT_TOTAL + NEW.Point_Change WHERE points.User_ID = NEW.User_ID and points.Sponsor_ID = NEW.Sponsor_ID;
+	ELSE
+	INSERT INTO points(User_ID,Sponsor_ID,Point_Total) VALUES (NEW.User_ID,NEW.Sponsor_ID,NEW.Point_Change);
+	END IF;
+END$$

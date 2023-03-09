@@ -86,6 +86,28 @@ CREATE TABLE purchase_item (
 );
 
 CREATE TABLE points (
+   Points_ID INTEGER PRIMARY KEY AUTO_INCREMENT,
+   User_ID INTEGER NOT NULL,
+   Sponsor_ID INTEGER NOT NULL,
+   Point_Total INTEGER NOT NULL,
+   FOREIGN KEY  (User_ID) REFERENCES users(User_ID),
+   FOREIGN KEY (Sponsor_ID) REFERENCES sponsor(Sponsor_ID)
+   
+);
+
+CREATE TABLE points_history (
+   Change_ID INTEGER PRIMARY KEY AUTO_INCREMENT,
+   User_ID INTEGER NOT NULL,
+   Sponsor_ID INTEGER NOT NULL,
+   Point_Change INTEGER NOT NULL,
+   Date_Time Datetime NOT NULL,
+   Reason VARCHAR(50) NOT NULL,
+   FOREIGN KEY  (User_ID) REFERENCES users(User_ID),
+   FOREIGN KEY (Sponsor_ID) REFERENCES sponsor(Sponsor_ID)
+   
+);
+
+CREATE TABLE points_old (
    Transaction_ID INTEGER PRIMARY KEY AUTO_INCREMENT,
    User_ID INTEGER NOT NULL,
    Point_Total INTEGER NOT NULL,
@@ -104,4 +126,12 @@ CREATE TABLE application_state_change (
 	New_Status VARCHAR(15) NOT NULL,
 	New_Reason VARCHAR(30),
 	FOREIGN KEY (Application_ID) REFERENCES driver_application(Application_ID)
+);
+
+CREATE TABLE password_changes (
+	Change_ID INT PRIMARY KEY AUTO_INCREMENT,
+	Date_Time datetime NOT NULL,
+	User_ID int NOT NULL,
+	Type_Of_Change VARCHAR(10),
+	FOREIGN KEY (User_ID) REFERENCES users(User_ID)
 );

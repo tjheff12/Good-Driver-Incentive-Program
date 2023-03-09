@@ -49,7 +49,7 @@ def register(request):
     
     
 def driverHome(request):
-    return render(request, 'navigation/driverHome.html')
+    return render(request, 'driverHome.html')
     
 
 def login(request):
@@ -92,7 +92,11 @@ def logout(request):
         return redirect(login)
         
     elif request.method == "GET":
-        return render(request, 'registration/logout.html' )
+        auth_logout(request)
+        messages.info(request, "You have logged out")
+        return redirect(login)
+
+        
 
 def resetPassword(request):
     import hashlib
@@ -122,14 +126,71 @@ def sponsorView(request):
     return render(request, 'sponsorView.html')
 
 def pointChange(request):
-    return render(request, 'pointChange.html')
+    from datetime import datetime
+    if request.user.is_anonymous == True:
+        raise FileNotFoundError
+    # Logic for if a user is signed in AND is of the 'Sponsor' type
+    elif request.user.user_type == "Sponsor":
+        if request.method == "GET":
+            user_sponsor_obj = models.SponsorUser.objects.get(user_id=request.user.user_id)
+            sponsor_id = getattr(user_sponsor_obj, 'sponsor_id')
+            driver_query = models.DriverSponsor.objects.select_related('user').filter(sponsor=sponsor_id).order_by('user__first_name')#.values()
+            driver_list = []
+            for driver in driver_query:
+                id = driver.user.user_id
+                name = driver.user.first_name + " " + driver.user.last_name
+                driver_list.append({'Name':name, 'id':id})
+            print(driver_list)
+            return render(request, 'pointChange.html', {'driver_list': driver_list})
+        elif request.method == "POST":
+            print(request.POST)
+            user_sponsor_obj = models.SponsorUser.objects.get(user_id=request.user.user_id)
+            sponsor_id = getattr(user_sponsor_obj, 'sponsor_id')
+            point_amount = request.POST['point_amount']
+            if(request.POST['add_or_subtract'] == 'deduct'):
+                messages.info(request,"Points Deducted")
+                point_amount = str(int(point_amount) * -1)
+            else:
+                messages.info(request,"Points Added")
+            
+            print(point_amount)
+            new_point_history = models.PointsHistory(user=models.Users.objects.get(user_id = request.POST['driver_id']), sponsor=models.Sponsor.objects.get(sponsor_id=sponsor_id), point_change=point_amount, date_time=datetime.utcnow(), reason=request.POST['reason'] )
+            new_point_history.save()
+            
+            return redirect(pointChange)
+    
 
 def catalog(request):
     return render(request, 'catalog.html')
 
 def pointHistory(request):
-    return render(request, 'pointHistory.html')
+    if request.user.is_anonymous == True:
+        redirect(login)
+    # Logic for if a user is signed in 
+    elif request.user.user_type == "Driver":
+        if request.method == "GET":
+            points_query = models.Points.objects.select_related('sponsor').filter(user=request.user.user_id)
+            points_list = []
+            for obj in points_query:
+                sponsor = obj.sponsor.name
+                points = obj.point_total
+                new_dict = {"Sponsor": sponsor, "Points": points}
+                points_list.append(new_dict)
+            
+            points_history_query = models.PointsHistory.objects.select_related('sponsor').filter(user=request.user.user_id).order_by('sponsor__name', "date_time")
+            points_hist_list = []
+            for obj in points_history_query:
+                sponsor = obj.sponsor.name
+                point_change = obj.point_change
+                reason = obj.reason
+                date_time = obj.date_time
 
+                new_dict = {"sponsor": sponsor, "point_change": point_change, 'reason':reason, "date_time":date_time}
+                points_hist_list.append(new_dict)
+            print(points_hist_list)
+            return render(request, 'pointHistory.html', {"point_list": points_list, "point_history_list":points_hist_list})
+        elif request.method == "POST":
+            return None
 
 def user_profile(request):
     if request.method == "GET":
@@ -473,9 +534,9 @@ def application(request):
             user_id = request.user.user_id
             user_obj = models.Users.objects.get(user_id=user_id)
             sponsor_obj = models.Sponsor.objects.get(name=request.POST['sponsor_name'])
-            print(sponsor_obj)
+            
             sponsor_id = getattr(sponsor_obj, 'sponsor_id')
-            print(sponsor_id)
+            
             ##prevents duplicate application while original app is still pending
             if(models.DriverApplication.objects.filter(driver=user_id,sponsor=sponsor_id,status='Pending').exists()):
                 messages.info(request,"You already applied to " + request.POST['sponsor_name'])
@@ -495,6 +556,7 @@ def application(request):
             return redirect(application)
     elif(request.user.user_type == "Sponsor"):
         if request.method == "GET":
+            ##gets sponsor name that the currently logged in user is a part of
             user_sponsor_obj = models.SponsorUser.objects.get(user_id=request.user.user_id)
             sponsor_id = getattr(user_sponsor_obj, 'sponsor_id')
             sponsor_obj = models.Sponsor.objects.get(sponsor_id=sponsor_id)
@@ -545,6 +607,7 @@ def driverManagement(request):
     return render(request, 'driverManagement.html')
 
 def pointTracking(request):
+    
     return render(request, 'pointTracking.html')
 
 def driverSales(request):
@@ -567,3 +630,28 @@ def adminReport(request):
 
 def adminInfo(request):
     return render(request, 'adminInfo.html')
+
+def sponsor_see_all_drivers(request):
+    if request.user.is_anonymous == True:
+        raise FileNotFoundError
+    # Logic for if a user is signed in AND is of the 'Sponsor' type
+    elif request.user.user_type == "Sponsor":
+        if request.method == "GET":
+            user_sponsor_obj = models.SponsorUser.objects.get(user_id=request.user.user_id)
+            sponsor_id = getattr(user_sponsor_obj, 'sponsor_id')
+            form = forms.allDriversForSponsor(sponsor_id)
+            print(form)
+
+            return render(request, 'all_drivers.html', {'form': form})
+        elif request.method == "POST":
+            return None
+
+def home(request):
+    if request.user.is_anonymous == True:
+        return redirect(login)
+    elif request.user.user_type == "Driver":
+        return render(request, 'driverHome.html')
+    elif request.user.user_type == "Sponsor":
+        return render(request, 'sponsorHome.html')
+    elif request.user.user_type == "Admin":
+        return render(request, 'adminHome.html')
