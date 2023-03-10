@@ -29,12 +29,13 @@ urlpatterns = [
 
     path('sponsorHome/', views.sponsorHome, name='sponsorHome'),
 
-    #path('home/', views.driverHome, name="home"),
+   
 
     path('adminHome/', views.adminHome, name="adminHome"),
 
     path('sponsorHome/driverManagement/', views.driverManagement, name='driverManagement'),
     
+    path('sponsorHome/driverManagement/allDrivers', views.sponsor_see_all_drivers, name='all_drivers'),
 
     path('sponsorHome/sponsorReport/pointTracking/', views.pointTracking, name='pointTracking'),
 

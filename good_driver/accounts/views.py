@@ -187,7 +187,7 @@ def pointHistory(request):
 
                 new_dict = {"sponsor": sponsor, "point_change": point_change, 'reason':reason, "date_time":date_time}
                 points_hist_list.append(new_dict)
-            print(points_hist_list)
+            
             return render(request, 'pointHistory.html', {"point_list": points_list, "point_history_list":points_hist_list})
         elif request.method == "POST":
             return None
@@ -639,10 +639,27 @@ def sponsor_see_all_drivers(request):
         if request.method == "GET":
             user_sponsor_obj = models.SponsorUser.objects.get(user_id=request.user.user_id)
             sponsor_id = getattr(user_sponsor_obj, 'sponsor_id')
-            form = forms.allDriversForSponsor(sponsor_id)
-            print(form)
-
-            return render(request, 'all_drivers.html', {'form': form})
+            sponsor_obj = models.Sponsor.objects.get(sponsor_id=sponsor_id)
+            sponsor_name = getattr(sponsor_obj, 'name')
+            
+            ##select related gets the necessary Users objects so the database only needs to be queried once
+            driver_query = models.DriverSponsor.objects.select_related('user').filter(sponsor=sponsor_obj)
+            driver_list = []
+            
+            for driver in driver_query:
+                
+                
+                first_name = driver.user.first_name
+                last_name = driver.user.last_name
+                street_address = driver.user.street_address
+                city = driver.user.city
+                zip_code = driver.user.zip_code
+                phone_number = driver.user.phone_number
+                new_dict = {'first_name':first_name,'last_name':last_name,'street_address':street_address,'city':city,'zip_code':zip_code, 'phone_number':phone_number}
+                
+                driver_list.append(new_dict)
+            
+            return render(request, 'all_drivers.html', {'driver_list': driver_list, 'sponsor_name':sponsor_name})
         elif request.method == "POST":
             return None
 
