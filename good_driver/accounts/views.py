@@ -674,64 +674,93 @@ def home(request):
         return render(request, 'adminHome.html')
 def admin_edit_account(request):
     # Denies permission to anyone who is not signed in as an Admin
-    if  request.user.is_anonymous == True or request.user.user_type != "Admin":
+    if  request.user.is_anonymous == True or (request.user.user_type != "Admin" and request.user.user_type != "Sponsor"):
         raise PermissionDenied
+
+    print('User ID:', request.user.user_id)
 
     both_forms = {"form1": forms.getDriverEmail, "form2": forms.getDriverInfo}
 
     if request.method == "GET":
         return render(request, 'adminEditAccount.html', both_forms)
     elif request.method == "POST":
+        #get the requested email from the POST request
         form1 = forms.getDriverEmail(request.POST)
-        # make sure the form is valid
+
+        # if the form is valid, update the email, otherwise use the previous email
         if form1.is_valid():
             target_user_email = form1.cleaned_data['email']
         else:
             target_user_email = request.POST['email']
 
-        #make sure the user exists
-        if models.Users.objects.filter(email=target_user_email).exists():
-            print(models.Users.objects.filter(email=target_user_email))
+        # if the user has request info about a driver via form 1
+        if 'showInfo' in request.POST:
 
-            #get the user from the database
-            target_user_queryset = models.Users.objects.filter(email=target_user_email).values('email', 'first_name', 'last_name', 'phone_number', 'street_address', 'street_address_2', 'user_type', 'zip_code', 'city')
-            target = target_user_queryset[0]
+            #make sure these are different invalid IDs, so they will only match if both the driver and the sposor are in the same organization
+            target_sponsor_id = -1
+            sponsor_id = -2
 
-            #this maps the fields from the database to the variables in adminEditAccounts.html
-            context_data =  {"form1": forms.getDriverEmail, "form2": forms.getDriverInfo, 'other_email': target['email'], 'other_first_name': target['first_name'], 'other_last_name':target['last_name'], 'other_street_address':target['street_address'], 'other_city':target['city'], 'other_zip_code':target['zip_code'], 'other_phone_number':target['phone_number'], 'other_user_type':target['user_type']}
+            #make sure the user exists
+            if models.Users.objects.filter(email=target_user_email).exists():
 
-            #
-            #  If the "Update Provided Fields" button is pressed
-            #
-            if 'updateInfo' in request.POST:
-                #get form submission data
+                #get the user from the database
+                target_user_queryset = models.Users.objects.filter(email=target_user_email).values('email', 'first_name', 'last_name', 'phone_number', 'street_address', 'street_address_2', 'user_type', 'zip_code', 'city', 'user_id')
+                target = target_user_queryset[0]
 
-                first_name = request.POST['first_name']
-                last_name = request.POST['last_name']
-                street_addr = request.POST['street_address']
-                city = request.POST['city']
-                zip_code = request.POST['zip_code']
-                phone_num = request.POST['phone_number']
+                if models.DriverUser.objects.filter(user_id=target['user_id']).exists():
+                    target_sponsor_id = models.DriverUser.objects.filter(user_id=target['user_id']).values('sponsor_id')[0]['sponsor_id']
 
-                #update queryset for updated info
-                if first_name != "":
-                    target_user_queryset.update(first_name=first_name)
-                    context_data['other_first_name'] = first_name 
-                if last_name != "":
-                    target_user_queryset.update(last_name=last_name)
-                    context_data['other_last_name'] = last_name
-                if street_addr != "":
-                    target_user_queryset.update(street_address=street_addr)
-                    context_data['other_street_address'] = street_addr
-                if city != "":
-                    target_user_queryset.update(city=city)
-                    context_data['other_city'] = city
-                if zip_code != "" and zip_code.isnumeric():
-                    target_user_queryset.update(zip_code=zip_code)
-                    context_data['other_zip_code'] = zip_code
-                if phone_num != "":
-                    target_user_queryset.update(phone_number=phone_num)
-                    context_data['other_phone_number'] = phone_num
+            print(models.SponsorUser.objects.filter(user_id=request.user.user_id), target_sponsor_id)
+
+            #if the user is a sponsor, make sure they are asking for a user from their same organization
+            print("User type:", request.user.user_type)
+            #get the sponsor ID for the logged in user
+            if models.SponsorUser.objects.filter(user_id=request.user.user_id).exists():
+                sponsor_id = models.SponsorUser.objects.filter(user_id=request.user.user_id).values('sponsor_id')[0]['sponsor_id']
+            print('Sponsor ID:', sponsor_id)
+            print('Target ID: ', target_sponsor_id)
+
+            #if you are authorized to see and modify the user's data
+            if  sponsor_id == target_sponsor_id or request.user.user_type == 'Admin':
+                #populate the returned page with the data about the requested driver
+                print("Populating context data")
+                context_data =  {"form1": forms.getDriverEmail, "form2": forms.getDriverInfo, 'other_email': target['email'], 'other_first_name': target['first_name'], 'other_last_name':target['last_name'], 'other_street_address':target['street_address'], 'other_city':target['city'], 'other_zip_code':target['zip_code'], 'other_phone_number':target['phone_number'], 'other_user_type':target['user_type']}
+            else:
+                context_data = both_forms
+    
+        #
+        #  If the "Update Provided Fields" button is pressed
+        #
+        elif 'updateInfo' in request.POST:
+            print('Updating info')
+            #get form submission data
+
+            first_name = request.POST['first_name']
+            last_name = request.POST['last_name']
+            street_addr = request.POST['street_address']
+            city = request.POST['city']
+            zip_code = request.POST['zip_code']
+            phone_num = request.POST['phone_number']
+
+            #update queryset for updated info
+            if first_name != "":
+                target_user_queryset.update(first_name=first_name)
+                context_data['other_first_name'] = first_name 
+            if last_name != "":
+                target_user_queryset.update(last_name=last_name)
+                context_data['other_last_name'] = last_name
+            if street_addr != "":
+                target_user_queryset.update(street_address=street_addr)
+                context_data['other_street_address'] = street_addr
+            if city != "":
+                target_user_queryset.update(city=city)
+                context_data['other_city'] = city
+            if zip_code != "" and zip_code.isnumeric():
+                target_user_queryset.update(zip_code=zip_code)
+                context_data['other_zip_code'] = zip_code
+            if phone_num != "":
+                target_user_queryset.update(phone_number=phone_num)
+                context_data['other_phone_number'] = phone_num
 
         else:
             context_data = both_forms
