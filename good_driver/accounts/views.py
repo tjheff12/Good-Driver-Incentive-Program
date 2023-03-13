@@ -693,10 +693,11 @@ def admin_edit_account(request):
         else:
             target_user_email = request.POST['email']
 
-        # if the user has request info about a driver via form 1
+        # if the user has requested info about a driver by entering their email
         if 'showInfo' in request.POST:
 
-            #make sure these are different invalid IDs, so they will only match if both the driver and the sposor are in the same organization
+            #make sure these are different invalid IDs
+            #    so they will only match if both the driver and the sposor are in the same organization
             target_sponsor_id = -1
             sponsor_id = -2
 
@@ -707,25 +708,20 @@ def admin_edit_account(request):
                 target_user_queryset = models.Users.objects.filter(email=target_user_email).values('email', 'first_name', 'last_name', 'phone_number', 'street_address', 'street_address_2', 'user_type', 'zip_code', 'city', 'user_id')
                 target = target_user_queryset[0]
 
+                #if the requested driver exists, find their sponsor_id
                 if models.DriverUser.objects.filter(user_id=target['user_id']).exists():
                     target_sponsor_id = models.DriverUser.objects.filter(user_id=target['user_id']).values('sponsor_id')[0]['sponsor_id']
 
-            print(models.SponsorUser.objects.filter(user_id=request.user.user_id), target_sponsor_id)
-
-            #if the user is a sponsor, make sure they are asking for a user from their same organization
-            print("User type:", request.user.user_type)
             #get the sponsor ID for the logged in user
             if models.SponsorUser.objects.filter(user_id=request.user.user_id).exists():
                 sponsor_id = models.SponsorUser.objects.filter(user_id=request.user.user_id).values('sponsor_id')[0]['sponsor_id']
-            print('Sponsor ID:', sponsor_id)
-            print('Target ID: ', target_sponsor_id)
 
-            #if you are authorized to see and modify the user's data
+            #if the web user is authorized to see and modify the target user's data
             if  sponsor_id == target_sponsor_id or request.user.user_type == 'Admin':
                 #populate the returned page with the data about the requested driver
-                print("Populating context data")
                 context_data =  {"form1": forms.getDriverEmail, "form2": forms.getDriverInfo, 'other_email': target['email'], 'other_first_name': target['first_name'], 'other_last_name':target['last_name'], 'other_street_address':target['street_address'], 'other_city':target['city'], 'other_zip_code':target['zip_code'], 'other_phone_number':target['phone_number'], 'other_user_type':target['user_type']}
             else:
+                #do non populate any context data, only provide the blank forms
                 context_data = both_forms
     
         #
