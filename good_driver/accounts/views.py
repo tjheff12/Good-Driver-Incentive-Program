@@ -435,6 +435,7 @@ def sponsor_panel(request):
     # Returns 403 Error (Permission Denied)    
     else: raise PermissionDenied
 
+# Creates a new sponsor account (Not an organization)
 def sponsor_create_account(request):
     # Denies permission to ANYONE who is NOT signed in
     if request.user.is_anonymous == True:
@@ -492,7 +493,6 @@ def sponsor_remove_driver(request):
     # Logic for if a user is signed in AND is of the 'Sponsor' type
     elif request.user.user_type == "Sponsor":
         if request.method == "GET":
-            # Give page with basically a registration page, but with more details available
             return render(request, 'sponsorRemoveDriver.html')
         elif request.method == "POST":
             username = request.POST['username']
@@ -516,6 +516,55 @@ def sponsor_remove_driver(request):
             else:
                 messages.info(request, 'Username does not exist')
                 return redirect(sponsor_remove_driver)
+        else: raise Http404
+    # Returns 403 Error (Permission Denied)    
+    else: raise PermissionDenied
+
+# Allows for a sponsor user to create a new driver account that is automatically placed within their organization
+def sponsor_add_driver(request):
+    # Denies permission to ANYONE who is NOT signed in
+    if request.user.is_anonymous == True:
+        raise PermissionDenied
+    # Logic for if a user is signed in AND is of the 'Sponsor' type
+    elif request.user.user_type == "Sponsor":
+        if request.method == "GET":
+            # Give page with basically a registration page, but with more details available
+            return render(request, 'sponsorAddDriverRegistration.html')
+        elif request.method == "POST":        
+            import hashlib
+            # Get the sponsor entity (organization) that matches the sponsor that's signed in and requesting this process
+            Sponsor = models.Sponsor.objects.get(sponsor_id=models.SponsorUser.objects.get(user_id=request.user.user_id).sponsor_id)
+
+            first_name = request.POST['first_name']
+            last_name = request.POST['last_name']
+            ##username is the email
+            username = request.POST['username']
+            password = request.POST['password']
+            confirm_password = request.POST['confirm_password']
+            street_addr = request.POST['street_address']
+            city = request.POST['city']
+            zip_code = request.POST['zip_code']
+            phone_num = request.POST['phone_num']
+            
+            password_hash = hashlib.md5(password.encode()).hexdigest()
+            if password==confirm_password:
+                if models.Users.objects.filter(email=username).exists():
+                    messages.info(request, 'Username already exists! Please choose another one.')
+                    return redirect(sponsor_add_driver)
+                else:
+                    # Add to Users table
+                    user = models.Users(email=username, password=password_hash, 
+                                            first_name=first_name, last_name=last_name, street_address=street_addr, 
+                                            street_address_2=street_addr, city=city, zip_code=zip_code, 
+                                            phone_number=phone_num, user_type="Driver")
+                    user.save()
+
+                    # Get user just created, and create a new entry matching it inside the Driver_Sponsor table
+                    driverSponsor = models.DriverSponsor(user=user, sponsor=Sponsor)
+                    print(driverSponsor)
+                    driverSponsor.save()
+                    
+                    return redirect('done')
         else: raise Http404
     # Returns 403 Error (Permission Denied)    
     else: raise PermissionDenied

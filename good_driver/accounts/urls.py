@@ -15,6 +15,7 @@ urlpatterns = [
     path('sponsorPanel/', views.sponsor_panel, name='sponsorPanel'),
     path('sponsorCreateAccount/', views.sponsor_create_account, name='sponsorCreateAccount'),
     path('sponsorRemoveDriver/', views.sponsor_remove_driver, name='sponsorRemoveDriver'),
+    path('sponsorAddDriver/', views.sponsor_add_driver, name='sponsorAddDriver'),
     path('application/', views.application, name='application'),
     path('sponsorHome/driverManagement/application/', views.application,name='application'),
     path('resetPassword/', views.resetPassword, name='resetPassword'),
