@@ -147,6 +147,12 @@ def pointChange(request):
             user_sponsor_obj = models.SponsorUser.objects.get(user_id=request.user.user_id)
             sponsor_id = getattr(user_sponsor_obj, 'sponsor_id')
             point_amount = request.POST['point_amount']
+
+            reasoning=request.POST['reason']
+            # Confirm that the reasoning is not blank
+            if reasoning == "" or reasoning == "Reason":
+                messages.info(request, "Reasoning Field Cannot be left Blank or the default text!")
+                return redirect(pointChange)
             if(request.POST['add_or_subtract'] == 'deduct'):
                 messages.info(request,"Points Deducted")
                 point_amount = str(int(point_amount) * -1)
@@ -154,7 +160,7 @@ def pointChange(request):
                 messages.info(request,"Points Added")
             
             print(point_amount)
-            new_point_history = models.PointsHistory(user=models.Users.objects.get(user_id = request.POST['driver_id']), sponsor=models.Sponsor.objects.get(sponsor_id=sponsor_id), point_change=point_amount, date_time=datetime.utcnow(), reason=request.POST['reason'] )
+            new_point_history = models.PointsHistory(user=models.Users.objects.get(user_id = request.POST['driver_id']), sponsor=models.Sponsor.objects.get(sponsor_id=sponsor_id), point_change=point_amount, date_time=datetime.utcnow(), reason=reasoning)
             new_point_history.save()
             
             return redirect(pointChange)
