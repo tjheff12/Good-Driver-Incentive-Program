@@ -17,11 +17,14 @@
             <br>
             <br>
             <a href='pointChange'><input type="button" class="buttonFormat" value="Add or Subtract Points"/></a>
+            <br>
+            <br>
+            <a href='allDrivers'><input type="button" class="buttonFormat" value="Check All Drivers"/></a>
         </form>
     </div>
 
     <div class="home">
-        <img src="{% static 'images/home.png' %}" alt="My Image" >
+        <a href="{% url 'home' %}"><img src="{% static 'images/home.png' %}" alt="Home" ></a>
     </div>
 
     <div class="switchView">

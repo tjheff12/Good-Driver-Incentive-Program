@@ -3,26 +3,28 @@
 <html lang="en">
 {% load static %}
 <link rel="stylesheet" href="{% static 'login.css' %}">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LoginSystem</title> 
+    <title>LoginSystem</title>
 </head>
+
 <body>
     <div class="login">
         <form method="post">
             {% csrf_token %}
             <h2 class="title"> Good Driver </h2>
             <label for="username_input">Username</label>
-            <input type="text"  id="username_input" name="username">
+            <input type="text" id="username_input" name="username">
             <br>
             <br>
             <label for="password_input">Password</label>
             <input type="password" id="password_input" name="password">
             <br>
             <br>
-            <input type="submit" class="loginButton" value="Login"/>
+            <input type="submit" class="loginButton" value="Login" />
             <br>
             <br>
             <a href="../register" role="button">Create Account</a>
@@ -30,16 +32,17 @@
             <a href="../logout" role="button">Got to Logout</a>
             <br>
             <br>
-            <div >
+            <div>
                 {% for message in messages %}
-                <div role="alert">
+                <div role="alert" style="color:rgb(255,0,0);">
                     {{message}}
                 </div>
                 {% endfor %}
             </div>
-            
+
         </form>
     </div>
 
 </body>
+
 </html>

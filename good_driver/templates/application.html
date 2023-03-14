@@ -1,4 +1,6 @@
 <!DOCTYPE html>
+{% load static %}
+<link rel="stylesheet" href="{% static 'sponsorView.css' %}">
 {% block content %}
 {% if user.user_type == 'Driver' %}
 
@@ -37,8 +39,12 @@
     border: 0;
     text-align: center;
 }
-h1{
+h1, h2{
     text-align: center;
+}
+table{
+    margin-left: auto;
+    margin-right: auto;
 }
 </style>
 <head>
@@ -48,6 +54,7 @@ h1{
     <h1>Pending Applications for {{sponsor_name}}</h1>
     <br>
     <br>
+    {% if app_list %}
     <table>
         <tr>
             <th>Application ID</th>
@@ -82,7 +89,9 @@ h1{
             </form>
         </tr>
     {% endfor %}
-    
+    {% else %}
+        <h2>There are no pending applications</h2>
+    {% endif %}
     </table>
     <div >
         {% for message in messages %}
@@ -90,6 +99,14 @@ h1{
             {{message}}
         </div>
         {% endfor %}
+    </div>
+    <div class="home">
+        <a href="{% url 'home' %}"><img src="{% static 'images/home.png' %}" alt="Home" ></a>
+    </div>
+
+    <div class="switchView">
+        <input type="button" value="Light Mode"/>
+        <input type="button" value="Dark Mode"/>
     </div>
 </body>
 {% endif %}

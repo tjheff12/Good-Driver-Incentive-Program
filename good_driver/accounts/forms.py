@@ -56,3 +56,14 @@ class allDriversForSponsor(forms.Form):
     driver_option = forms.ChoiceField(label='Driver', choices=DRIVERS)
 
     
+class getDriverEmail(forms.Form):
+    email = forms.CharField(label = "Driver Email", required=False)
+
+
+class getDriverInfo(forms.Form):
+    first_name = forms.CharField(label = 'first_name', required=False)
+    last_name = forms.CharField(label = 'last_name', required=False)
+    street_address = forms.CharField(label = 'street_address', required=False)
+    city = forms.CharField(label = 'city', required=False)
+    zip_code = forms.CharField(label = 'zip_code', required=False)
+    phone_number = forms.CharField(label = 'phone_number', required=False)
