@@ -1,0 +1,55 @@
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+<form method="POST">
+  {% csrf_token %}
+  {{ form1 }}
+  <input type="submit" value="Show User Info" name="showInfo">
+</form>
+
+<form method="POST">
+  {% csrf_token %}
+  {{ form2 }}
+  <input type="text" value="{{ other_email }}" readonly name='email' hidden="hidden">
+  <input type="submit" value="Update Info" name="updateInfo">
+</form>
+
+  Hi {{ user.email }}!
+  <br>
+  Here's information about {{other_email}}:
+  <br>
+  Username-{{other_email}}
+  <br>
+  First Name-{{other_first_name}}
+  <br>
+  Last Name-{{other_last_name}}
+  <br>
+  Street Address 1-{{other_street_address}}  
+  <br>
+  City-{{other_city}}
+  <br>
+  Zip Code-{{other_zip_code}}
+  <br>
+  Phone Number-{{other_phone_number}}
+  <br>
+  User Type-{{other_user_type}}
+  <br>
+  <a href="../logout" role="button">Got to Logout</a>
+  <br>
+  <br>
+  <div >
+    {% for message in messages %}
+    <div role="alert">
+        {{message}}
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+  <p>You are not logged in</p>
+  <a class="btn btn-dark" href="../login" role="button">Go To Login</a>
+ 
+{% endif %}
+{% endblock %}
