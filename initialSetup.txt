@@ -121,3 +121,5 @@ Libraries/Packages:
 4. Nginx: sudo apt-get install nginx
 5. More libraries/packages to come as we start development!
 -------------------- End of Commit 8 --------------------
+
+For eBay API Python SDK: pip install ebaysdk

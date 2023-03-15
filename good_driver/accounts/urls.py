@@ -22,6 +22,7 @@ urlpatterns = [
     path('sponsorHome/driverManagement/pointChange/', views.pointChange, name='pointChange'),
     path('all_drivers', views.sponsor_see_all_drivers, name='all_drivers'),
     path('catalog/', views.catalog, name='catalog'),
+    path('catalogOverview/', views.catalog_overview, name='catalogOverview'),
     path('home/', views.home, name='home'),
 
     path('pointHistory/', views.pointHistory, name='pointHistory'),

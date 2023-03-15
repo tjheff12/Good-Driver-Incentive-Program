@@ -719,6 +719,7 @@ def sponsor_see_all_drivers(request):
             return None
 
 def home(request):
+    search_ebay_products('Gaming PC')
     if request.user.is_anonymous == True:
         return redirect(login)
     elif request.user.user_type == "Driver":
@@ -817,3 +818,39 @@ def admin_edit_account(request):
             context_data = both_forms
     
     return render(request, 'adminEditAccount.html', context_data)
+
+def catalog_overview(request):
+    # We will need to determine what sponsors can choose for filtering the catalog page ex: name, category, price, etc. (or all the above!)
+        # this currently just tests it with a simple query for the name of the item (IN SANDBOX MODE)
+    productResultsDict = search_ebay_products('Gaming PC')
+    return render(request, 'catalog_overview.html', {"product_result_list": productResultsDict})
+
+def search_ebay_products(query):
+    import datetime
+    from ebaysdk.exception import ConnectionError
+    from ebaysdk.finding import Connection as Finding
+    from ebaysdk.shopping import Connection as Shopping
+
+    try:
+        api = Finding(domain='svcs.sandbox.ebay.com', appid='HaydenSt-DriverIn-SBX-0cd4f0a51-76ca4c5c', config_file=None)
+        response = api.execute('findItemsAdvanced', {
+            'keywords': query,
+            'paginationInput': {
+                'entriesPerPage': 10,
+                'pageNumber': 1
+            }
+        })
+
+        assert(response.reply.ack == 'Success')
+        assert(type(response.reply.timestamp) == datetime.datetime)
+        assert(type(response.reply.searchResult.item) == list)
+
+        item = response.reply.searchResult.item[0]
+        assert(type(item.listingInfo.endTime) == datetime.datetime)
+        assert(type(response.dict()) == dict)
+        print(response.dict())
+        return response.dict()
+
+    except ConnectionError as e:
+        print(e)
+        print(e.response.dict())
