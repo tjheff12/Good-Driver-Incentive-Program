@@ -100,7 +100,10 @@ def logout(request):
 
 def resetPassword(request):
     import hashlib
+    import datetime
     if request.method == 'POST':
+        
+        change_type = 'User'
         username = request.POST['username']
         new_password = request.POST['new_password']
         confirm_password = request.POST['confirm_password']
@@ -112,6 +115,8 @@ def resetPassword(request):
             user = models.Users.objects.get(email=username)
             user.password = hashed_password
             user.save()
+            pass_change_obj = models.PasswordChanges(user=user, date_time=datetime.datetime.utcnow(), type_of_change=change_type)
+            pass_change_obj.save()
             return redirect('done')
         
         else:
@@ -388,7 +393,7 @@ def admin_delete_account(request):
 
 def admin_change_user_password(request):
     import hashlib
-
+    import datetime
     # Denies permission to ANYONE who is NOT signed in
     if request.user.is_anonymous == True:
         raise PermissionDenied
@@ -418,6 +423,8 @@ def admin_change_user_password(request):
                 userToUpdate = models.Users.objects.get(email=username)
                 userToUpdate.password = password_hash
                 userToUpdate.save()
+                pass_change_obj = models.PasswordChanges(user=userToUpdate, date_time=datetime.datetime.utcnow(), type_of_change='Admin')
+                pass_change_obj.save()
                 return redirect('done')
             else:
                 messages.info(request, 'Username does not exist')
