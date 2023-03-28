@@ -9,6 +9,8 @@
     <title>Driver Home</title> 
 </head>
 <body>
+    {% include 'top_buttons.html' %}
+    
     <div class="sponsorView">
         <form method="post">
             <h2 class="title"> Driver Interface </h2>
@@ -28,13 +30,7 @@
         </form>
     </div>
 
-    <div class="home">
-        <a href="{% url 'home' %}"><img src="{% static 'images/home.png' %}" alt="Home" ></a>
-    </div>
-
-    <div class="switchView">
-        <input type="button" value="Light Mode"/>
-        <input type="button" value="Dark Mode"/>
-    </div>
+    
+    
 </body>
 </html>

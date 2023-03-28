@@ -23,6 +23,8 @@ table{
 
 </head>
 <body>
+    {% include 'top_buttons.html' %}
+    <div class="header_padding">
     <h1>All Drivers working for {{sponsor_name}}</h1>
     <br><br><br>
     {% if driver_list %}
@@ -50,14 +52,8 @@ table{
     
     <h2>There are no Drivers working for {{sponsor_name}}</h2>
     {% endif %}
-    <div class="home">
-        <a href="{% url 'sponsorHome' %}"><img src="{% static 'images/home.png' %}" alt="Home" ></a>
     </div>
-    <div class="switchView">
-        <input type="button" value="Light Mode"/>
-        <input type="button" value="Dark Mode"/>
-        
-    </div>
+    
 
 
 </body>

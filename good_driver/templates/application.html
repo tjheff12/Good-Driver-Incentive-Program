@@ -8,24 +8,29 @@
     <title>Apply!</title>
 </head>
 <body>
-    <h1>Apply for Sponsorship Today</h1>
-    <form method="POST" class="sponsorForm">
-        {% csrf_token %}
-        {{form}}
+    {% include 'top_buttons.html' %}
+    <div class = 'header_padding' style="text-align: center;" >
+        
+        <h1>Apply for Sponsorship Today</h1>
+        <form method="POST" class="sponsorForm">
+            {% csrf_token %}
+            {{form}}
+            <br>
+            <br>
+            <button type="submit">Submit</button>
+        </form>
         <br>
         <br>
-        <button type="submit">Submit</button>
-    </form>
-    <br>
-    <br>
-    <input type="button" class="button" value="Return Home" onclick="window.location.href='/home'"/>
-    <div >
-        {% for message in messages %}
-        <div role="alert">
-            {{message}}
+        <input type="button" class="button" value="Return Home" onclick="window.location.href='/home'"/>
+        <div >
+            {% for message in messages %}
+            <div role="alert">
+                {{message}}
+            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
     </div>
+    {% include 'top_buttons.html' %}
 
 </body>
 
@@ -51,6 +56,8 @@ table{
     <title>Applications</title>
 </head>
 <body>
+    {% include 'top_buttons.html' %}
+    <div class="header_padding">
     <h1>Pending Applications for {{sponsor_name}}</h1>
     <br>
     <br>
@@ -89,10 +96,12 @@ table{
             </form>
         </tr>
     {% endfor %}
+
     {% else %}
         <h2>There are no pending applications</h2>
     {% endif %}
     </table>
+    </div>
     <div >
         {% for message in messages %}
         <div role="alert">
@@ -100,14 +109,7 @@ table{
         </div>
         {% endfor %}
     </div>
-    <div class="home">
-        <a href="{% url 'home' %}"><img src="{% static 'images/home.png' %}" alt="Home" ></a>
-    </div>
-
-    <div class="switchView">
-        <input type="button" value="Light Mode"/>
-        <input type="button" value="Dark Mode"/>
-    </div>
+   
 </body>
 {% endif %}
 {% endblock %}

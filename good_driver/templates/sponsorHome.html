@@ -9,6 +9,7 @@
     <title>Sponsor Home</title> 
 </head>
 <body>
+    {% include 'top_buttons.html' %}
     <div class="sponsorView">
         <form method="post">
             <h2 class="title"> Sponsor Interface </h2>
@@ -27,16 +28,6 @@
         </form>
     </div>
 
-    <div class="home">
-        <a href="{% url 'sponsorHome' %}"><img src="{% static 'images/home.png' %}" alt="Home" ></a>
-    </div>
-
-    <div class="switchView">
-        <input type="button" value="Light Mode"/>
-        <input type="button" value="Dark Mode"/>
-        <br>
-        <br>
-        <a href="{% url 'home' %}"><input type="button" value="Driver View"/></a>
-    </div>
+    
 </body>
 </html>

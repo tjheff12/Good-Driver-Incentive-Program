@@ -721,6 +721,9 @@ def sponsor_see_all_drivers(request):
 def home(request):
     search_ebay_products('Gaming PC')
     if request.user.is_anonymous == True:
+        message = 'Please log in to access the home page'
+        ##saves message to html template
+        messages.info(request, message)
         return redirect(login)
     elif request.user.user_type == "Driver":
         return render(request, 'driverHome.html')

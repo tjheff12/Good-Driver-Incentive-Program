@@ -14,30 +14,32 @@
 </head>
 
 <body>
-	<form action="/adminDeleteAccount/" method="POST" class="form-horizontal">
-		{% csrf_token%}
-		<div class="mx-auto" style="width: 400px;">
+	{% include 'top_buttons.html' %}
+	<div class="header_padding">
+		<form action="/adminDeleteAccount/" method="POST" class="form-horizontal">
+			{% csrf_token%}
+			<div class="mx-auto" style="width: 400px;">
 
-			<div class="col-xs-8 col-xs-offset-4">
-				<h2 style="text-align:center;">Delete Any User</h2>
+				<div class="col-xs-8 col-xs-offset-4">
+					<h2 style="text-align:center;">Delete Any User</h2>
+				</div>
+				<hr />
+				<div class="form-group">
+					<label for="username">Email</label>
+					<input type="text" class="form-control" name="username" id="username" placeholder="Enter Email"
+						Required>
+				</div>
+				<button type="deleteAccount" class="btn btn-primary">Delete This Account</button>
 			</div>
-			<hr />
-			<div class="form-group">
-				<label for="username">Email</label>
-				<input type="text" class="form-control" name="username" id="username" placeholder="Enter Email"
-					Required>
+		</form>
+		<div class="form-group">
+			{% for message in messages %}
+			<div class="alert alert-danger" role="alert">
+				{{message}}
 			</div>
-            <button type="deleteAccount" class="btn btn-primary">Delete This Account</button>
+			{% endfor %}
 		</div>
-	</form>
-	<div class="form-group">
-		{% for message in messages %}
-		<div class="alert alert-danger" role="alert">
-			{{message}}
-		</div>
-		{% endfor %}
 	</div>
-
 	<!-- Optional JavaScript -->
 	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
 	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"

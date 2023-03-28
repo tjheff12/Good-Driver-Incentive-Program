@@ -10,6 +10,7 @@
     <title>PointChange</title> 
 </head>
 <body>
+    {% include 'top_buttons.html' %}
     <div class="pointChange">
         <form method="post">
             {% csrf_token %}
@@ -51,12 +52,6 @@
                 {% endfor %}
             </div>
     </div>
-    <div class="home">
-        <a href="{% url 'home' %}"><img src="{% static 'images/home.png' %}" alt="Home" ></a>
-    </div>
-    <div class="switchView">
-        <input type="button" value="Light Mode"/>
-        <input type="button" value="Dark Mode"/>
-    </div>
+    
 </body>
 </html>

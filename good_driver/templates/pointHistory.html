@@ -6,7 +6,7 @@
     }
 </style>
 {% load static %}
-<link rel="stylesheet" href="{% static 'pointHistory.css' %}">
+<link rel="stylesheet" href="{% static 'sponsorView.css' %}">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -14,7 +14,8 @@
     <title>PointHistory</title> 
 </head>
 <body>
-    <div style="text-align: center;" >
+    {% include 'top_buttons.html' %}
+    <div class = 'header_padding' style="text-align: center;" >
         
         <h1 > Points </h1>
         <br>
@@ -60,13 +61,6 @@
         
     </div>
 
-    <div class="home">
-        <img src="{% static 'images/home.png' %}" alt="My Image" >
-    </div>
-
-    <div class="switchView">
-        <input type="button" value="Light Mode"/>
-        <input type="button" value="Dark Mode"/>
-    </div>
+    
 </body>
 </html>
