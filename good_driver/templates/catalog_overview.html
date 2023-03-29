@@ -39,19 +39,25 @@
                 <th>Item Name</th>
                 <th>Item Price</th>
                 <th>In Stock?</th>
+                <th></th>
             </tr>
             {% for product in product_result_list.searchResult.item %}
             <tr>
-                <td><a href="//{{product.viewItemURL|urlencode}}"><img src="{{product.galleryURL}}" alt="Image of Product"></a></td>
-                <td><a href="//{{product.viewItemURL|urlencode}}">{{product.title}}</a></td>
-                <td>${{product.sellingStatus.currentPrice.value}}</td>
-                <td>
-                    {% if product.sellingStatus.sellingState == 'Active' %}
-                        Yes
-                    {% else %}
-                        No
-                    {% endif %}
-                </td>
+                <form action="../../order" method="POST">
+                    {% csrf_token %}
+                    <td hidden="hidden"><input type="number" class="item_id" name='item_id' value={{product.itemId}} readonly></td>
+                    <td><a href="//{{product.viewItemURL|urlencode}}"><img src="{{product.galleryURL}}" alt="Image of Product"></a></td>
+                    <td><a href="//{{product.viewItemURL|urlencode}}">{{product.title}}</a></td>
+                    <td><input style = 'border: 0;' type="text" class="price" name='price' value=${{product.sellingStatus.currentPrice.value}} readonly></td>
+                    <td>
+                        {% if product.sellingStatus.sellingState == 'Active' %}
+                        <font color="green">Yes</font>
+                        {% else %}
+                        <font color="red">No</font>
+                        {% endif %}
+                    </td>
+                    <td><button type="submit">Order Item</button></td>
+                </form>
             </tr>
             {% endfor %}
         </table>
@@ -74,6 +80,8 @@
             {% endfor %}
         </div>
     </div>
+    
+
 	<!-- Optional JavaScript -->
 	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
 	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"

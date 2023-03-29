@@ -849,20 +849,21 @@ def catalog_overview(request, sponsor, pageNum, search="search"):
     if request.method == "GET":
         
         
-        print(search)
+        
         results_tuple = search_ebay_products(search, pageNum)
         try:
             productResultsDict = results_tuple[0]
+            #print(productResultsDict)
             total_pages = results_tuple[1]
             
             return render(request, 'catalog_overview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search})
-        except:
+        except Exception as e:
+            print(e)
             productResultsDict = {}
             total_pages = 0
             return render(request, 'catalog_overview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search})
     elif request.method == "POST":
-        print(request.POST)
-        print(request.POST['search'])
+        
         return redirect('../pageNum=1&&search=' + request.POST['search'])
 
 def search_ebay_products(query, pageNum):
@@ -882,8 +883,12 @@ def search_ebay_products(query, pageNum):
             }
         })
         #print(response.reply)
+        try:
+            total_pages = response.reply.paginationOutput.totalPages
+        except:
+            total_pages = 0
         if(response.reply.searchResult._count == '0'):
-            return {}
+            return {}, total_pages
         assert(response.reply.ack == 'Success')
         assert(type(response.reply.timestamp) == datetime.datetime)
         assert(type(response.reply.searchResult.item) == list)
@@ -899,3 +904,40 @@ def search_ebay_products(query, pageNum):
     except ConnectionError as e:
         print(e)
         print(e.response.dict())
+
+def order_item(request, sponsor):
+    import datetime
+    if request.method == "GET":
+        raise Http404
+    elif request.method == "POST":
+        if request.user.user_type == "Driver":
+            print(request.POST)
+            print(sponsor)
+            sponsor_obj = models.Sponsor.objects.get(name=sponsor)
+            sponsor_id = sponsor_obj.sponsor_id
+            conversion_rate = sponsor_obj.point_value
+            print(sponsor_id)
+            print(request.user.user_id)
+            price_split = request.POST['price'].split('.')[2]
+            price_round_str = price_split[2]
+            if (price_round_str[0] != '0'):
+                
+                price = int(price_split[0]) + 1
+                print(price)
+            else:
+                price = int(price_split[0])
+                print(price)
+            current_time = datetime.datetime.utcnow()
+            status = "Pending"
+            return None
+        else:
+            raise Http404
+    
+def order(request):
+    if request.user.is_anonymous == True:
+        message = 'Please log in'
+        ##saves message to html template
+        messages.info(request, message)
+        return redirect(login)
+    elif request.user.user_type == "Driver":
+        return render(request, 'driverHome.html')
