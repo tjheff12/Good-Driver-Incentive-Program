@@ -883,7 +883,7 @@ def search_ebay_products(query, pageNum):
         })
         #print(response.reply)
         if(response.reply.searchResult._count == '0'):
-            return {}
+            return {}, 0
         assert(response.reply.ack == 'Success')
         assert(type(response.reply.timestamp) == datetime.datetime)
         assert(type(response.reply.searchResult.item) == list)
