@@ -23,7 +23,10 @@
      
     </style>
 
+{% include 'top_buttons.html' %}
+<br><br><br>
 <body>
+    
     <table style="margin-left: auto; margin-right: auto">
         <tr>
             <th>Product Image</th>
@@ -35,12 +38,13 @@
         <tr>
             <td><a href="//{{product.viewItemURL|urlencode}}"><img src="{{product.galleryURL}}" alt="Image of Product"></a></td>
             <td><a href="//{{product.viewItemURL|urlencode}}">{{product.title}}</a></td>
+            <!--Need to make this price rounded to 2 decimal places-->
             <td>${{product.sellingStatus.currentPrice.value}}</td>
             <td>
                 {% if product.sellingStatus.sellingState == 'Active' %}
-                    Yes
+                <font color="green">Yes</font>
                 {% else %}
-                    No
+                <font color="red">No</font>
                 {% endif %}
             </td>
         </tr>

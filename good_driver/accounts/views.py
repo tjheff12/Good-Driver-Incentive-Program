@@ -823,10 +823,29 @@ def admin_edit_account(request):
     return render(request, 'adminEditAccount.html', context_data)
 
 def catalog_overview(request):
-    # We will need to determine what sponsors can choose for filtering the catalog page ex: name, category, price, etc. (or all the above!)
-        # this currently just tests it with a simple query for the name of the item (IN SANDBOX MODE)
-    productResultsDict = search_ebay_products('Gaming PC')
-    return render(request, 'catalog_overview.html', {"product_result_list": productResultsDict})
+    if request.method == "GET" and request.user.is_anonymous == False:
+        # No Query params
+        if len(request.GET) == 0:
+            sponsor_list = {}
+            sponsorid_list = models.DriverSponsor.objects.filter(user=request.user.user_id)
+            print(sponsorid_list)
+            '''for entry in sponsorid_list:
+                sponsor_list.append(models.Sponsor.objects.get(entry.sponsor))'''
+            
+            print(sponsor_list)
+            return render(request, 'chooseCatalogBySponsor.html', {"sponsor_list": sponsor_list})
+        # Has Query param (Sponsor Organization ID)
+        else:
+            orgID = request.GET['param1']
+            # Validate orgID (make sure org exists && user is a part of org)
+
+
+            # We will need to determine what sponsors can choose for filtering the catalog page ex: name, category, price, etc. (or all the above!)
+                # this currently just tests it with a simple query for the name of the item (IN SANDBOX MODE)
+            productResultsDict = search_ebay_products('Computer')
+            return render(request, 'catalog_overview.html', {"product_result_list": productResultsDict})
+
+    
 
 def search_ebay_products(query):
     import datetime
