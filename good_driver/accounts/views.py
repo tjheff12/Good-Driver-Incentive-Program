@@ -895,6 +895,16 @@ def catalog_overview(request, sponsor, pageNum, search="search"):
                                                              'selectedOrg': 'No Sponsor Selected', 'minPointsForADollar': 0})
     # If a sponsor user decides to use the catalog, they can only access their own
     if request.method == "GET" and request.user.user_type == "Sponsor":
+        # Validate that the driver's link with the sponsor is one of their actual sponsors
+        sponsor_list_query = models.SponsorUser.objects.select_related('sponsor').filter(user=request.user.user_id)
+        sponsor_found = False
+        for obj in sponsor_list_query:
+           if obj.sponsor.name == sponsor:
+               sponsor_found = True
+        if sponsor_found == False:
+            messages.info(request, 'An Invalid Organization Was Chosen!')
+            return redirect(catalog)
+
         print(search)
         results_tuple = search_ebay_products(search, pageNum)
 
