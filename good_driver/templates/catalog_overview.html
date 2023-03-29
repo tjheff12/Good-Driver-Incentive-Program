@@ -24,37 +24,56 @@
     </style>
 
 <body>
-    <table style="margin-left: auto; margin-right: auto">
-        <tr>
-            <th>Product Image</th>
-            <th>Item Name</th>
-            <th>Item Price</th>
-            <th>In Stock?</th>
-        </tr>
-        {% for product in product_result_list.searchResult.item %}
-        <tr>
-            <td><a href="//{{product.viewItemURL|urlencode}}"><img src="{{product.galleryURL}}" alt="Image of Product"></a></td>
-            <td><a href="//{{product.viewItemURL|urlencode}}">{{product.title}}</a></td>
-            <td>${{product.sellingStatus.currentPrice.value}}</td>
-            <td>
-                {% if product.sellingStatus.sellingState == 'Active' %}
-                    Yes
-                {% else %}
-                    No
-                {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
-
-	<div class="form-group">
-		{% for message in messages %}
-		<div class="alert alert-danger" role="alert">
-			{{message}}
-		</div>
-		{% endfor %}
-	</div>
-
+    {% include 'top_buttons.html' %}
+    <div class="header_padding">
+        <div class="search" style="text-align: center;">
+            <form method="POST">
+                {% csrf_token %}
+                <input type="text" id="search" name="search" placeholder="Search Catalog">
+                <button type="submit">Go</button>
+            </form>
+        </div>
+        <table style="margin-left: auto; margin-right: auto">
+            <tr>
+                <th>Product Image</th>
+                <th>Item Name</th>
+                <th>Item Price</th>
+                <th>In Stock?</th>
+            </tr>
+            {% for product in product_result_list.searchResult.item %}
+            <tr>
+                <td><a href="//{{product.viewItemURL|urlencode}}"><img src="{{product.galleryURL}}" alt="Image of Product"></a></td>
+                <td><a href="//{{product.viewItemURL|urlencode}}">{{product.title}}</a></td>
+                <td>${{product.sellingStatus.currentPrice.value}}</td>
+                <td>
+                    {% if product.sellingStatus.sellingState == 'Active' %}
+                        Yes
+                    {% else %}
+                        No
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        <div style="text-align: center;">
+            <p>Page {{pageNum}} of {{totalPages}} </p>
+        </div>
+        <div style="text-align: center;">
+            {% if pageNum > 1 %}
+            <a href='../pageNum={{pageNum|add:-1}}&&search={{search}}' style="text-align: center;">Prev Page</a>
+            {% endif %}
+            {% if pageNum < totalPages %}
+            <a href='../pageNum={{pageNum|add:1}}&&search={{search}}' style="text-align: center;">Next Page</a>
+        </div>
+        {% endif %}
+        <div class="form-group">
+            {% for message in messages %}
+            <div class="alert alert-danger" role="alert">
+                {{message}}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
 	<!-- Optional JavaScript -->
 	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
 	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"

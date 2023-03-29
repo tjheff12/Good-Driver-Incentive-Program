@@ -172,7 +172,21 @@ def pointChange(request):
     
 
 def catalog(request):
-    return render(request, 'catalog.html')
+    if request.user.is_anonymous == True:
+        redirect(login)
+    # Logic for if a user is signed in 
+    elif request.user.user_type == "Driver":
+        if request.method == "GET":
+            driver_sponsor_query = models.DriverSponsor.objects.select_related('sponsor').filter(user=request.user.user_id)
+            sponsor_list = []
+            for obj in driver_sponsor_query:
+                sponsor_list.append(obj.sponsor.name)
+            
+            print(sponsor_list)
+            return render(request, 'catalog.html', {'sponsor_list':sponsor_list})
+        elif request.method == "POST":
+            url = './' + request.POST['sponsor_name'] + '/catalogOverview/pageNum=1'
+            return redirect(url)
 
 def pointHistory(request):
     if request.user.is_anonymous == True:
@@ -726,7 +740,7 @@ def sponsor_see_all_drivers(request):
             return None
 
 def home(request):
-    search_ebay_products('Gaming PC')
+    
     if request.user.is_anonymous == True:
         message = 'Please log in to access the home page'
         ##saves message to html template
@@ -829,13 +843,29 @@ def admin_edit_account(request):
     
     return render(request, 'adminEditAccount.html', context_data)
 
-def catalog_overview(request):
+def catalog_overview(request, sponsor, pageNum, search="search"):
     # We will need to determine what sponsors can choose for filtering the catalog page ex: name, category, price, etc. (or all the above!)
         # this currently just tests it with a simple query for the name of the item (IN SANDBOX MODE)
-    productResultsDict = search_ebay_products('Gaming PC')
-    return render(request, 'catalog_overview.html', {"product_result_list": productResultsDict})
+    if request.method == "GET":
+        
+        
+        print(search)
+        results_tuple = search_ebay_products(search, pageNum)
+        try:
+            productResultsDict = results_tuple[0]
+            total_pages = results_tuple[1]
+            
+            return render(request, 'catalog_overview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search})
+        except:
+            productResultsDict = {}
+            total_pages = 0
+            return render(request, 'catalog_overview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search})
+    elif request.method == "POST":
+        print(request.POST)
+        print(request.POST['search'])
+        return redirect('../pageNum=1&&search=' + request.POST['search'])
 
-def search_ebay_products(query):
+def search_ebay_products(query, pageNum):
     import datetime
     from ebaysdk.exception import ConnectionError
     from ebaysdk.finding import Connection as Finding
@@ -845,12 +875,15 @@ def search_ebay_products(query):
         api = Finding(domain='svcs.sandbox.ebay.com', appid='HaydenSt-DriverIn-SBX-0cd4f0a51-76ca4c5c', config_file=None)
         response = api.execute('findItemsAdvanced', {
             'keywords': query,
-            'paginationInput': {
-                'entriesPerPage': 10,
-                'pageNumber': 1
+            'paginationInput': { 
+                'entriesPerPage': 5,
+                'pageNumber': pageNum,
+                
             }
         })
-
+        #print(response.reply)
+        if(response.reply.searchResult._count == '0'):
+            return {}
         assert(response.reply.ack == 'Success')
         assert(type(response.reply.timestamp) == datetime.datetime)
         assert(type(response.reply.searchResult.item) == list)
@@ -858,8 +891,10 @@ def search_ebay_products(query):
         item = response.reply.searchResult.item[0]
         assert(type(item.listingInfo.endTime) == datetime.datetime)
         assert(type(response.dict()) == dict)
-        print(response.dict())
-        return response.dict()
+        #print(response.dict())
+        
+        total_pages = response.reply.paginationOutput.totalPages
+        return response.dict(), total_pages
 
     except ConnectionError as e:
         print(e)

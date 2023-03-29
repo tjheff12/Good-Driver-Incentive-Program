@@ -42,10 +42,12 @@ class DriverApplication(models.Model):
     class Meta:
         managed = False
         db_table = 'driver_application'
+        
 
 
 class DriverSponsor(models.Model):
-    user = models.ForeignKey('Users', models.DO_NOTHING, db_column='User_ID', primary_key=True)  # Field name made lowercase.
+    id = models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
+    user = models.ForeignKey('Users', models.DO_NOTHING, db_column='User_ID')  # Field name made lowercase.
     sponsor = models.ForeignKey('Sponsor', models.DO_NOTHING, db_column='Sponsor_ID')  # Field name made lowercase.
 
     class Meta:
