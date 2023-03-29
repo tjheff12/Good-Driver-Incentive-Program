@@ -169,24 +169,6 @@ def pointChange(request):
             new_point_history.save()
             
             return redirect(pointChange)
-    
-
-def catalog(request):
-    if request.user.is_anonymous == True:
-        redirect(login)
-    # Logic for if a user is signed in 
-    elif request.user.user_type == "Driver":
-        if request.method == "GET":
-            driver_sponsor_query = models.DriverSponsor.objects.select_related('sponsor').filter(user=request.user.user_id)
-            sponsor_list = []
-            for obj in driver_sponsor_query:
-                sponsor_list.append(obj.sponsor.name)
-            
-            print(sponsor_list)
-            return render(request, 'catalog.html', {'sponsor_list':sponsor_list})
-        elif request.method == "POST":
-            url = './' + request.POST['sponsor_name'] + '/catalogOverview/pageNum=1'
-            return redirect(url)
 
 def pointHistory(request):
     if request.user.is_anonymous == True:
@@ -843,23 +825,87 @@ def admin_edit_account(request):
     
     return render(request, 'adminEditAccount.html', context_data)
 
+def catalog(request):
+    if request.user.is_anonymous == True:
+        redirect(login)
+    # Logic for if a user is signed in 
+    elif request.user.user_type == "Driver":
+        if request.method == "GET":
+            driver_sponsor_query = models.DriverSponsor.objects.select_related('sponsor').filter(user=request.user.user_id)
+            sponsor_list = []
+            for obj in driver_sponsor_query:
+                sponsor_list.append(obj.sponsor.name)
+            
+            print(sponsor_list)
+            return render(request, 'catalog.html', {'sponsor_list':sponsor_list})
+        elif request.method == "POST" and 'sponsor_name' in request.POST:
+            url = './' + request.POST['sponsor_name'] + '/catalogOverview/pageNum=1'
+            return redirect(url)
+        # Invalid Organization chosen
+        else:
+            driver_sponsor_query = models.DriverSponsor.objects.select_related('sponsor').filter(user=request.user.user_id)
+            sponsor_list = []
+            for obj in driver_sponsor_query:
+                sponsor_list.append(obj.sponsor.name)
+            
+            print(sponsor_list)
+            messages.info(request, 'An Invalid Organization Was Chosen!')
+            return render(request, 'catalog.html', {'sponsor_list':sponsor_list})
+    elif request.user.user_type == "Sponsor":
+        sponsor_model = models.SponsorUser.objects.select_related('sponsor').get(user=request.user.user_id)
+        url = './' + sponsor_model.sponsor.name + '/catalogOverview/pageNum=1'
+        return redirect(url)
+    
 def catalog_overview(request, sponsor, pageNum, search="search"):
     # We will need to determine what sponsors can choose for filtering the catalog page ex: name, category, price, etc. (or all the above!)
         # this currently just tests it with a simple query for the name of the item (IN SANDBOX MODE)
-    if request.method == "GET":
-        
+    if request.method == "GET" and request.user.user_type == "Driver":
+        # Validate that the driver's link with the sponsor is one of their actual sponsors
+        sponsor_list_query = models.DriverSponsor.objects.select_related('sponsor').filter(user=request.user.user_id)
+        sponsor_found = False
+        for obj in sponsor_list_query:
+           if obj.sponsor.name == sponsor:
+               sponsor_found = True
+        if sponsor_found == False:
+            messages.info(request, 'An Invalid Organization Was Chosen!')
+            return redirect(catalog)
         
         print(search)
         results_tuple = search_ebay_products(search, pageNum)
+
+        sponsor_entity = models.Sponsor.objects.get(name=sponsor)
+        # *If this line fails, the user has no points entry in the points table.*
+        points_entity = models.Points.objects.get(user=request.user.user_id, sponsor=sponsor_entity.sponsor_id)
+        min_points = float(0) if sponsor_entity.point_value == 0 else float(1 / sponsor_entity.point_value)
         try:
+            
+
             productResultsDict = results_tuple[0]
             total_pages = results_tuple[1]
             
-            return render(request, 'catalog_overview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search})
+            return render(request, 'catalog_overview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search
+                                                             , 'pointsAvailable':points_entity.point_total, 'sponsorPointConversion': sponsor_entity.point_value, 
+                                                             'selectedOrg': sponsor_entity.name, 'minPointsForADollar': min_points})
         except:
+            print('here')
             productResultsDict = {}
             total_pages = 0
-            return render(request, 'catalog_overview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search})
+            return render(request, 'catalog_overview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search
+                                                             , 'pointsAvailable': 0, 'sponsorPointConversion': 0, 
+                                                             'selectedOrg': 'No Sponsor Selected', 'minPointsForADollar': 0})
+    # If a sponsor user decides to use the catalog, they can only access their own
+    if request.method == "GET" and request.user.user_type == "Sponsor":
+        print(search)
+        results_tuple = search_ebay_products(search, pageNum)
+
+        sponsor_entity = models.Sponsor.objects.get(name=sponsor)
+        print('here')
+        productResultsDict = results_tuple[0]
+        total_pages = results_tuple[1]
+        return render(request, 'catalog_overview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search
+                                                            , 'pointsAvailable': 0, 'sponsorPointConversion': sponsor_entity.point_value, 
+                                                            'selectedOrg': sponsor, 'minPointsForADollar': 0})
+
     elif request.method == "POST":
         print(request.POST)
         print(request.POST['search'])

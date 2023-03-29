@@ -24,10 +24,25 @@
     </style>
 
 {% include 'top_buttons.html' %}
-<br><br><br>
+<br>
 <body>
     {% include 'top_buttons.html' %}
     <div class="header_padding">
+        <div style="text-align: center;"> 
+            <h2>Your Points Available to Spend:
+                <!-- If the driver's amount of points are less than a dollar, the points are red, otherwise is green -->
+                {% if pointsAvailable > minPointsForADollar %}
+                    <font color="#50C878">
+                {% else %}
+                    <font color="red">
+                {% endif %}
+                <b>{{pointsAvailable}} Points</b></h2></font>
+            <h5>Point to Dollar Conversion Rate: <b>1 Point = ${{sponsorPointConversion}}*</b></h5>
+            <h6>Selected Organization: <b>{{selectedOrg}}</b></h6>
+         </div>
+
+         <br>
+
         <div class="search" style="text-align: center;">
             <form method="POST">
                 {% csrf_token %}
@@ -44,12 +59,12 @@
             </tr>
             {% for product in product_result_list.searchResult.item %}
             <tr>
-                <td><a href="//{{product.viewItemURL|urlencode}}"><img src="{{product.galleryURL}}" alt="Image of Product"></a></td>
+                <td><a href="//{{product.viewItemURL|urlencode}}"><img src="{{product.galleryURL}}" alt="Product Image"></a></td>
                 <td><a href="//{{product.viewItemURL|urlencode}}">{{product.title}}</a></td>
                 <td>${{product.sellingStatus.currentPrice.value}}</td>
                 <td>
                     {% if product.sellingStatus.sellingState == 'Active' %}
-                    <font color="green">Yes</font>
+                    <font color="#34A56F">Yes</font>
                     {% else %}
                     <font color="red">No</font>
                     {% endif %}
@@ -74,6 +89,11 @@
                 {{message}}
             </div>
             {% endfor %}
+        </div>
+
+        <div style="text-align: center;">
+            <br>
+            <small><b>*</b> - Set by your Organization, amounts in USD</small>
         </div>
     </div>
 	<!-- Optional JavaScript -->
