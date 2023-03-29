@@ -23,6 +23,8 @@
      
     </style>
 
+{% include 'top_buttons.html' %}
+<br><br><br>
 <body>
     {% include 'top_buttons.html' %}
     <div class="header_padding">
@@ -47,9 +49,9 @@
                 <td>${{product.sellingStatus.currentPrice.value}}</td>
                 <td>
                     {% if product.sellingStatus.sellingState == 'Active' %}
-                        Yes
+                    <font color="green">Yes</font>
                     {% else %}
-                        No
+                    <font color="red">No</font>
                     {% endif %}
                 </td>
             </tr>
