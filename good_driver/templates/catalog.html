@@ -25,6 +25,14 @@
                 <br>
                 <button type="submit">Submit</button>
             </form>
+
+            <div >
+                {% for message in messages %}
+                <div role="alert">
+                   <font color="red">{{message}}</font> 
+                </div>
+                {% endfor %}
+            </div>
             
         </div>
     </div>

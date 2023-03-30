@@ -24,21 +24,33 @@
     </style>
 
 {% include 'top_buttons.html' %}
-<br><br><br>
+<br>
 <body>
     {% include 'top_buttons.html' %}
     <div class="header_padding">
-        <div class = "top" >
-            
-            <div class="search" style="text-align: center;" >
-                <form method="POST">
-                    {% csrf_token %}
-                    <input type="text" id="search" name="search" placeholder="Search Catalog">
-                    <button type="submit">Go</button>
-                </form>
-            </div>
-            
+        <div style="text-align: center;"> 
+            <h2>Your Points Available to Spend:
+                <!-- If the driver's amount of points are less than a dollar, the points are red, otherwise is green -->
+                {% if pointsAvailable > minPointsForADollar %}
+                    <font color="#50C878">
+                {% else %}
+                    <font color="red">
+                {% endif %}
+                <b>{{points}} Points</b></h2></font>
+            <h5>Point to Dollar Conversion Rate: <b>1 Point = ${{sponsorPointConversion}}*</b></h5>
+            <h6>Selected Organization: <b>{{sponsor}}</b></h6>
+         </div>
+
+         <br>
+
+        <div class="search" style="text-align: center;">
+            <form method="POST">
+                {% csrf_token %}
+                <input type="text" id="search" name="search" placeholder="Search Catalog">
+                <button type="submit">Go</button>
+            </form>
         </div>
+        
         {% if product_result_list.searchResult.item %}
         <br>
         <table style="margin-left: auto; margin-right: auto">
@@ -76,10 +88,7 @@
             <br><br><br>
             {% endif %}
             <br>
-        <div class="points" style="text-align: center; ">
-            <h5>Current Sponsor: <font color="red">{{sponsor}}</font></h5>
-            <h5>Current Points: <font color="red">{{points}}</font></h5>
-        </div>
+        
         <br>
         <div style="text-align: center;">
             <p>Page {{pageNum}} of {{totalPages}} </p>
@@ -93,7 +102,11 @@
         </div>
         {% endif %}
         
-        
+        <div style="text-align: center;">
+            <br>
+            <small><b>*</b> - Set by your Organization, amounts in USD</small>
+        </div>
+
         <div class="form-group">
             {% for message in messages %}
             <div class="alert alert-danger" role="alert">
@@ -101,6 +114,8 @@
             </div>
             {% endfor %}
         </div>
+
+        
     </div>
     
 
