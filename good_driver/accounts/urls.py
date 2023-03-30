@@ -18,6 +18,7 @@ urlpatterns = [
     path('sponsorAddDriver/', views.sponsor_add_driver, name='sponsorAddDriver'),
     path('application/', views.application, name='application'),
     path('sponsorHome/driverManagement/application/', views.application,name='application'),
+    path('driverHome/applications/', views.driverApplications ,name='driver applications'),
     path('resetPassword/', views.resetPassword, name='resetPassword'),
     path('sponsorHome/driverManagement/pointChange/', views.pointChange, name='pointChange'),
     path('all_drivers', views.sponsor_see_all_drivers, name='all_drivers'),

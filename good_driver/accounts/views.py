@@ -579,6 +579,31 @@ def sponsor_add_driver(request):
     # Returns 403 Error (Permission Denied)    
     else: raise PermissionDenied
 
+def driverApplications(request):
+    from datetime import datetime
+    if request.user.is_anonymous == True:
+        messages.info(request, 'You must be logged in to apply to a sponsor')
+        return redirect(login)
+    elif(request.user.user_type == "Driver"):
+        ##gets sponsor name that the currently logged in user is a part of
+
+        #get user object
+        user_obj = models.Users.objects.get(user_id=request.user.user_id)
+
+        #get user name
+        user_name = user_obj.first_name + " " + user_obj.last_name
+        
+        #find the applications for the driver
+        app_list = models.DriverApplication.objects.filter(driver=request.user.user_id)
+        
+        list_of_apps = []
+        for app in app_list:
+            sponsor_name = app.sponsor.name
+            new_dict = {'sponsor_name':sponsor_name, 'status':app.status, 'reason':app.reason, 'date_time':app.date_time, 'application_id': app.application_id}
+            list_of_apps.append(new_dict)
+
+        return render(request, 'driver_application.html', {'app_list': list_of_apps, 'sponsor_name':user_name})
+
 def application(request):
     from datetime import datetime
     if request.user.is_anonymous == True:

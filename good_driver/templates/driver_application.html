@@ -2,41 +2,7 @@
 {% load static %}
 <link rel="stylesheet" href="{% static 'sponsorView.css' %}">
 {% block content %}
-{% if user.user_type == 'Driver' %}
 
-<head>
-    <title>Apply!</title>
-</head>
-<body>
-    {% include 'top_buttons.html' %}
-    <div class = 'header_padding' style="text-align: center;" >
-        
-        <h1>Apply for Sponsorship Today</h1>
-        <form method="POST" class="sponsorForm">
-            {% csrf_token %}
-            {{form}}
-            <br>
-            <br>
-            <button type="submit">Submit</button>
-        </form>
-        <br>
-        <br>
-        <input type="button" class="button" value="Return Home" onclick="window.location.href='/home'"/>
-        <div >
-            {% for message in messages %}
-            <div role="alert">
-                {{message}}
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-    {% include 'top_buttons.html' %}
-
-</body>
-
-
-{% endif %}
-{%if user.user_type == 'Sponsor' %}
 <style>th, td{
     padding:15px;
 }
@@ -66,11 +32,6 @@ table{
         <tr>
             <th>Application ID</th>
             <th>Sponsor Name</th>
-            <th>Last Name</th>
-            <th>Street Address</th>
-            <th>City</th>
-            <th>Zip Code</th>
-            <th>Phone Number</th>
             <th>Status</th>
             <th>Additional Comments</th>
             <th>Time Applied</th>
@@ -82,17 +43,9 @@ table{
                 {% csrf_token %}
             <td ><input type="number" class="app_id" name='application_id' value={{application.application_id}} readonly></td>
             <td>{{application.sponsor_name}}</td>
-            <td>{{application.last_name}}</td>
-            <td>{{application.street_address}}</td>
-            <td>{{application.city}}</td>
-            <td>{{application.zip_code}}</td>
-            <td>{{application.phone_number}}</td>
             <td>{{application.status}}</td>
             <td>{{application.reason}}</td>
             <td>{{application.date_time}}</td>
-            <td><input type="submit" name="decision" value="Accept"></td>
-            <td><input type="submit" name="decision" value="Reject"></td>
-            <td><input type="text" id = 'reason_input' name="reason_input"></td>
             </form>
         </tr>
     {% endfor %}
@@ -111,7 +64,6 @@ table{
     </div>
    
 </body>
-{% endif %}
 {% endblock %}
 
 
