@@ -135,3 +135,18 @@ CREATE TABLE password_changes (
 	Type_Of_Change VARCHAR(10),
 	FOREIGN KEY (User_ID) REFERENCES users(User_ID)
 );
+
+
+CREATE TABLE orders (
+   Order_ID INTEGER NOT NULL AUTO_INCREMENT,
+   User_ID INTEGER NOT NULL,
+   Sponsor_ID INTEGER NOT NULL,
+   date_time DATETIME NOT NULL,
+   Status VARCHAR(20) NOT NULL,
+   Item_ID VARHCAHR(20) NOT NULL,
+   Price FLOAT NOT NULL,
+   Points INT NOT NULL,
+   PRIMARY KEY(Order_ID),
+   FOREIGN KEY (User_ID) REFERENCES users(User_ID),
+   FOREIGN KEY (Sponsor_ID) REFERENCES sponsor(Sponsor_ID)
+);

@@ -85,6 +85,21 @@ class LoginAttempt(models.Model):
         managed = False
         db_table = 'login_attempt'
 
+
+class Orders(models.Model):
+    order_id = models.AutoField(db_column='Order_ID', primary_key=True)  # Field name made lowercase.
+    user = models.ForeignKey('Users', models.DO_NOTHING, db_column='User_ID')  # Field name made lowercase.
+    sponsor = models.ForeignKey('Sponsor', models.DO_NOTHING, db_column='Sponsor_ID')  # Field name made lowercase.
+    date_time = models.DateTimeField()
+    status = models.CharField(db_column='Status', max_length=20)  # Field name made lowercase.
+    price = models.FloatField(db_column='Price')  # Field name made lowercase.
+    points = models.IntegerField(db_column='Points')  # Field name made lowercase.
+    item_id = models.CharField(db_column='Item_ID', max_length=20 )
+
+    class Meta:
+        managed = False
+        db_table = 'orders'
+
 class PasswordChanges(models.Model):
     change_id = models.AutoField(db_column='Change_ID', primary_key=True)  # Field name made lowercase.
     date_time = models.DateTimeField(db_column='Date_Time')  # Field name made lowercase.

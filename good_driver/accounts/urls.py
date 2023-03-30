@@ -28,6 +28,8 @@ urlpatterns = [
     path('catalogOverview/pageNum=<int:pageNum>/', views.catalog_overview, name='catalogOverview'),
     path('catalogOverview/pageNum=<int:pageNum>&&search=/', views.catalog_overview, name='catalogOverview'),
     path('catalogOverview/pageNum=<int:pageNum>&&search=<str:search>/', views.catalog_overview, name='catalogOverview'),
+    path('catalog/<str:sponsor>/order', views.order_item, name='order_item'),
+    path('home/orders/', views.order, name='orders'),
     path('home/', views.home, name='home'),
 
     path('pointHistory/', views.pointHistory, name='pointHistory'),

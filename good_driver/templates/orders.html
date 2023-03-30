@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Orders</title>
+    <style>
+    th, td{
+        padding:15px;
+        border:0px solid black;
+        
+    }
+
+    h1,h2{
+        text-align: center;
+    } 
+    table{
+        margin-left: auto;
+        margin-right: auto;
+        
+        border-collapse: collapse;
+    }
+    </style>
+</head>
+
+<body>
+    {% include 'top_buttons.html' %}
+    <div class="header_padding">
+        <div style="text-align: center;">
+            <h1>Orders</h1>
+            <br>
+            <h2>Current Orders</h2>
+            {% if curr_order_list %} 
+                <table>
+                    <tr>
+                        <th></th>
+                        <th>Order Date</th>
+                        <th>Sponsor</th>
+                        <th>Item ID</th>
+                        <th>Points</th>
+                        <th>Status</th>
+                    </tr>
+                    {% for entry in curr_order_list %} 
+                        <tr>
+                            <form method="POST">
+                                {% csrf_token %}
+                                <td ><input hidden="hidden" type="number"  name='order_id' value={{entry.order_id}} readonly></td>
+                                <td>{{entry.date}}</td>
+                                <td>{{entry.sponsor}}</td>
+                                <td>{{entry.item_id}}</td>
+                                <td>{{entry.points}}</td>
+                                <td>{{entry.status}}</td>
+                                {% if entry.status == 'Pending' or entry.status == 'Confirmed' %}
+                                <td><input type="submit" name="cancel" value="Cancel Order"></td>
+                                {% endif %}
+                            </form>
+                        </tr>
+                    {% endfor %} 
+                </table>
+            {% else %} 
+                <h3>You have no orders</h3>
+            {% endif %}
+            <h2>Completed Orders</h2>
+            {% if completed_order_list %} 
+            <table>
+                <tr>
+                    <th>Order Date</th>
+                    <th>Sponsor</th>
+                    <th>Item ID</th>
+                    <th>Points</th>
+                    <th>Status</th>
+                    
+                </tr>
+                {% for entry in completed_order_list %} 
+                <tr>   
+                    <td>{{entry.date}}</td>
+                    <td>{{entry.sponsor}}</td>
+                    <td>{{entry.item_id}}</td>
+                    <td>{{entry.points}}</td>
+                    <td>{{entry.status}}</td>
+                    
+                </tr>
+                {% endfor %} 
+            </table>
+            {% else %} 
+            <br>
+            <h3>You have no previous orders</h3>
+            {% endif %}
+        </div>
+    </div>
+
+    <div>
+        {% for message in messages %}
+        <div role="alert" style="color:rgb(255,0,0); text-align: center;">
+            {{message}}
+        </div>
+        {% endfor %}
+    </div>
+
+</body>
+
+
+</html>
