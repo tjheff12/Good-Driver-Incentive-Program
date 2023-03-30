@@ -13,6 +13,7 @@
     {% include 'top_buttons.html' %}
     <div class="header_padding">
         <div style="text-align: center;">
+            {% if sponsor_list %}
             <h1>All Catalog's</h1>
             <form method="POST" class="sponsorForm">
                 {% csrf_token %}
@@ -25,7 +26,10 @@
                 <br>
                 <button type="submit">Submit</button>
             </form>
-
+            {% else %} 
+            <h1>You Are Not Part Of Any Sponsors</h1>
+            <input type="button" class="button" value="Return Home" onclick="window.location.href='/home'"/>
+            {% endif %}
             <div >
                 {% for message in messages %}
                 <div role="alert">

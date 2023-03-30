@@ -21,6 +21,7 @@
         <br>
         <br>
             <div >
+                {% if point_list %}
                 <table style="margin-left: auto; margin-right: auto">
                     <tr>
                         <th>Sponsor</th>
@@ -33,12 +34,15 @@
                     </tr>
                     {% endfor %}
                 </table>
-                
+                {% else %} 
+                <h3>You do not have any points</h3>
+                {% endif %}
             </div>   
         <br>
         <br>
             <div>
                 <h2>Point History</h2>
+                {% if point_history_list %}
                 <table style="margin-left: auto; margin-right: auto">
                     <tr>
                         <th>Sponsor</th>
@@ -55,7 +59,9 @@
                     </tr>
                     {% endfor %}
                 </table>
-               
+                {% else %}
+                <h3>You do not have any point history</h3>
+                {% endif %}
             </div>
             
         
