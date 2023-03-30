@@ -5,10 +5,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     
-        <!-- Bootstrap CSS -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-            integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    
+       
         <title>Catalog Overview</title>
     </head>
     <style>
@@ -23,22 +20,22 @@
      
     </style>
 
-{% include 'top_buttons.html' %}
-<br>
+
+
 <body>
     {% include 'top_buttons.html' %}
     <div class="header_padding">
         <div style="text-align: center;"> 
-            <h2>Your Points Available to Spend:
+            <h1>Your Points Available to Spend:
                 <!-- If the driver's amount of points are less than a dollar, the points are red, otherwise is green -->
-                {% if pointsAvailable > minPointsForADollar %}
-                    <font color="#50C878">
+                {% if points %}
+                    <font color="#50C878">{{points}}
                 {% else %}
-                    <font color="red">
+                    <font color="red">0
                 {% endif %}
-                <b>{{points}} Points</b></h2></font>
-            <h5>Point to Dollar Conversion Rate: <b>1 Point = ${{sponsorPointConversion}}*</b></h5>
-            <h6>Selected Organization: <b>{{sponsor}}</b></h6>
+                 Points</h1></font>
+            <h3>Point to Dollar Conversion Rate: <b>1 Point = ${{sponsorPointConversion}}*</b></h3>
+            <h3>Selected Organization: <b>{{sponsor}}</b></h3>
          </div>
 
          <br>

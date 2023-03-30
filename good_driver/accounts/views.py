@@ -857,7 +857,7 @@ def catalog(request):
         url = './' + sponsor_model.sponsor.name + '/catalogOverview/pageNum=1'
         return redirect(url)
     
-def catalog_overview(request, sponsor, pageNum, search="search"):
+def catalog_overview(request, sponsor, pageNum=1, search="search"):
     # We will need to determine what sponsors can choose for filtering the catalog page ex: name, category, price, etc. (or all the above!)
         # this currently just tests it with a simple query for the name of the item (IN SANDBOX MODE)
     if request.method == "GET" and request.user.user_type == "Driver":
@@ -872,14 +872,13 @@ def catalog_overview(request, sponsor, pageNum, search="search"):
             return redirect(catalog)
         
         sponsor_obj = models.Sponsor.objects.get(name=sponsor)
+        conversion_rate = sponsor_obj.point_value
         points_obj = models.Points.objects.get(user=request.user, sponsor=sponsor_obj)
         current_points = points_obj.point_total
         results_tuple = search_ebay_products(search, pageNum)
 
         sponsor_entity = models.Sponsor.objects.get(name=sponsor)
-        # *If this line fails, the user has no points entry in the points table.*
-        points_entity = models.Points.objects.get(user=request.user.user_id, sponsor=sponsor_entity.sponsor_id)
-        min_points = float(0) if sponsor_entity.point_value == 0 else float(1 / sponsor_entity.point_value)
+        
         try:
             
 
@@ -887,14 +886,14 @@ def catalog_overview(request, sponsor, pageNum, search="search"):
             #print(productResultsDict)
             total_pages = results_tuple[1]
             
-            return render(request, 'catalog_overview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search, 'sponsor':sponsor, 'points':current_points})
+            return render(request, 'catalog_overview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search, 'sponsor':sponsor, 'points':current_points, 'sponsorPointConversion':conversion_rate})
         except Exception as e:
             print(e)
             productResultsDict = {}
             total_pages = 0
             return render(request, 'catalog_overview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search
                                                              , 'pointsAvailable': 0, 'sponsorPointConversion': 0, 
-                                                             'selectedOrg': 'No Sponsor Selected', 'minPointsForADollar': 0})
+                                                             'sponsor': 'No Sponsor Selected'})
     # If a sponsor user decides to use the catalog, they can only access their own
     if request.method == "GET" and request.user.user_type == "Sponsor":
         # Validate that the driver's link with the sponsor is one of their actual sponsors
