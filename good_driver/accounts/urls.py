@@ -31,7 +31,7 @@ urlpatterns = [
 
     path('sponsorHome/', views.sponsorHome, name='sponsorHome'),
 
-   
+    path('pointChangeAudit/', views.pointChangeAudit, name='pointChangeAudit'),
 
     path('adminHome/', views.adminHome, name="adminHome"),
 
