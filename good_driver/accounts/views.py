@@ -725,6 +725,44 @@ def sponsor_see_all_drivers(request):
         elif request.method == "POST":
             return None
 
+import csv
+def pointChangeAudit(request):
+    if request.user.is_anonymous == True:
+        raise FileNotFoundError
+    elif request.user.user_type == "Sponsor":
+        if request.method == "GET":
+            user_sponsor_obj = models.SponsorUser.objects.get(user_id=request.user.user_id)
+            sponsor_id = getattr(user_sponsor_obj, 'sponsor_id')
+            sponsor_obj = models.Sponsor.objects.get(sponsor_id=sponsor_id)
+            sponsor_name = getattr(sponsor_obj, 'name')
+
+            start_date = request.GET.get('start_date')
+            end_date = request.GET.get('end_date')
+
+            driver_query = models.PointsOld.objects.select_related('user').filter(sponsor=sponsor_obj,date_time__range=(start_date, end_date))
+            driver_list = []
+            
+            for driver in driver_query:
+                first_name = driver.user.first_name
+                last_name = driver.user.last_name
+                point_total = driver.point_total
+                point_change = driver.points_added_or_deducted
+                reason = driver.reason
+                date = driver.date_time
+                new_dict = {'first_name':first_name,'last_name':last_name,'point_total':point_total,'point_change':point_change,'reason':reason,'date':date}
+                driver_list.append(new_dict)
+
+            response = HttpResponse(content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename="Point_Change_Audit.csv"'
+            writer = csv.writer(response)
+            writer.writerow(['Driver', 'Last Name', 'Point Total', 'Point Change', 'Reason', 'Date'])
+            for driver in driver_list:
+                writer.writerow([driver['first_name'], driver['last_name'], driver['point_total'], driver['point_change'], driver['reason'], driver['date']])
+
+            return response and render(request, 'pointChangeAudit.html', {'driver_list': driver_list, 'sponsor_name':sponsor_name})
+    elif request.method == "POST":
+            return None
+
 def home(request):
     search_ebay_products('Gaming PC')
     if request.user.is_anonymous == True:
