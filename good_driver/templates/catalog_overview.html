@@ -26,13 +26,19 @@
 <body>
     {% include 'top_buttons.html' %}
     <div class="header_padding">
-        <div class="search" style="text-align: center;">
-            <form method="POST">
-                {% csrf_token %}
-                <input type="text" id="search" name="search" placeholder="Search Catalog">
-                <button type="submit">Go</button>
-            </form>
+        <div class = "top" >
+            
+            <div class="search" style="text-align: center;" >
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="text" id="search" name="search" placeholder="Search Catalog">
+                    <button type="submit">Go</button>
+                </form>
+            </div>
+            
         </div>
+        {% if product_result_list.searchResult.item %}
+        <br>
         <table style="margin-left: auto; margin-right: auto">
             <tr>
                 <th>Product Image</th>
@@ -41,26 +47,38 @@
                 <th>In Stock?</th>
                 <th></th>
             </tr>
-            {% for product in product_result_list.searchResult.item %}
-            <tr>
-                <form action="../../order" method="POST">
-                    {% csrf_token %}
-                    <td hidden="hidden"><input type="number" class="item_id" name='item_id' value={{product.itemId}} readonly></td>
-                    <td><a href="//{{product.viewItemURL|urlencode}}"><img src="{{product.galleryURL}}" alt="Image of Product"></a></td>
-                    <td><a href="//{{product.viewItemURL|urlencode}}">{{product.title}}</a></td>
-                    <td><input style = 'border: 0;' type="text" class="price" name='price' value=${{product.sellingStatus.currentPrice.value}} readonly></td>
-                    <td>
-                        {% if product.sellingStatus.sellingState == 'Active' %}
-                        <font color="green">Yes</font>
-                        {% else %}
-                        <font color="red">No</font>
-                        {% endif %}
-                    </td>
-                    <td><button type="submit">Order Item</button></td>
-                </form>
-            </tr>
-            {% endfor %}
-        </table>
+            
+                {% for product in product_result_list.searchResult.item %}
+                <tr>
+                    <form action="../../order" method="POST">
+                        {% csrf_token %}
+                        <td hidden="hidden"><input type="number" class="item_id" name='item_id' value={{product.itemId}} readonly></td>
+                        <td><img src="{{product.galleryURL}}" alt="No image provided"></td>
+                        <td><a href="//{{product.viewItemURL|urlencode}}">{{product.title}}</a></td>
+                        <td><input style = 'border: 0;' type="text" class="price" name='price' value=${{product.sellingStatus.currentPrice.value}} readonly></td>
+                        <td>
+                            {% if product.sellingStatus.sellingState == 'Active' %}
+                            <font color="green">Yes</font>
+                            {% else %}
+                            <font color="red">No</font>
+                            {% endif %}
+                        </td>
+                        <td><button type="submit">Order Item</button></td>
+                    </form>
+                </tr>
+                {% endfor %}
+            </table>
+            {% else %} 
+            <br><br><br>
+            <div style="text-align: center; align-items: center;"><h3>No items to show</h3></div>
+            <br><br><br>
+            {% endif %}
+            <br>
+        <div class="points" style="text-align: center; ">
+            <h5>Current Sponsor: <font color="red">{{sponsor}}</font></h5>
+            <h5>Current Points: <font color="red">{{points}}</font></h5>
+        </div>
+        <br>
         <div style="text-align: center;">
             <p>Page {{pageNum}} of {{totalPages}} </p>
         </div>
@@ -72,6 +90,8 @@
             <a href='../pageNum={{pageNum|add:1}}&&search={{search}}' style="text-align: center;">Next Page</a>
         </div>
         {% endif %}
+        
+        
         <div class="form-group">
             {% for message in messages %}
             <div class="alert alert-danger" role="alert">

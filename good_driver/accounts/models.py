@@ -94,6 +94,7 @@ class Orders(models.Model):
     status = models.CharField(db_column='Status', max_length=20)  # Field name made lowercase.
     price = models.FloatField(db_column='Price')  # Field name made lowercase.
     points = models.IntegerField(db_column='Points')  # Field name made lowercase.
+    item_id = models.CharField(db_column='Item_ID', max_length=20 )
 
     class Meta:
         managed = False

@@ -5,6 +5,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
+from django.db.models import Q
 from . import backends
 from . import models
 from . import forms
@@ -72,7 +73,7 @@ def login(request):
                 user_id_queryset = models.Users.objects.filter(email=email).values('user_id')
                 ##gets id from query
                 user_id = user_id_queryset[0]['user_id']
-                CURRENT_TIME = datetime.now()
+                CURRENT_TIME = datetime.utcnow()
                 new_login_attempt = models.LoginAttempt(user_id = user_id, date_time=CURRENT_TIME, was_accepted=0)
                 new_login_attempt.save()
                 #models.LoginAttempt.save(user_id=user_obj, date_time=CURRENT_TIME,was_accepted=0)
@@ -202,7 +203,7 @@ def pointHistory(request):
                 new_dict = {"Sponsor": sponsor, "Points": points}
                 points_list.append(new_dict)
             
-            points_history_query = models.PointsHistory.objects.select_related('sponsor').filter(user=request.user.user_id).order_by('sponsor__name', "date_time")
+            points_history_query = models.PointsHistory.objects.select_related('sponsor').filter(user=request.user.user_id).order_by('sponsor__name', "-date_time")
             points_hist_list = []
             for obj in points_history_query:
                 sponsor = obj.sponsor.name
@@ -621,7 +622,7 @@ def application(request):
                 messages.info(request,"You are already sponsored by " + request.POST['sponsor_name'])
                 return redirect(application)
 
-            CURRENT_TIME = datetime.now()
+            CURRENT_TIME = datetime.utcnow()
             
 
             ##gets id from query
@@ -843,20 +844,21 @@ def admin_edit_account(request):
     
     return render(request, 'adminEditAccount.html', context_data)
 
-def catalog_overview(request, sponsor, pageNum, search="search"):
+def catalog_overview(request, sponsor, pageNum=1, search="search"):
     # We will need to determine what sponsors can choose for filtering the catalog page ex: name, category, price, etc. (or all the above!)
         # this currently just tests it with a simple query for the name of the item (IN SANDBOX MODE)
     if request.method == "GET":
         
-        
-        
+        sponsor_obj = models.Sponsor.objects.get(name=sponsor)
+        points_obj = models.Points.objects.get(user=request.user, sponsor=sponsor_obj)
+        current_points = points_obj.point_total
         results_tuple = search_ebay_products(search, pageNum)
         try:
             productResultsDict = results_tuple[0]
             #print(productResultsDict)
             total_pages = results_tuple[1]
             
-            return render(request, 'catalog_overview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search})
+            return render(request, 'catalog_overview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search, 'sponsor':sponsor, 'points':current_points})
         except Exception as e:
             print(e)
             productResultsDict = {}
@@ -877,7 +879,7 @@ def search_ebay_products(query, pageNum):
         response = api.execute('findItemsAdvanced', {
             'keywords': query,
             'paginationInput': { 
-                'entriesPerPage': 5,
+                'entriesPerPage': 10,
                 'pageNumber': pageNum,
                 
             }
@@ -907,37 +909,99 @@ def search_ebay_products(query, pageNum):
 
 def order_item(request, sponsor):
     import datetime
+    import math
     if request.method == "GET":
         raise Http404
     elif request.method == "POST":
         if request.user.user_type == "Driver":
             print(request.POST)
             print(sponsor)
+            user=request.user
             sponsor_obj = models.Sponsor.objects.get(name=sponsor)
             sponsor_id = sponsor_obj.sponsor_id
             conversion_rate = sponsor_obj.point_value
+            print("Sponsor is ", end='')
             print(sponsor_id)
             print(request.user.user_id)
-            price_split = request.POST['price'].split('.')[2]
-            price_round_str = price_split[2]
-            if (price_round_str[0] != '0'):
-                
-                price = int(price_split[0]) + 1
-                print(price)
-            else:
-                price = int(price_split[0])
-                print(price)
+            print("Conv rate is " + str(conversion_rate))
+            
+            price = float(request.POST['price'][1:])
             current_time = datetime.datetime.utcnow()
-            status = "Pending"
-            return None
+            
+            item_id = request.POST['item_id']
+            print(current_time)
+
+            
+            
+            print(price)
+            point_cost = math.ceil(float(price) / float(conversion_rate))
+            print(point_cost)
+
+            points_obj = models.Points.objects.get(user=user, sponsor=sponsor_obj)
+            current_points = points_obj.point_total
+            print(current_points)
+            
+            if(current_points < point_cost):
+                messages.info(request, "You do not have enough points to order that item")
+                return redirect("./catalogOverview/pageNum=1")
+            
+            point_history_obj = models.PointsHistory(user=user, sponsor=sponsor_obj, point_change=(point_cost * -1), date_time=current_time, reason="Item Ordered")
+            point_history_obj.save()
+
+            new_order = models.Orders(user=user, sponsor=sponsor_obj, date_time=current_time, status='Pending', price=price, points=point_cost, item_id=item_id)
+            new_order.save()
+            
+
+            messages.info(request, "Item Ordered")
+            return redirect("./catalogOverview/pageNum=1")
+            
         else:
             raise Http404
     
 def order(request):
+    import datetime
     if request.user.is_anonymous == True:
         message = 'Please log in'
         ##saves message to html template
         messages.info(request, message)
         return redirect(login)
     elif request.user.user_type == "Driver":
-        return render(request, 'driverHome.html')
+        if request.method == "GET":
+            user = request.user
+            curr_order_query = models.Orders.objects.select_related('sponsor').filter(Q(user=user), Q(status='Pending') | Q(status='Confirmed') | Q(status='Shipped')) 
+            completed_order_query = models.Orders.objects.select_related('sponsor').filter(Q(user=user), Q(status='Delivered') | Q(status='Cancelled')) 
+            curr_order_list = []
+            completed_order_list = []
+            for entry in curr_order_query:
+                order_id = entry.order_id
+                date = entry.date_time
+                status = entry.status
+                points = entry.points
+                item_id = entry.item_id
+                sponsor = entry.sponsor.name
+                new_dict = {'date':date, 'status':status,'points':points, 'item_id':item_id, 'sponsor':sponsor, 'order_id':order_id}
+                curr_order_list.append(new_dict)
+            print(curr_order_list)
+            for entry in completed_order_query:
+                order_id = entry.order_id
+                date = entry.date_time
+                status = entry.status
+                points = entry.points
+                item_id = entry.item_id
+                sponsor = entry.sponsor.name
+                new_dict = {'date':date, 'status':status,'points':points, 'item_id':item_id, 'sponsor':sponsor, 'order_id':order_id}
+                completed_order_list.append(new_dict)
+            
+
+            return render(request, 'orders.html', {'curr_order_list':curr_order_list, 'completed_order_list':completed_order_list})
+        elif request.method == "POST":
+            print(request.POST)
+            order = models.Orders.objects.get(order_id=request.POST['order_id'])
+            order.status = "Cancelled"
+            sponsor_obj = order.sponsor
+            point_to_refund = order.points
+            order.save()
+            point_history_obj = models.PointsHistory(user=request.user, sponsor=sponsor_obj, point_change=point_to_refund, date_time=datetime.datetime.utcnow(), reason="Order Cancelled")
+            point_history_obj.save()
+            messages.info(request, "Order Cancelled. You will be refunded shortly")
+            return redirect('../orders')
