@@ -921,7 +921,7 @@ def catalog_overview(request, sponsor, pageNum=1, search="search"):
         total_pages = results_tuple[1]
         return render(request, 'catalog_overview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search
                                                             , 'pointsAvailable': 0, 'sponsorPointConversion': sponsor_entity.point_value, 
-                                                            'selectedOrg': sponsor, 'minPointsForADollar': 0})
+                                                            'sponsor': sponsor, 'minPointsForADollar': 0})
 
     elif request.method == "POST":
         
