@@ -887,9 +887,11 @@ def catalog_overview(request, sponsor, pageNum=1, search="search"):
             productResultsDict = results_tuple[0]
             
             total_pages = results_tuple[1]
-            for item in productResultsDict['searchResult']['item']:
-                item["point_cost"] = math.ceil(float(item['sellingStatus']['currentPrice']['value']) / float(conversion_rate))
-            print(productResultsDict)
+            if(productResultsDict != {}):
+                for item in productResultsDict['searchResult']['item']:
+                    item["point_cost"] = math.ceil(float(item['sellingStatus']['currentPrice']['value']) / float(conversion_rate))
+                
+            
             return render(request, 'catalog_overview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search, 'sponsor':sponsor, 'points':current_points, 'sponsorPointConversion':conversion_rate})
         except Exception as e:
             print(e)
