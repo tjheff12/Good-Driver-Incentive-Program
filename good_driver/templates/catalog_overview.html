@@ -56,7 +56,7 @@
                 <th>Item Name</th>
                 <th>Item Price</th>
                 <th>In Stock?</th>
-                <th></th>
+                <th>Order Item?</th>
             </tr>
             
                 {% for product in product_result_list.searchResult.item %}
@@ -74,7 +74,11 @@
                             <font color="red">No</font>
                             {% endif %}
                         </td>
+                        {% if product.sellingStatus.sellingState == 'Active' and product.point_cost < points %}
                         <td><button type="submit">Order Item</button></td>
+                        {% else %}
+                        <td><button type="submit" disabled>Not Enough Points</button></td>
+                        {% endif %}
                     </form>
                 </tr>
                 {% endfor %}
@@ -88,7 +92,11 @@
         
         <br>
         <div style="text-align: center;">
+            {% if totalPages == 0 %}
+            <p>Page 0 of {{totalPages}} </p>
+            {% else %}
             <p>Page {{pageNum}} of {{totalPages}} </p>
+            {% endif %}
         </div>
         <div style="text-align: center;">
             {% if pageNum > 1 %}

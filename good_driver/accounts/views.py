@@ -858,6 +858,7 @@ def catalog(request):
         return redirect(url)
     
 def catalog_overview(request, sponsor, pageNum=1, search="search"):
+    import math
     # We will need to determine what sponsors can choose for filtering the catalog page ex: name, category, price, etc. (or all the above!)
         # this currently just tests it with a simple query for the name of the item (IN SANDBOX MODE)
     if request.method == "GET" and request.user.user_type == "Driver":
@@ -879,21 +880,24 @@ def catalog_overview(request, sponsor, pageNum=1, search="search"):
 
         sponsor_entity = models.Sponsor.objects.get(name=sponsor)
         
+        
         try:
             
 
             productResultsDict = results_tuple[0]
-            #print(productResultsDict)
-            total_pages = results_tuple[1]
             
+            total_pages = results_tuple[1]
+            for item in productResultsDict['searchResult']['item']:
+                item["point_cost"] = math.ceil(float(item['sellingStatus']['currentPrice']['value']) / float(conversion_rate))
+            print(productResultsDict)
             return render(request, 'catalog_overview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search, 'sponsor':sponsor, 'points':current_points, 'sponsorPointConversion':conversion_rate})
         except Exception as e:
             print(e)
             productResultsDict = {}
             total_pages = 0
             return render(request, 'catalog_overview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search
-                                                             , 'pointsAvailable': 0, 'sponsorPointConversion': 0, 
-                                                             'sponsor': 'No Sponsor Selected'})
+                                                             , 'points': current_points, 'sponsorPointConversion': conversion_rate, 
+                                                             'sponsor': sponsor})
     # If a sponsor user decides to use the catalog, they can only access their own
     if request.method == "GET" and request.user.user_type == "Sponsor":
         # Validate that the driver's link with the sponsor is one of their actual sponsors
