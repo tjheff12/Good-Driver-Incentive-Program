@@ -957,7 +957,7 @@ def search_ebay_products(query, pageNum):
         item = response.reply.searchResult.item[0]
         assert(type(item.listingInfo.endTime) == datetime.datetime)
         assert(type(response.dict()) == dict)
-        #print(response.dict())
+        print(response.dict())
         
         total_pages = response.reply.paginationOutput.totalPages
         return response.dict(), total_pages
@@ -1050,7 +1050,8 @@ def order(request):
                 sponsor = entry.sponsor.name
                 new_dict = {'date':date, 'status':status,'points':points, 'item_id':item_id, 'sponsor':sponsor, 'order_id':order_id}
                 completed_order_list.append(new_dict)
-            
+                print(search_ebay_by_id(item_id))
+                print("!!!!!!!!!!!!!!!!!!!!!!!")
 
             return render(request, 'orders.html', {'curr_order_list':curr_order_list, 'completed_order_list':completed_order_list})
         elif request.method == "POST":
@@ -1064,3 +1065,45 @@ def order(request):
             point_history_obj.save()
             messages.info(request, "Order Cancelled. You will be refunded shortly")
             return redirect('../orders')
+    else:
+        raise Http404
+
+
+def search_ebay_by_id(id):
+    import datetime
+    from ebaysdk.exception import ConnectionError
+    from ebaysdk.finding import Connection as Finding
+    from ebaysdk.shopping import Connection as Shopping
+    from ebaysdk.soa.finditem import Connection as FindItem
+    
+    #id = '110553902996'
+    try:
+        api = Shopping(domain='svcs.sandbox.ebay.com', appid='HaydenSt-DriverIn-SBX-0cd4f0a51-76ca4c5c', config_file=None)
+        response = api.execute('GetSingleItem', {'ItemID': id})
+        
+        
+        print(response.reply)
+        print(response.dict())
+        return 0
+        try:
+            total_pages = response.reply.paginationOutput.totalPages
+        except:
+            total_pages = 0
+        if(response.reply.searchResult._count == '0'):
+            return {}, total_pages
+        assert(response.reply.ack == 'Success')
+        assert(type(response.reply.timestamp) == datetime.datetime)
+        assert(type(response.reply.searchResult.item) == list)
+
+        item = response.reply.searchResult.item[0]
+        assert(type(item.listingInfo.endTime) == datetime.datetime)
+        assert(type(response.dict()) == dict)
+        #print(response.dict())
+        
+        total_pages = response.reply.paginationOutput.totalPages
+        return response.dict(), total_pages
+
+    except ConnectionError as e:
+        pass
+        #print(e)
+        #print(e.response.dict())
