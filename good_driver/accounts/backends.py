@@ -16,6 +16,15 @@ class CustomAuthBackend(object):
 				return user
 		except models.Users.DoesNotExist:
 				return None
+		
+	def prehashed_auth(username=None, password=None):
+		try:
+			user = models.Users.objects.get(email=username)
+			
+			if user.password == password:
+				return user
+		except models.Users.DoesNotExist:
+				return None
 
 	def get_user(self, user_id):
 		""" Get a User object from the user_id. """

@@ -1102,3 +1102,77 @@ def order(request):
             point_history_obj.save()
             messages.info(request, "Order Cancelled. You will be refunded shortly")
             return redirect('../orders')
+        
+def start_driver_impersonation(request):
+    if request.user.user_type == "Sponsor":
+        import hashlib
+
+        # Create impersonation driver within the given org (Has a unique email tied to the requester's id)
+        email = "driverImpostor" + str(request.user.user_id)
+        imp_driver = models.Users(email=email, password=hashlib.md5("1234".encode()).hexdigest(), 
+                                            first_name="Impostor", last_name="Driver", street_address="1234 Impostor Ln", street_address_2="1234 Impostor Ln", 
+                                            city="Impostorville", zip_code=12345, 
+                                            phone_number="No Phone", user_type='Driver', is_impersonation=1)
+        imp_driver.save()
+
+        # Add this new driver to requester's org and add points to play with (no ordering allowed) (Driver_Sponsor and Points tables edited)
+            # Sponsor from requester (MUST HAVE SPONSOR ORG ASSOCIATED WITH SPONSOR USER IN ORDER TO WORK!)
+        sponsor=models.Sponsor.objects.get(sponsor_id=models.SponsorUser.objects.get(user_id=request.user.user_id).sponsor_id)
+        driverSponsorEntry = models.DriverSponsor(user=imp_driver, sponsor=sponsor)
+        driverSponsorEntry.save()
+
+        pointEntry = models.Points(user=imp_driver, sponsor=sponsor, point_total=99999)
+        pointEntry.save()
+        
+        # Store the original user's email and password in the session
+        oldEmail = request.user.email
+        oldPassword = request.user.password
+        impDriverEmail = imp_driver.email
+
+        auth_logout(request)
+
+        # Log in user as impostor
+        user = backends.CustomAuthBackend.authenticate(username=email, password="1234")
+        if user is not None:
+            auth_login(request, user)
+            message = 'You are logged in as the impostor driver!'
+            messages.info(request, message)
+
+        request.session['original_email'] = oldEmail
+        request.session['original_password'] = oldPassword
+        request.session['impostor_driver'] = impDriverEmail
+
+        return redirect(user_profile)
+    else:
+        return redirect(user_profile)
+
+def end_driver_impersonation(request):
+    oldEmail = request.session.get('original_email')
+    oldPassword = request.session.get('original_password')
+    impDriverEmail = request.session.get('impostor_driver')
+
+    # Clear the session variables
+    del request.session['original_email']
+    del request.session['original_password']
+    del request.session['impostor_driver']
+
+    # Log out of driver impostor
+    auth_logout(request)
+
+    # Log back into the original requester's account, frictionlessly
+    user = backends.CustomAuthBackend.prehashed_auth(username=oldEmail, password=oldPassword)
+    if user is not None:
+        auth_login(request, user)
+
+    # Delete the impostor's instances from Users, Driver_Sponsor, and Points tables
+    imp_driver = models.Users.objects.get(email=impDriverEmail)
+    driverSponsorEntry = models.DriverSponsor.objects.get(user=imp_driver)
+    driverSponsorEntry.delete()
+
+    pointEntry = models.Points.objects.get(user=imp_driver)
+    pointEntry.delete()
+
+    imp_driver.delete()
+
+    messages.info(request, "You have successfully ended the impostor session, and are now logged back into your original account.")
+    return redirect(user_profile)
