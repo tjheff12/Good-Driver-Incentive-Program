@@ -64,8 +64,10 @@
         </div>
 
         <div class="switchView">
-            <input type="button" value="Light Mode"/>
-            <input type="button" value="Dark Mode"/>
+            {% if user.is_impersonation == 1 %}
+            <a href="/logout" role="button"><input type="button" class="button"
+                value="End Impersonation Session" /></a>
+            {% endif %}
         </div>
         <div class="background"></div>
         <div class="title_name"><h1 >Assembler's Good Driving Program</h1></div>

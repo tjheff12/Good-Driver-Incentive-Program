@@ -89,12 +89,9 @@
     <a href="/user_profile/DriverView" role="button"><input type="button" class="button"
         value="Impersonate a Driver From Your Organization" /></a>
     {% endif %}
-    <br>
-    <br>
-
-    {% if user.is_impersonation == 1 and user.user_type == "Driver" %}
-    <a href="/user_profile/EndDriverView" role="button"><input type="button" class="button"
-        value="End Impersonation" /></a>
+    {% if user.is_impersonation == 0 and user.user_type == "Admin" %}
+    <a href="/user_profile/ChangeView" role="button"><input type="button" class="button"
+      value="Impersonate a Driver or Sponsor" /></a>
     {% endif %}
     <br>
     <br>

@@ -85,8 +85,31 @@ def login(request):
     elif request.method == "GET":
         
         return render(request, 'registration/login.html')
+
+def get_trailing_number(s):
+    import re
+    m = re.search(r'\d+$', s)
+    return int(m.group()) if m else None
     
 def logout(request):
+    if request.user.is_impersonation == 1:
+        # Last digits of a impersonating user's email is the id of the original requester user (either sponsor or admin)
+        originalUserID = get_trailing_number(request.user.email)
+        sponsorOrAdminEntity = models.Users.objects.get(user_id=originalUserID)
+        originalUserType = sponsorOrAdminEntity.user_type
+
+        # Specifically for Sponsors impersonating drivers
+        if request.user.user_type == "Driver" and originalUserType == "Sponsor":
+            return redirect(end_driver_impersonation)
+        # Specifically for Admins impersonating drivers
+        elif request.user.user_type == "Driver" and originalUserType == "Admin":
+            # replace this with function driver->back to admin*******************************************************
+            return redirect(end_admin_driver_impersonation)
+        # Specifically for Admins impersonating Sponsors (currently, only admins can impersonate other sponsors, no need to check orig type)
+        elif request.user.user_type == "Sponsor":
+            # replace this with function sponsor->back to admin*******************************************************
+            return redirect(end_admin_sponsor_impersonation)
+
     if request.method == "POST":
         auth_logout(request)
         
@@ -1102,7 +1125,8 @@ def order(request):
             point_history_obj.save()
             messages.info(request, "Order Cancelled. You will be refunded shortly")
             return redirect('../orders')
-        
+
+# For Sponsor users, this starts the Driver impersonation session, adds new Driver to db, and logs them into that limited account with points pre-added    
 def start_driver_impersonation(request):
     if request.user.user_type == "Sponsor":
         import hashlib
@@ -1146,6 +1170,7 @@ def start_driver_impersonation(request):
     else:
         return redirect(user_profile)
 
+# For Sponsor users, this ends the Driver impersonation session, deletes from db, and relogs them back into their original Sponsor account
 def end_driver_impersonation(request):
     oldEmail = request.session.get('original_email')
     oldPassword = request.session.get('original_password')
@@ -1173,6 +1198,188 @@ def end_driver_impersonation(request):
     pointEntry.delete()
 
     imp_driver.delete()
+
+    messages.info(request, "You have successfully ended the impostor session, and are now logged back into your original account.")
+    return redirect(user_profile)
+
+# For Admin users, this is the menu to choose which view they want (Driver or Sponsor)
+def change_view(request):
+    if request.method == "GET":
+        all_sponsor_query = models.Sponsor.objects.all()
+        sponsor_list = []
+        sponsor_list.append({'sponsor_id':-1,'point_value':0.0,'name':"Empty Sponsor"})
+        
+        for sponsor in all_sponsor_query:
+            sponsor_id=sponsor.sponsor_id
+            point_value=sponsor.point_value
+            name=sponsor.name
+            new_dict = {'sponsor_id':sponsor_id,'point_value':point_value,'name':name}
+            
+            sponsor_list.append(new_dict)
+
+        return render(request, 'change_view.html', {'sponsor_list': sponsor_list})
+    elif request.method == "POST":
+        # Default value for a blank sponsor
+        chosenSponsor = models.Sponsor(sponsor_id=-1, point_value=0.0, name="Empty Sponsor")
+
+        # Gets the sponsor id from the drop-down menu in change_view
+        if request.POST['sponsor'] != "-1":
+            chosenSponsor = models.Sponsor.objects.get(sponsor_id=request.POST['sponsor'])
+      
+        userTypeChosen = request.POST['user_type']
+        request.session['sponsor'] = chosenSponsor.sponsor_id
+
+        if userTypeChosen == "Sponsor":
+            return redirect(start_admin_sponsor_impersonation)
+        elif userTypeChosen == "Driver":
+            return redirect(start_admin_driver_impersonation)
+        
+def start_admin_driver_impersonation(request):
+    if request.user.user_type == "Admin":
+        chosenSponsor = request.session.get('sponsor')
+        import hashlib
+
+        # Create impersonation driver within the given org (Has a unique email tied to the requester's id)
+        email = "driverImpostor" + str(request.user.user_id)
+        imp_driver = models.Users(email=email, password=hashlib.md5("1234".encode()).hexdigest(), 
+                                            first_name="Impostor", last_name="Driver", street_address="1234 Impostor Ln", street_address_2="1234 Impostor Ln", 
+                                            city="Impostorville", zip_code=12345, 
+                                            phone_number="No Phone", user_type='Driver', is_impersonation=1)
+        imp_driver.save()
+
+        # Add this new driver to requested org and add points to play with (no ordering allowed) (Driver_Sponsor and Points tables edited)
+        if chosenSponsor != -1:
+            sponsor=models.Sponsor.objects.get(sponsor_id=chosenSponsor)
+            driverSponsorEntry = models.DriverSponsor(user=imp_driver, sponsor=sponsor)
+            driverSponsorEntry.save()
+
+            pointEntry = models.Points(user=imp_driver, sponsor=sponsor, point_total=99999)
+            pointEntry.save()
+
+        del request.session['sponsor']
+        
+        # Store the original user's email and password in the session
+        oldEmail = request.user.email
+        oldPassword = request.user.password
+        impDriverEmail = imp_driver.email
+
+        auth_logout(request)
+
+        # Log in user as impostor
+        user = backends.CustomAuthBackend.authenticate(username=email, password="1234")
+        if user is not None:
+            auth_login(request, user)
+            message = 'You are logged in as the impostor driver!'
+            messages.info(request, message)
+
+        request.session['original_email'] = oldEmail
+        request.session['original_password'] = oldPassword
+        request.session['impostor_driver'] = impDriverEmail
+
+        return redirect(user_profile)
+    else:
+        return redirect(user_profile)
+
+def end_admin_driver_impersonation(request):
+    oldEmail = request.session.get('original_email')
+    oldPassword = request.session.get('original_password')
+    impDriverEmail = request.session.get('impostor_driver')
+
+    # Clear the session variables
+    del request.session['original_email']
+    del request.session['original_password']
+    del request.session['impostor_driver']
+
+    # Log out of driver impostor
+    auth_logout(request)
+
+    # Log back into the original requester's account, frictionlessly
+    user = backends.CustomAuthBackend.prehashed_auth(username=oldEmail, password=oldPassword)
+    if user is not None:
+        auth_login(request, user)
+
+    # Delete the impostor's instances from Users, Driver_Sponsor, and Points tables
+    imp_driver = models.Users.objects.get(email=impDriverEmail)
+    if models.DriverSponsor.objects.filter(user=imp_driver).exists():
+        driverSponsorEntry = models.DriverSponsor.objects.get(user=imp_driver)
+        driverSponsorEntry.delete()
+
+        pointEntry = models.Points.objects.get(user=imp_driver)
+        pointEntry.delete()
+
+    imp_driver.delete()
+
+    messages.info(request, "You have successfully ended the impostor session, and are now logged back into your original account.")
+    return redirect(user_profile)
+
+def start_admin_sponsor_impersonation(request):
+    if request.user.user_type == "Admin":
+        chosenSponsor = request.session.get('sponsor')
+        import hashlib
+
+        # Create impersonation sponsor within the given org (Has a unique email tied to the requester's id)
+        email = "sponsorImpostor" + str(request.user.user_id)
+        imp_sponsor = models.Users(email=email, password=hashlib.md5("1234".encode()).hexdigest(), 
+                                            first_name="Impostor", last_name="Sponsor", street_address="1234 Impostor Ln", street_address_2="1234 Impostor Ln", 
+                                            city="Impostorville", zip_code=12345, 
+                                            phone_number="No Phone", user_type='Sponsor', is_impersonation=1)
+        imp_sponsor.save()
+
+        # Add this new sponsor to requested org and add points to play with (no ordering allowed) (SponsorUser table edited)
+        if chosenSponsor != -1:
+            sponsor=models.Sponsor.objects.get(sponsor_id=chosenSponsor)
+            sponsorUserEntry = models.SponsorUser(user=imp_sponsor, sponsor=sponsor)
+            sponsorUserEntry.save()
+
+        del request.session['sponsor']
+        
+        # Store the original user's email and password in the session
+        oldEmail = request.user.email
+        oldPassword = request.user.password
+        impSponsorEmail = imp_sponsor.email
+
+        auth_logout(request)
+
+        # Log in user as impostor
+        user = backends.CustomAuthBackend.authenticate(username=email, password="1234")
+        if user is not None:
+            auth_login(request, user)
+            message = 'You are logged in as the impostor sponsor!'
+            messages.info(request, message)
+
+        request.session['original_email'] = oldEmail
+        request.session['original_password'] = oldPassword
+        request.session['impostor_sponsor'] = impSponsorEmail
+
+        return redirect(user_profile)
+    else:
+        return redirect(user_profile)
+
+def end_admin_sponsor_impersonation(request):
+    oldEmail = request.session.get('original_email')
+    oldPassword = request.session.get('original_password')
+    impSponsorEmail = request.session.get('impostor_sponsor')
+
+    # Clear the session variables
+    del request.session['original_email']
+    del request.session['original_password']
+    del request.session['impostor_sponsor']
+
+    # Log out of sponsor impostor
+    auth_logout(request)
+
+    # Log back into the original requester's account, frictionlessly
+    user = backends.CustomAuthBackend.prehashed_auth(username=oldEmail, password=oldPassword)
+    if user is not None:
+        auth_login(request, user)
+
+    # Delete the impostor's instances from Users and SponsorUser tables
+    imp_sponsor = models.Users.objects.get(email=impSponsorEmail)
+    if models.SponsorUser.objects.filter(user=imp_sponsor).exists():
+        sponsorUserEntry = models.SponsorUser.objects.filter(user=imp_sponsor)
+        sponsorUserEntry.delete()
+
+    imp_sponsor.delete()
 
     messages.info(request, "You have successfully ended the impostor session, and are now logged back into your original account.")
     return redirect(user_profile)
