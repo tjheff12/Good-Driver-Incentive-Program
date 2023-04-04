@@ -15,6 +15,7 @@ urlpatterns = [
     path('adminDeleteAccount/', views.admin_delete_account, name='adminDeleteAccount'),
     path('adminCreateSponsor/', views.admin_create_sponsor, name='adminCreateSponsor'),
     path('adminChangeUserPassword/', views.admin_change_user_password, name='adminChangeUserPassword'),
+    path('adminAddDriverToOrganization/', views.admin_add_driver_to_org, name='adminAddDriverToOrganization'),
     path('adminStartDriverView/', views.start_admin_driver_impersonation, name='start_admin_driver_impersonation'),
     path('adminEndDriverView/', views.end_admin_driver_impersonation, name='end_admin_driver_impersonation'),
     path('adminStartSponsorView/', views.start_admin_sponsor_impersonation, name='start_admin_sponsor_impersonation'),

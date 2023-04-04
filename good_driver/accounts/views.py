@@ -454,6 +454,55 @@ def admin_change_user_password(request):
     # Returns 403 Error (Permission Denied)    
     else: raise PermissionDenied
 
+def admin_add_driver_to_org(request):
+    # Denies permission to ANYONE who is NOT signed in
+    if request.user.is_anonymous == True:
+        raise PermissionDenied
+    # Logic for if a user is signed in AND is of the 'Admin' type
+    elif request.user.user_type == "Admin":
+        if request.method == "GET":
+            all_sponsor_query = models.Sponsor.objects.all()
+            sponsor_list = []
+            
+            for sponsor in all_sponsor_query:
+                sponsor_id=sponsor.sponsor_id
+                point_value=sponsor.point_value
+                name=sponsor.name
+                new_dict = {'sponsor_id':sponsor_id,'point_value':point_value,'name':name}
+                
+                sponsor_list.append(new_dict)
+
+            all_driver_query = models.Users.objects.filter(user_type="Driver")
+            driver_list = []
+            
+            for driver in all_driver_query:
+                first_name=driver.first_name
+                last_name=driver.last_name
+                userid=driver.user_id
+                email=driver.email
+                new_dict = {'name':first_name+' '+last_name,'user_id':userid,'email':email}
+                
+                driver_list.append(new_dict)
+
+            return render(request, 'adminAddDriverToOrganization.html', {'sponsor_list': sponsor_list, 'driver_list': driver_list})
+        elif request.method == "POST":
+            driverIDChosen = request.POST['driver']
+            sponsorIDChosen = request.POST['sponsor']
+
+            # Check if user is already a part of this sponsor, error if so, otherwise add them to the org and put a success message
+            if models.DriverSponsor.objects.filter(user=driverIDChosen, sponsor=sponsorIDChosen).exists():
+                messages.info(request, 'This Driver is already a part of the chosen Organization!')
+            else:
+                driverInstance = models.Users.objects.get(user_id=driverIDChosen)
+                sponsorOrgInstance = models.Sponsor.objects.get(sponsor_id=sponsorIDChosen)
+                newDriverSponsor = models.DriverSponsor(user=driverInstance, sponsor=sponsorOrgInstance)
+                newDriverSponsor.save()
+                messages.info(request, 'The Driver has been successfully added to the chosen Organization!')
+
+            return redirect(admin_add_driver_to_org)
+    # Returns 403 Error (Permission Denied)    
+    else: raise PermissionDenied
+
 def sponsor_panel(request):
     # Denies permission to ANYONE who is NOT signed in
     if request.user.is_anonymous == True:
@@ -1234,6 +1283,7 @@ def change_view(request):
         elif userTypeChosen == "Driver":
             return redirect(start_admin_driver_impersonation)
         
+# Logs in the Admin user into the impersonator Driver account
 def start_admin_driver_impersonation(request):
     if request.user.user_type == "Admin":
         chosenSponsor = request.session.get('sponsor')
@@ -1280,6 +1330,7 @@ def start_admin_driver_impersonation(request):
     else:
         return redirect(user_profile)
 
+# Logs out the Admin user of the impersonator Driver account, and back into their Admin account
 def end_admin_driver_impersonation(request):
     oldEmail = request.session.get('original_email')
     oldPassword = request.session.get('original_password')
@@ -1312,6 +1363,7 @@ def end_admin_driver_impersonation(request):
     messages.info(request, "You have successfully ended the impostor session, and are now logged back into your original account.")
     return redirect(user_profile)
 
+# Logs in the Admin user into the impersonator Sponsor account
 def start_admin_sponsor_impersonation(request):
     if request.user.user_type == "Admin":
         chosenSponsor = request.session.get('sponsor')
@@ -1355,6 +1407,7 @@ def start_admin_sponsor_impersonation(request):
     else:
         return redirect(user_profile)
 
+# Logs out the Admin user of the impersonator Sponsor account, and back into their Admin account
 def end_admin_sponsor_impersonation(request):
     oldEmail = request.session.get('original_email')
     oldPassword = request.session.get('original_password')
