@@ -916,8 +916,9 @@ def catalog_overview(request, sponsor, pageNum=1, search="search"):
         results_tuple = search_ebay_products(search, pageNum)
 
         sponsor_entity = models.Sponsor.objects.get(name=sponsor)
-        print('here')
+        
         productResultsDict = results_tuple[0]
+        
         total_pages = results_tuple[1]
         return render(request, 'catalog_overview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search
                                                             , 'pointsAvailable': 0, 'sponsorPointConversion': sponsor_entity.point_value, 
@@ -973,32 +974,29 @@ def order_item(request, sponsor):
         raise Http404
     elif request.method == "POST":
         if request.user.user_type == "Driver":
-            print(request.POST)
-            print(sponsor)
+            
             user=request.user
             sponsor_obj = models.Sponsor.objects.get(name=sponsor)
             sponsor_id = sponsor_obj.sponsor_id
             conversion_rate = sponsor_obj.point_value
-            print("Sponsor is ", end='')
-            print(sponsor_id)
-            print(request.user.user_id)
-            print("Conv rate is " + str(conversion_rate))
+            
             
             price = float(request.POST['price'][1:])
             current_time = datetime.datetime.utcnow()
             
             item_id = request.POST['item_id']
-            print(current_time)
+            
 
             
             
-            print(price)
+            
             point_cost = math.ceil(float(price) / float(conversion_rate))
-            print(point_cost)
+            
 
             points_obj = models.Points.objects.get(user=user, sponsor=sponsor_obj)
             current_points = points_obj.point_total
-            print(current_points)
+            item_name = request.POST['item_name']
+            
             
             if(current_points < point_cost):
                 messages.info(request, "You do not have enough points to order that item")
@@ -1007,7 +1005,7 @@ def order_item(request, sponsor):
             point_history_obj = models.PointsHistory(user=user, sponsor=sponsor_obj, point_change=(point_cost * -1), date_time=current_time, reason="Item Ordered")
             point_history_obj.save()
 
-            new_order = models.Orders(user=user, sponsor=sponsor_obj, date_time=current_time, status='Pending', price=price, points=point_cost, item_id=item_id)
+            new_order = models.Orders(user=user, sponsor=sponsor_obj, date_time=current_time, status='Pending', price=price, points=point_cost, item_id=item_id, item_name=item_name)
             new_order.save()
             
 
@@ -1037,8 +1035,9 @@ def order(request):
                 status = entry.status
                 points = entry.points
                 item_id = entry.item_id
+                item_name= entry.item_name
                 sponsor = entry.sponsor.name
-                new_dict = {'date':date, 'status':status,'points':points, 'item_id':item_id, 'sponsor':sponsor, 'order_id':order_id}
+                new_dict = {'date':date, 'status':status,'points':points, 'item_id':item_id, 'sponsor':sponsor, 'order_id':order_id, 'item_name':item_name}
                 curr_order_list.append(new_dict)
             print(curr_order_list)
             for entry in completed_order_query:
@@ -1047,14 +1046,15 @@ def order(request):
                 status = entry.status
                 points = entry.points
                 item_id = entry.item_id
+                item_name= entry.item_name
                 sponsor = entry.sponsor.name
-                new_dict = {'date':date, 'status':status,'points':points, 'item_id':item_id, 'sponsor':sponsor, 'order_id':order_id}
+                new_dict = {'date':date, 'status':status,'points':points, 'item_id':item_id, 'sponsor':sponsor, 'order_id':order_id, 'item_name':item_name}
                 completed_order_list.append(new_dict)
             
 
             return render(request, 'orders.html', {'curr_order_list':curr_order_list, 'completed_order_list':completed_order_list})
         elif request.method == "POST":
-            print(request.POST)
+            
             order = models.Orders.objects.get(order_id=request.POST['order_id'])
             order.status = "Cancelled"
             sponsor_obj = order.sponsor

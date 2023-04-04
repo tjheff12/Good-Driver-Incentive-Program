@@ -64,6 +64,7 @@
                 <tr>
                     <form action="../../order" method="POST">
                         {% csrf_token %}
+                        <input hidden="hidden" type=text name="item_name" id="item_name" value="{{product.title}}">
                         <td hidden="hidden"><input type="number" class="item_id" name='item_id' value={{product.itemId}} readonly></td>
                         <td><img src="{{product.galleryURL}}" alt="No image provided"></td>
                         <td><a href="//{{product.viewItemURL|urlencode}}">{{product.title}}</a></td>
@@ -110,11 +111,13 @@
         <div style="text-align: center;">
             <br>
             <small><b>*</b> - Set by your Organization, amounts in USD</small>
+            <br>
+            <small><b>**</b> - Orders will be sent to your current Address</small>
         </div>
 
         <div class="form-group">
             {% for message in messages %}
-            <div class="alert alert-danger" role="alert">
+            <div class="alert alert-danger" role="alert" style="color:rgb(255,0,0);">
                 {{message}}
             </div>
             {% endfor %}

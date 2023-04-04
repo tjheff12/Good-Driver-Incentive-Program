@@ -34,7 +34,7 @@
                         <th></th>
                         <th>Order Date</th>
                         <th>Sponsor</th>
-                        <th>Item ID</th>
+                        <th>Item Name</th>
                         <th>Points</th>
                         <th>Status</th>
                     </tr>
@@ -45,7 +45,7 @@
                                 <td ><input hidden="hidden" type="number"  name='order_id' value={{entry.order_id}} readonly></td>
                                 <td>{{entry.date}}</td>
                                 <td>{{entry.sponsor}}</td>
-                                <td>{{entry.item_id}}</td>
+                                <td>{{entry.item_name}}</td>
                                 <td>{{entry.points}}</td>
                                 <td>{{entry.status}}</td>
                                 {% if entry.status == 'Pending' or entry.status == 'Confirmed' %}
@@ -64,7 +64,7 @@
                 <tr>
                     <th>Order Date</th>
                     <th>Sponsor</th>
-                    <th>Item ID</th>
+                    <th>Item Name</th>
                     <th>Points</th>
                     <th>Status</th>
                     
@@ -73,7 +73,7 @@
                 <tr>   
                     <td>{{entry.date}}</td>
                     <td>{{entry.sponsor}}</td>
-                    <td>{{entry.item_id}}</td>
+                    <td>{{entry.item_name}}</td>
                     <td>{{entry.points}}</td>
                     <td>{{entry.status}}</td>
                     
