@@ -52,6 +52,13 @@
     width: 100%;
     height: 65px;
 }
+
+.red_button{
+    height: 40px;
+    width: 200px;
+    color: white;
+    background-color: #f44336;
+}
 </style>
 
 <div class="top_buttons">
@@ -64,8 +71,10 @@
         </div>
 
         <div class="switchView">
-            <input type="button" value="Light Mode"/>
-            <input type="button" value="Dark Mode"/>
+            {% if user.is_impersonation == 1 %}
+            <a href="/logout" role="button"><input type="button" class="button red_button"
+                value="End Impersonation Session" /></a>
+            {% endif %}
         </div>
         <div class="background"></div>
         <div class="title_name"><h1 >Assembler's Good Driving Program</h1></div>

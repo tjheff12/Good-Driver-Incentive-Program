@@ -25,6 +25,11 @@
             {% csrf_token %}
             <a class="btn btn-dark" href="../adminChangeUserPassword" role="button">Change a User's Password</a>
         </form>
+        <br>
+        <form method="POST">
+            {% csrf_token %}
+            <a class="btn btn-dark" href="../adminAddDriverToOrganization" role="button">Add a Driver to an Organization</a>
+        </form>
     </div>
 </body>
 

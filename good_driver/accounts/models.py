@@ -208,6 +208,7 @@ class Users(AbstractBaseUser):
     user_type = models.CharField(db_column='User_Type', max_length=15)  # Field name made lowercase.
     security_question_answer = models.CharField(db_column='Security_Question_Answer', max_length=35, null=False)
 
+    is_impersonation = models.BooleanField(db_column='is_impersonation', default=0)
 
     objects = UserManager()
 
