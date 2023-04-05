@@ -28,22 +28,21 @@
 				<div class="form-group">
 					<label for="sponsor">Sponsor Organization</label>
 					<select id="sponsor" name="sponsor" required>
-						{% for sponsor in sponsor_list %}
+                        {% for sponsor in sponsor_list %}
 						<option value="{{sponsor.sponsor_id}}"> {{sponsor.name}} </option>
-						{% endfor %}
+                        {% endfor %}
 					</select>
 				</div>
 
-				<div class="form-group">
-					<label for="user_type">User Type</label>
+                <div class="form-group">
+                <label for="user_type">User Type</label>
 					<select id="user_type" name="user_type" required>
 						<option value="Driver"> Driver </option>
-						<option value="Sponsor"> Sponsor </option>
+                        <option value="Sponsor"> Sponsor </option>
 					</select>
-				</div>
+                </div>
 
-				<button type="submit" class="btn btn-primary"
-					onclick="this.disabled=true;this.value='Loading...';this.form.submit();">Impersonate User</button>
+				<button type="submit" class="btn btn-primary">Impersonate User</button>
 			</div>
 		</form>
 		<div class="form-group">
