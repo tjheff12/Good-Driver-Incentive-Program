@@ -25,24 +25,22 @@ table{
 <body>
     {% include 'top_buttons.html' %}
     <div class="header_padding">
-    <h1>Point Change Audit Report</h1>
-    <br>
+    <h1>Driver Application Audit Report: {{start_date}} - {{end_date}}</h1>
+    <br><br><br>
     {% if driver_list %}
     <table>
         <tr>
-            <th>Name</th>
-            <th>Point Total</th>
-            <th>Point Change</th>
-            <th>Reason</th>
             <th>Date</th>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Reason</th>
         </tr>
         {% for driver in driver_list %}
             <tr>
-                <td>{{driver.first_name}} {{driver.last_name}}</td>
-                <td>{{driver.point_total}}</td>
-                <td>{{driver.point_change}}</td>
-                <td>{{driver.reason}}</td>
                 <td>{{driver.date}}</td>
+                <td>{{driver.first_name}} {{driver.last_name}}</td>
+                <td>{{driver.status}}</td>
+                <td>{{driver.reason}}</td>
             </tr>
         {% endfor %}
     </table>
