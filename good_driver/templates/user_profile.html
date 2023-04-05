@@ -87,11 +87,11 @@
     <br>
     {% if user.is_impersonation == 0 and user.user_type == "Sponsor" %}
     <a href="/user_profile/DriverView" role="button"><input type="button" class="button"
-        value="Impersonate a Driver From Your Organization" /></a>
+        onclick="this.disabled=true;this.value='Loading...';" value="Impersonate a Driver From Your Organization" /></a>
     {% endif %}
     {% if user.is_impersonation == 0 and user.user_type == "Admin" %}
     <a href="/user_profile/ChangeView" role="button"><input type="button" class="button"
-      value="Impersonate a Driver or Sponsor" /></a>
+        value="Impersonate a Driver or Sponsor" /></a>
     {% endif %}
     <br>
     <br>

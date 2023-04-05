@@ -1215,6 +1215,10 @@ def start_driver_impersonation(request):
     if request.user.user_type == "Sponsor":
         import hashlib
 
+        if not models.SponsorUser.objects.filter(user_id=request.user.user_id).exists():
+            messages.info(request, "You are not part of an Organization! Unable to impersonate a Driver.")
+            return redirect(user_profile)
+
         # Create impersonation driver within the given org (Has a unique email tied to the requester's id)
         email = "driverImpostor" + str(request.user.user_id)
         imp_driver = models.Users(email=email, password=hashlib.md5("1234".encode()).hexdigest(), 
