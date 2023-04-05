@@ -206,6 +206,8 @@ class Users(AbstractBaseUser):
     zip_code = models.IntegerField(db_column='ZIP_Code', blank=True, null=True)  # Field name made lowercase.
     phone_number = models.CharField(db_column='Phone_Number', max_length=15, blank=True, null=True)  # Field name made lowercase.
     user_type = models.CharField(db_column='User_Type', max_length=15)  # Field name made lowercase.
+    security_question_answer = models.CharField(db_column='Security_Question_Answer', max_length=35, null=False)
+
 
     objects = UserManager()
 

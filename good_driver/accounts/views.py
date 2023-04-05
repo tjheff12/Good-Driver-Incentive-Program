@@ -24,9 +24,10 @@ def register(request):
         city = request.POST['city']
         zip_code = request.POST['zip_code']
         phone_num = request.POST['phone_num']
+        sec_question = request.POST['sec_question']
         
         password_hash = hashlib.md5(password.encode()).hexdigest()
-        
+        question_hash = hashlib.md5(sec_question.encode()).hexdigest()
     
         if password==confirm_password:
             if models.Users.objects.filter(email=username).exists():
@@ -36,7 +37,7 @@ def register(request):
                 
             else:
                 user = models.Users(email=username, password=password_hash, 
-                                         first_name=first_name, last_name=last_name, street_address=street_addr, street_address_2=street_addr, city=city, zip_code=zip_code, phone_number=phone_num, user_type='Driver')
+                                         first_name=first_name, last_name=last_name, street_address=street_addr, street_address_2=street_addr, city=city, zip_code=zip_code, phone_number=phone_num, user_type='Driver', security_question_answer=question_hash)
                 user.save()
                 
                 return redirect('done')
@@ -108,20 +109,29 @@ def resetPassword(request):
         username = request.POST['username']
         new_password = request.POST['new_password']
         confirm_password = request.POST['confirm_password']
-        
-        if new_password == confirm_password:
-            # Hash the new password
-            hashed_password = hashlib.md5(new_password.encode()).hexdigest()
-            print(hashed_password)
-            user = models.Users.objects.get(email=username)
-            user.password = hashed_password
-            user.save()
-            pass_change_obj = models.PasswordChanges(user=user, date_time=datetime.datetime.utcnow(), type_of_change=change_type)
-            pass_change_obj.save()
-            return redirect('done')
-        
+        sec_question_answer = request.POST['sec_question']
+
+        answer_hash = hashlib.md5(sec_question_answer.encode()).hexdigest()
+        user = models.Users.objects.get(email=username)
+        correct_answer_hash = user.security_question_answer
+
+        if answer_hash == correct_answer_hash:
+            if new_password == confirm_password:
+                # Hash the new password
+                hashed_password = hashlib.md5(new_password.encode()).hexdigest()
+                print("Debug: " + hashed_password)
+                user.password = hashed_password
+                user.save()
+                pass_change_obj = models.PasswordChanges(user=user, date_time=datetime.datetime.utcnow(), type_of_change=change_type)
+                pass_change_obj.save()
+                return redirect('done')
+            
+            else:
+                message = "New password and confirm password do not match"
+                messages.info(request, message)
+                return render(request, 'resetPassword.html', {"message":message})
         else:
-            message = "New password and confirm password do not match"
+            message = "Your mother's maiden name was entered incorrectly."
             messages.info(request, message)
             return render(request, 'resetPassword.html', {"message":message})
             
