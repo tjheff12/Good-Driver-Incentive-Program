@@ -80,8 +80,7 @@
                         {% endif %}
                     </td>
                     <td>{{product.point_cost}}</td>
-                    {% if product.sellingStatus.sellingState == 'Active' and product.point_cost < points and
-                        user.is_impersonation==0 %} <td><button type="submit">Order Item</button></td>
+                    {% if product.sellingStatus.sellingState == 'Active' and product.point_cost < points and user.is_impersonation == 0 %} <td><button type="submit">Order Item</button></td>
                         {% elif user.is_impersonation == 1 %}
                         <td><button type="submit" disabled>Orders Disabled for Impersonation Mode</button></td>
                         {% else %}
