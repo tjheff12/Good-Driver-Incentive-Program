@@ -68,6 +68,7 @@
                     {% csrf_token %}
                     <td hidden="hidden"><input type="number" class="item_id" name='item_id' value={{product.itemId}}
                             readonly></td>
+                    <input hidden="hidden" name="item_name" type="text" value="{{product.title}}">
                     <td><img src="{{product.galleryURL}}" alt="No image provided"></td>
                     <td><a href="//{{product.viewItemURL|urlencode}}">{{product.title}}</a></td>
                     <td><input style='border: 0;' type="text" class="price" name='price'

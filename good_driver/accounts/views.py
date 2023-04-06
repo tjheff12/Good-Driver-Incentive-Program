@@ -1199,7 +1199,7 @@ def order_item(request, sponsor):
         raise Http404
     elif request.method == "POST":
         if request.user.user_type == "Driver":
-            
+            print(request.POST)
             user=request.user
             sponsor_obj = models.Sponsor.objects.get(name=sponsor)
             sponsor_id = sponsor_obj.sponsor_id
