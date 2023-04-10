@@ -55,13 +55,12 @@ urlpatterns = [
     
     path('sponsorHome/driverManagement/allDrivers', views.sponsor_see_all_drivers, name='all_drivers'),
 
-    path('sponsorHome/sponsorReport/pointTracking/', views.pointTracking, name='pointTracking'),
+    
+    path('home/report/driverSales/', views.driverSales, name='driverSales'),
 
-    path('adminHome/adminReport/driverSales/', views.driverSales, name='driverSales'),
+    path('home/report/sponsorSales/', views.sponsorSales, name='sponsorSales'),
 
-    path('adminHome/adminReport/sponsorSales/', views.sponsorSales, name='sponsorSales'),
-
-    path('adminHome/adminReport/invoice/', views.invoice, name='invoice'),
+    path('home/report/invoice/', views.invoice, name='invoice'),
 
     path('sponsorHome/sponsorReport/audit/', views.audit, name='sponsorAudit'),
 
@@ -98,21 +97,21 @@ urlpatterns = [
     path('sponsorHome/driverManagement/', views.driverManagement, name='driverManagement'),
     
 
-    path('sponsorHome/sponsorReport/pointTracking/', views.pointTracking, name='pointTracking'),
+    path('home/report/pointTracking/', views.pointTracking, name='pointTracking'),
 
-    path('adminHome/adminReport/driverSales/', views.driverSales, name='driverSales'),
+    #path('adminHome/adminReport/driverSales/', views.driverSales, name='driverSales'),
 
-    path('adminHome/adminReport/sponsorSales/', views.sponsorSales, name='sponsorSales'),
+    #path('adminHome/adminReport/sponsorSales/', views.sponsorSales, name='sponsorSales'),
 
-    path('adminHome/adminReport/invoice/', views.invoice, name='invoice'),
+    #path('adminHome/adminReport/invoice/', views.invoice, name='invoice'),
 
-    path('sponsorHome/sponsorReport/audit/', views.audit, name='sponsorAudit'),
+    path('home/report/audit/', views.audit, name='audit'),
 
-    path('adminHome/adminReport/audit/', views.audit, name='adminAudit'),
+    #path('adminHome/adminReport/audit/', views.audit, name='adminAudit'),
 
-    path('sponsorHome/sponsorReport/', views.sponsorReport, name='sponsorReport'),
+    #path('sponsorHome/sponsorReport/', views.sponsorReport, name='sponsorReport'),
 
-    path('adminHome/adminReport/', views.adminReport, name='adminReport'),
+    path('home/report/', views.report, name='adminReport'),
 
     path('adminInfo/', views.adminInfo, name='adminInfo'),
     #path("home", views.home, name="home")

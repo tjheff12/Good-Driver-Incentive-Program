@@ -5,27 +5,12 @@
     height: 100vh;
 }
 
-.switchView {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-}
-
-.home {
-    position: absolute;
-    top: 0;
-    left: 0;
-}
-
 .title {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.formatting {
-    width: 220px;
-}
 
 .download {
     width: 220px;
@@ -52,10 +37,6 @@
 .end {
     display: block;
     margin-left: 10px;
-}
-
-.formatting {
-    padding: 5px;
 }
 
 .driverListTitle {

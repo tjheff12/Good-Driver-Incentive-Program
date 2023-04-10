@@ -8,42 +8,114 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DriverSale</title> 
+
+    <script type="text/javascript">
+        window.onload = CheckSponsorWrap;
+        
+        function removeAll(selectElement) {
+            var i, L = selectElement.options.length - 1;
+            for(i = L; i >= 0; i--) {
+                selectElement.remove(i);
+            }
+        }
+        //Makes sure that when loading this webpage "All Sponsors" is the chosen drop down
+        function CheckSponsorWrap(){
+           
+            document.getElementById('id_sponsor_name').selectedIndex = 0;
+            return true;
+            
+        }
+
+        function getDriverID(name){
+            let driverIDs = JSON.parse('{{idList|safe}}')
+            for(let i = 0; i < driverIDs.length; i++){
+                if(driverIDs[i]['name'] == name){
+                    return driverIDs[i]['id'];
+                }
+            }
+            return 0;
+        }
+
+		function CheckSponsor(val) {
+            let first = true;
+            let driverList = JSON.parse('{{driverList|safe}}');
+            
+			var sponsor_elm = document.getElementById('id_sponsor_name');
+			var driver_elm = document.getElementById('driverChoice');
+            let driver_select = document.querySelector(".driverChoice");
+            var driver_label = document.getElementById('driverLabel');
+			if (val != 'All Sponsors') {
+                removeAll(driver_elm);
+				driver_elm.removeAttribute('hidden');
+				driver_label.removeAttribute('hidden');
+                //driver_select.empty();
+                for(let i = 0; i < driverList.length; i++){
+                    if(driverList[i]['sponsor'] == val){
+                        if(first) {
+                            let opt = document.createElement('option');
+                            let optionText = document.createTextNode('All Drivers');
+                            opt.appendChild(optionText);
+                            opt.setAttribute('value', 'All Drivers');
+                            driver_select.appendChild(opt);
+                            first = false;
+                        }
+                        let opt = document.createElement('option');
+                        let optionText = document.createTextNode(driverList[i]['name']);
+                        opt.appendChild(optionText);
+                        opt.setAttribute('value', getDriverID(driverList[i]['name']));
+                        driver_select.appendChild(opt);
+                    }
+                }
+
+			}
+			else {
+				
+				driver_elm.setAttribute('hidden', 'hidden');
+                driver_label.setAttribute('hidden', 'hidden');
+			}
+		}
+       
+	</script>
+
 </head>
-<body>
+<body onbeforeunload="CheckSponsorWrap()">
+    {% include 'top_buttons.html' %}
     <div class="driverSales">
         <form method="post">
+            {% csrf_token %}
             <h2 class="title"> Sales by Driver Report </h2>
-            <div class="driverOptions">
-                <label class="driverListTitle">Drivers:</label>
-                <select class="formatting" multiple>
-                    <option>Josiah</option>
-                    <option>Kevin</option>
+            <div class="sponsorOptions">
+                {{form}}
+            </div>            
+            <br>
+            <div class="driverOptions" id="driverOptions">
+                <label id="driverLabel" for="driverChoice" hidden="hidden">Driver's Name:</label>
+                <select id = 'driverChoice' name='driverChoice' class="driverChoice"  hidden="hidden">
                 </select>
             </div>            
             <br>
             <div class="dates" style="text-align: center; width: 300px;">
                 <div>
                     <label class="start">Start Date: </label>
-                    <input type="date" class="start" size="50">
+                    <input type="date" class="start" size="50" name="start_date">
                 </div>
                 <div>
                     <label class="end">End Date: </label>
-                    <input type="date" class="end" size="50">
+                    <input type="date" class="end" size="50" name="end_date">
                 </div>
             </div>            
             <br>
-            <input type="submit" class="download" value="Download" > 
+            <input type="submit" class="download" value="Generate Report" > 
+            <div style="text-align: center; padding:15px">
+                {% for message in messages %}
+                <div role="alert" style="color:rgb(255,0,0);">
+                  {{message}}
+                </div>
+                {% endfor %}
+            </div>
 
         </form>
     </div>
 
-    <div class="home">
-        <img src="{% static 'images/home.png' %}" alt="My Image" >
-    </div>
-
-    <div class="switchView">
-        <input type="button" value="Light Mode"/>
-        <input type="button" value="Dark Mode"/>
-    </div>
 </body>
 </html>

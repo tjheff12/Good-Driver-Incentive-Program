@@ -22,10 +22,10 @@
         <br>
         <br>
         <input type="button" class="button" value="Return Home" onclick="window.location.href='/home'"/>
-        <div >
+        <div style="text-align: center; padding:15px">
             {% for message in messages %}
-            <div role="alert">
-                {{message}}
+            <div role="alert" style="color:rgb(255,0,0);">
+              {{message}}
             </div>
             {% endfor %}
         </div>

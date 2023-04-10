@@ -10,29 +10,24 @@
     <title>AdminReport</title> 
 </head>
 <body>
-    <div class="adminReport">
-        <form method="post">
-            <h2 class="title"> Admin Report </h2>
-            <a href='sponsorSales'><input type="button" class="buttonFormat" value="Sales by Sponsor"/></a>
-            <br>
-            <br>
-            <a href='driverSales'><input type="button" class="buttonFormat" value="Sales by Driver"/></a>
-            <br>
-            <br>
-            <a href='invoice'><input type="button" class="buttonFormat" value="Invoice"/></a>
-            <br>
-            <br>
-            <a href='audit'><input type="button" class="buttonFormat" value="Audit Log"/></a>
-        </form>
-    </div>
+    {% include 'top_buttons.html' %}
+    <div>
+        <div class="adminReport">
+            <form method="post">
+                <h2 class="title"> Admin Report </h2>
+                <a href='sponsorSales'><input type="button" class="buttonFormat" value="Sales by Sponsor"/></a>
+                <br>
+                <br>
+                <a href='driverSales'><input type="button" class="buttonFormat" value="Sales by Driver"/></a>
+                <br>
+                <br>
+                <a href='invoice'><input type="button" class="buttonFormat" value="Invoice"/></a>
+                <br>
+                <br>
+                <a href='audit'><input type="button" class="buttonFormat" value="Audit Log"/></a>
+            </form>
+        </div>
 
-    <div class="home">
-        <img src="{% static 'images/home.png' %}" alt="My Image" >
-    </div>
-
-    <div class="switchView">
-        <input type="button" value="Light Mode"/>
-        <input type="button" value="Dark Mode"/>
     </div>
 </body>
 </html>

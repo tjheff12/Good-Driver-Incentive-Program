@@ -10,19 +10,12 @@
     <title>Invoice</title> 
 </head>
 <body>
+    {% include 'top_buttons.html' %}
     <div class="invoice">
         <form method="post">
             <h2 class="title"> Invoice Report </h2>
             <div class="sponsorOptions">
-                <label class="sponsorListTitle">Sponsors:</label>
-                <select class="formatting" multiple>
-                    <option>Josiah</option>
-                    <option>Kevin</option>
-                    <option>Kevin</option>
-                    <option>Kevin</option>
-                    <option>Kevin</option>
-                    <option>Kevin</option>
-                </select>
+                {{form}}
             </div>            
             <br>
             <div class="dates" style="text-align: center; width: 300px;">
@@ -37,17 +30,15 @@
             </div>            
             <br>
             <input type="submit" class="download" value="Download" > 
-
+            <div style="text-align: center; padding:15px">
+                {% for message in messages %}
+                <div role="alert" style="color:rgb(255,0,0);">
+                  {{message}}
+                </div>
+                {% endfor %}
+            </div>
         </form>
     </div>
 
-    <div class="home">
-        <img src="{% static 'images/home.png' %}" alt="My Image" >
-    </div>
-
-    <div class="switchView">
-        <input type="button" value="Light Mode"/>
-        <input type="button" value="Dark Mode"/>
-    </div>
 </body>
 </html>

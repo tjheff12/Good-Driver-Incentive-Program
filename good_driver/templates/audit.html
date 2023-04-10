@@ -11,6 +11,7 @@
 </head>
 <body>
     <div class="audit">
+        {% include 'top_buttons.html' %}
         <form method="post">
             <h2 class="title"> Sales by Sponsor Report </h2>
             <div class="sponsorOptions">
@@ -45,13 +46,5 @@
         </form>
     </div>
 
-    <div class="home">
-        <img src="{% static 'images/home.png' %}" alt="My Image" >
-    </div>
-
-    <div class="switchView">
-        <input type="button" value="Light Mode"/>
-        <input type="button" value="Dark Mode"/>
-    </div>
 </body>
 </html>

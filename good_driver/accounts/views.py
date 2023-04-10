@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
-from django.db.models import Q
+from django.db.models import Q, Sum
 from datetime import datetime
 from . import backends
 from . import models
@@ -85,7 +85,9 @@ def login(request):
             messages.info(request, message)
             return redirect(login)
     elif request.method == "GET":
-        
+        if request.user.is_anonymous == False:
+            messages.info(request, "Already logged in")
+            return redirect(user_profile)
         return render(request, 'registration/login.html')
 
 def get_trailing_number(s):
@@ -180,10 +182,10 @@ def pointChange(request):
                 id = driver.user.user_id
                 name = driver.user.first_name + " " + driver.user.last_name
                 driver_list.append({'Name':name, 'id':id})
-            print(driver_list)
+            
             return render(request, 'pointChange.html', {'driver_list': driver_list})
         elif request.method == "POST":
-            print(request.POST)
+           
             user_sponsor_obj = models.SponsorUser.objects.get(user_id=request.user.user_id)
             sponsor_id = getattr(user_sponsor_obj, 'sponsor_id')
             point_amount = request.POST['point_amount']
@@ -199,7 +201,7 @@ def pointChange(request):
             else:
                 messages.info(request,"Points Added")
             
-            print(point_amount)
+            
             new_point_history = models.PointsHistory(user=models.Users.objects.get(user_id = request.POST['driver_id']), sponsor=models.Sponsor.objects.get(sponsor_id=sponsor_id), point_change=point_amount, date_time=datetime.utcnow(), reason=reasoning)
             new_point_history.save()
             
@@ -323,7 +325,7 @@ def admin_create_account(request):
                         adminUser = models.AdminUser(user=user)
                         adminUser.save()
                     elif user.user_type == 'Sponsor':
-                        print('here')
+                        
                         sponsor = request.POST['sponsor']
                         # Check if the organization exists
                         if models.Sponsor.objects.filter(name=sponsor).exists():
@@ -654,7 +656,7 @@ def sponsor_add_driver(request):
 
                     # Get user just created, and create a new entry matching it inside the Driver_Sponsor table
                     driverSponsor = models.DriverSponsor(user=user, sponsor=Sponsor)
-                    print(driverSponsor)
+                    
                     driverSponsor.save()
                     
                     return redirect('done')
@@ -746,10 +748,9 @@ def application(request):
             
             return render(request, 'application.html', {'app_list': list_of_apps, 'sponsor_name':sponsor_name})
         elif request.method == "POST":
-            print(request.POST)
+            
             application_obj = models.DriverApplication.objects.select_related('sponsor').get(application_id=request.POST['application_id'])
-            print(application_obj.driver)
-            print(application_obj.sponsor)
+            
             if(request.POST['decision'] == "Accept"):
                 new_DriverSponsor = models.DriverSponsor(user=application_obj.driver, sponsor=application_obj.sponsor)
                 new_DriverSponsor.save()
@@ -774,17 +775,186 @@ def driverManagement(request):
     return render(request, 'driverManagement.html')
 
 def pointTracking(request):
-    
-    return render(request, 'pointTracking.html')
-
+    if request.user.is_anonymous == True:
+        return redirect(login)
+    elif request.user.user_type == "Sponsor":
+        if request.method == "GET":
+            return render(request, 'pointTracking.html')
+    raise Http404
 def driverSales(request):
-    return render(request, 'driverSales.html')
+    import json
+    if request.user.is_anonymous == True:
+        return redirect(login)
+    elif request.user.user_type != "Admin":
+        raise PermissionDenied
+    if request.method == "GET":
+        form = forms.SponsorFormWithAllOption()
+        driverQuery = models.DriverSponsor.objects.select_related('user', 'sponsor').all()
+        driverList = []
+        driverIDs = []
+        for driver in driverQuery:
+            new_dict = {'name': driver.user.first_name + " " + driver.user.last_name, 'sponsor': driver.sponsor.name}
+            id_dict = {'name': driver.user.first_name + " " + driver.user.last_name, 'id': driver.user.user_id}
+            driverList.append(new_dict)
+            if id_dict not in driverIDs:
+                driverIDs.append(id_dict)
+        
+        return render(request, 'driverSales.html', {'form':form,'driverList': json.dumps(driverList), 'idList':json.dumps(driverIDs)})
+    elif request.method == "POST":
+        
+        ## Sanity checks
+        if(request.POST['start_date'] == ''):
+            messages.info(request, 'Please Enter a Start Date')
+            return redirect('.')
+        if(request.POST['end_date'] == ''):
+            messages.info(request, 'Please Enter an End Date')
+            return redirect('.')
+        if(request.POST['end_date'] < request.POST['start_date']):
+            messages.info(request, 'End Date must be after Start Date')
+            return redirect('.')
+        ##Start of actual code
+        
+        
+        if(request.POST['sponsor_name'] == 'All Sponsors'):
+            driver_name = "none"
+            order_query = models.Orders.objects.select_related('sponsor', 'user').filter(date_time__range=(request.POST['start_date'],request.POST['end_date'])).order_by("sponsor")
+            total_orders = len(order_query)
+            total_price = round(models.Orders.objects.filter(date_time__range=(request.POST['start_date'],request.POST['end_date'])).aggregate(price__sum = Sum('price', filter=~Q(status='Cancelled')))['price__sum'], 2)
+            order_list = []
+            for order in order_query:
+                sponsor = order.sponsor.name
+                item_name = order.item_name
+                points = order.points
+                price = order.price
+                status = order.status
+                date_time = order.date_time
+                user = order.user.first_name + " " + order.user.last_name
+                new_dict = {'item_name':item_name, 'points':points,'price':price,'status':status,'date_time':date_time, 'sponsor':sponsor, 'user':user}
+                order_list.append(new_dict)
+            
+            return render(request, 'driverSalesReport.html', {'report_list': order_list, 'summary':{'total_price':total_price,'total_orders':total_orders}, 'sponsor_name':request.POST['sponsor_name']})
+        else:
+            driver_name = request.POST['driverChoice']
+            if(request.POST['driverChoice'] == 'All Drivers'):
+                
+                sponsor_obj = models.Sponsor.objects.get(name=request.POST['sponsor_name'])
+                order_query = models.Orders.objects.select_related('user').filter(sponsor=sponsor_obj, date_time__range=(request.POST['start_date'],request.POST['end_date'])).order_by("-date_time")
+                ## gets number of rows in query
+                total_orders = len(order_query)
+                print("Total orders are ", end='')
+                print(total_orders)
+                ## needs the dictionary dereference. This is a complex aggregate which returns a dictionary that is rounded to get the final price
+                if total_orders != 0:
+                    total_price = round(models.Orders.objects.filter(sponsor=sponsor_obj, date_time__range=(request.POST['start_date'],request.POST['end_date'])).aggregate(price__sum = Sum('price', filter=~Q(status='Cancelled')))['price__sum'], 2)
+                else:
+                    total_price = 0
+                order_list = []
+                for order in order_query:
+                    item_name = order.item_name
+                    points = order.points
+                    price = order.price
+                    status = order.status
+                    date_time = order.date_time
+                    user = order.user.first_name + " " + order.user.last_name
+                    new_dict = {'item_name':item_name, 'points':points,'price':price,'status':status,'date_time':date_time, 'user':user}
+                    order_list.append(new_dict)
+            else:
+                sponsor_obj = models.Sponsor.objects.get(name=request.POST['sponsor_name'])
+                
+                user_obj = models.Users.objects.get(user_id=request.POST['driverChoice'])
+                order_query = models.Orders.objects.select_related('user').filter(sponsor=sponsor_obj, user=user_obj, date_time__range=(request.POST['start_date'],request.POST['end_date'])).order_by("-date_time")
+                ## gets number of rows in query
+                total_orders = len(order_query)
+                print("Total orders are ", end='')
+                print(total_orders)
+                ## needs the dictionary dereference. This is a complex aggregate which returns a dictionary that is rounded to get the final price
+                if total_orders != 0:
+                    
+                    total_price = round(models.Orders.objects.filter(sponsor=sponsor_obj, user=user_obj, date_time__range=(request.POST['start_date'],request.POST['end_date'])).aggregate(price__sum = Sum('price', filter=~Q(status='Cancelled')))['price__sum'], 2)
+                else:
+                    total_price = 0
+                order_list = []
+                for order in order_query:
+                    item_name = order.item_name
+                    points = order.points
+                    price = order.price
+                    status = order.status
+                    date_time = order.date_time
+                    user = order.user.first_name + " " + order.user.last_name
+                    new_dict = {'item_name':item_name, 'points':points,'price':price,'status':status,'date_time':date_time, 'user':user}
+                    order_list.append(new_dict)
+        return render(request, 'driverSalesReport.html', {'report_list': order_list, 'summary':{'total_price':total_price,'total_orders':total_orders}, 'sponsor_name':request.POST['sponsor_name'], 'driver_name':driver_name})
+
 
 def sponsorSales(request):
-    return render(request, 'sponsorSales.html')
+    if request.user.is_anonymous == True:
+        return redirect(login)
+    elif request.user.user_type != "Admin":
+        raise PermissionDenied
+    if request.method == "GET":
+        form = forms.SponsorFormWithAllOption()
+        return render(request, 'sponsorSales.html', {'form':form})
+    elif request.method == "POST":
+        print(request.POST)
+        ## Sanity checks
+        if(request.POST['start_date'] == ''):
+            messages.info(request, 'Please Enter a Start Date')
+            return redirect('.')
+        if(request.POST['end_date'] == ''):
+            messages.info(request, 'Please Enter an End Date')
+            return redirect('.')
+        if(request.POST['end_date'] < request.POST['start_date']):
+            messages.info(request, 'End Date must be after Start Date')
+            return redirect('.')
+        if(request.POST['sponsor_name'] == 'All Sponsors'):
+            order_query = models.Orders.objects.select_related('sponsor').filter(date_time__range=(request.POST['start_date'],request.POST['end_date'])).order_by("sponsor")
+            total_orders = len(order_query)
+            if total_orders != 0:
+                total_price = round(models.Orders.objects.filter( date_time__range=(request.POST['start_date'],request.POST['end_date'])).aggregate(price__sum = Sum('price', filter=~Q(status='Cancelled')))['price__sum'], 2)
+            else:
+                total_price = 0
+            order_list = []
+            for order in order_query:
+                sponsor = order.sponsor.name
+                item_name = order.item_name
+                points = order.points
+                price = order.price
+                status = order.status
+                date_time = order.date_time
+                new_dict = {'item_name':item_name, 'points':points,'price':price,'status':status,'date_time':date_time, 'sponsor':sponsor}
+                order_list.append(new_dict)
+            #messages.info(request, 'Working on it')
+            return render(request, 'sponsorSalesReport.html', {'report_list': order_list, 'summary':{'total_price':total_price,'total_orders':total_orders}, 'sponsor_name':request.POST['sponsor_name']})
+        else:
+            sponsor_obj = models.Sponsor.objects.get(name=request.POST['sponsor_name'])
+            order_query = models.Orders.objects.filter(sponsor=sponsor_obj, date_time__range=(request.POST['start_date'],request.POST['end_date'])).order_by("-date_time")
+            ## gets number of rows in query
+            total_orders = len(order_query)
+            ## needs the dictionary dereference. This is a complex aggregate which returns a dictionary that is rounded to get the final price
+            if total_orders != 0:
+                total_price = round(models.Orders.objects.filter(sponsor=sponsor_obj, date_time__range=(request.POST['start_date'],request.POST['end_date'])).aggregate(price__sum = Sum('price', filter=~Q(status='Cancelled')))['price__sum'], 2)
+            else:
+                total_price = 0
+            order_list = []
+            for order in order_query:
+                item_name = order.item_name
+                points = order.points
+                price = order.price
+                status = order.status
+                date_time = order.date_time
+                new_dict = {'item_name':item_name, 'points':points,'price':price,'status':status,'date_time':date_time}
+                order_list.append(new_dict)
+
+        return render(request, 'sponsorSalesReport.html', {'report_list': order_list, 'summary':{'total_price':total_price,'total_orders':total_orders}, 'sponsor_name':request.POST['sponsor_name']})
 
 def invoice(request):
-    return render(request, 'invoice.html')
+    if request.user.is_anonymous == True:
+        return redirect(login)
+    elif request.user.user_type != "Admin":
+        raise PermissionDenied
+    if request.method == "GET":
+        form = forms.SponsorFormWithAllOption()
+        return render(request, 'invoice.html', {'form':form})
 
 def audit(request):
     if request.user.is_anonymous == True:
@@ -874,6 +1044,13 @@ def sponsorReport(request):
 def adminReport(request):
     return render(request, 'adminReport.html')
 
+def report(request):
+    if request.user.is_anonymous == True:
+        return redirect(login)
+    if request.user.user_type == "Sponsor":
+        return render(request, 'sponsorReport.html')
+    if request.user.user_type == "Admin":
+        return render(request, 'adminReport.html')
 def adminInfo(request):
     return render(request, 'adminInfo.html')
 
@@ -909,7 +1086,7 @@ def sponsor_see_all_drivers(request):
         elif request.method == "POST":
             return None
 
-import csv
+
 def pointChangeAudit(request):
     if request.user.is_anonymous == True:
         raise FileNotFoundError
@@ -965,7 +1142,7 @@ def admin_edit_account(request):
     if  request.user.is_anonymous == True or (request.user.user_type != "Admin" and request.user.user_type != "Sponsor"):
         raise PermissionDenied
 
-    print('User ID:', request.user.user_id)
+    #print('User ID:', request.user.user_id)
 
     both_forms = {"form1": forms.getDriverEmail, "form2": forms.getDriverInfo}
 
@@ -1016,7 +1193,7 @@ def admin_edit_account(request):
         #  If the "Update Provided Fields" button is pressed
         #
         elif 'updateInfo' in request.POST:
-            print('Updating info')
+            #print('Updating info')
             #get form submission data
 
             first_name = request.POST['first_name']
@@ -1062,7 +1239,7 @@ def catalog(request):
             for obj in driver_sponsor_query:
                 sponsor_list.append(obj.sponsor.name)
             
-            print(sponsor_list)
+            #print(sponsor_list)
             return render(request, 'catalog.html', {'sponsor_list':sponsor_list})
         elif request.method == "POST" and 'sponsor_name' in request.POST:
             url = './' + request.POST['sponsor_name'] + '/catalogOverview/pageNum=1'
@@ -1074,7 +1251,7 @@ def catalog(request):
             for obj in driver_sponsor_query:
                 sponsor_list.append(obj.sponsor.name)
             
-            print(sponsor_list)
+            #print(sponsor_list)
             messages.info(request, 'An Invalid Organization Was Chosen!')
             return render(request, 'catalog.html', {'sponsor_list':sponsor_list})
     elif request.user.user_type == "Sponsor":
@@ -1099,8 +1276,11 @@ def catalog_overview(request, sponsor, pageNum=1, search="search"):
         
         sponsor_obj = models.Sponsor.objects.get(name=sponsor)
         conversion_rate = sponsor_obj.point_value
-        points_obj = models.Points.objects.get(user=request.user, sponsor=sponsor_obj)
-        current_points = points_obj.point_total
+        try:
+            points_obj = models.Points.objects.get(user=request.user, sponsor=sponsor_obj)
+            current_points = points_obj.point_total
+        except:
+            current_points = 0
         results_tuple = search_ebay_products(search, pageNum)
 
         sponsor_entity = models.Sponsor.objects.get(name=sponsor)
@@ -1137,7 +1317,7 @@ def catalog_overview(request, sponsor, pageNum=1, search="search"):
             messages.info(request, 'An Invalid Organization Was Chosen!')
             return redirect(catalog)
 
-        print(search)
+        #print(search)
         results_tuple = search_ebay_products(search, pageNum)
 
         sponsor_entity = models.Sponsor.objects.get(name=sponsor)
@@ -1199,7 +1379,7 @@ def order_item(request, sponsor):
         raise Http404
     elif request.method == "POST":
         if request.user.user_type == "Driver":
-            print(request.POST)
+            #print(request.POST)
             user=request.user
             sponsor_obj = models.Sponsor.objects.get(name=sponsor)
             sponsor_id = sponsor_obj.sponsor_id
@@ -1264,7 +1444,7 @@ def order(request):
                 sponsor = entry.sponsor.name
                 new_dict = {'date':date, 'status':status,'points':points, 'item_id':item_id, 'sponsor':sponsor, 'order_id':order_id, 'item_name':item_name}
                 curr_order_list.append(new_dict)
-            print(curr_order_list)
+            #print(curr_order_list)
             for entry in completed_order_query:
                 order_id = entry.order_id
                 date = entry.date_time

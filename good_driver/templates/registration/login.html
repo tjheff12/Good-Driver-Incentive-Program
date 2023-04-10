@@ -13,7 +13,7 @@
 
 <body>
     {% include 'top_buttons.html' %}
-    <div class="header_padding">
+    <div>
         <div class="login" style="text-align: center;">
             <form method="post">
                 {% csrf_token %}
@@ -30,8 +30,8 @@
                 <br>
                 <br>
                 <a href="../register" role="button">Create Account</a>
-                <a role="button">Reset Password</a>
-                <a href="../logout" role="button">Got to Logout</a>
+                <a href="../resetPassword" role="button">Reset Password</a>
+                
                 <br>
                 <br>
                 <div>

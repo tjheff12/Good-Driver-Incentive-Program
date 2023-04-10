@@ -1,4 +1,4 @@
-</style>
+
 <!DOCTYPE html>
 <html lang="en">
 {% load static %}
@@ -7,43 +7,42 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SponsorSale</title> 
+    <title>Sales Report</title> 
 </head>
 <body>
+    {% include 'top_buttons.html' %}
     <div class="sponsorSales">
         <form method="post">
+            {% csrf_token %}
             <h2 class="title"> Sales by Sponsor Report </h2>
             <div class="sponsorOptions">
-                <label class="sponsorListTitle">Sponsor:</label>
-                <select class="formatting" multiple>
-                    <option>Josiah</option>
-                    <option>Kevin</option>
-                </select>
+                {{form}}
             </div>            
             <br>
             <div class="dates" style="text-align: center; width: 300px;">
                 <div>
                     <label class="start">Start Date: </label>
-                    <input type="date" class="start" size="50">
+                    <input type="date" class="start" size="50" name="start_date">
                 </div>
                 <div>
                     <label class="end">End Date: </label>
-                    <input type="date" class="end" size="50">
+                    <input type="date" class="end" size="50" name="end_date">
                 </div>
             </div>            
             <br>
-            <input type="submit" class="download" value="Download" > 
-
+            <input type="submit" class="download" value="Generate Report" > 
+            <div style="text-align: center; padding:15px">
+                {% for message in messages %}
+                <div role="alert" style="color:rgb(255,0,0);">
+                  {{message}}
+                </div>
+                {% endfor %}
+            </div>
         </form>
+        
     </div>
 
-    <div class="home">
-        <img src="{% static 'images/home.png' %}" alt="My Image" >
-    </div>
-
-    <div class="switchView">
-        <input type="button" value="Light Mode"/>
-        <input type="button" value="Dark Mode"/>
-    </div>
+    
+    
 </body>
 </html>

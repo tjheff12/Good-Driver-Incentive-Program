@@ -1,0 +1,131 @@
+
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<link rel="stylesheet" href="{% static 'sponsorSales.css' %}">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Report</title> 
+    <style>
+        th, td{
+        padding:15px;
+        border:3px solid black;
+        
+    }
+    
+    h1,h2{
+        text-align: center;
+    }
+    
+    table{
+        margin-left: auto;
+        margin-right: auto;
+        
+        border-collapse: collapse;
+    }
+    </style>
+    <script>
+        function downloadCSV(csv, filename) {
+            var csvFile;
+            var downloadLink;
+
+            // CSV file
+            csvFile = new Blob([csv], {type: "text/csv"});
+
+            // Download link
+            downloadLink = document.createElement("a");
+
+            // File name
+            downloadLink.download = filename;
+
+            // Create a link to the file
+            downloadLink.href = window.URL.createObjectURL(csvFile);
+
+            // Hide download link
+            downloadLink.style.display = "none";
+
+            // Add the link to DOM
+            document.body.appendChild(downloadLink);
+
+            // Click download link
+            downloadLink.click();
+        }
+        function exportTableToCSV(filename) {
+            var csv = [];
+            var rows = document.querySelectorAll("table tr");
+            
+            for (var i = 0; i < rows.length; i++) {
+                var row = [], cols = rows[i].querySelectorAll("td, th");
+                
+                for (var j = 0; j < cols.length; j++) 
+                    row.push("\"" + cols[j].innerText + "\"");
+                
+                csv.push(row.join(","));        
+            }
+
+            // Download CSV file
+            downloadCSV(csv.join("\n"), filename);
+        }
+    </script>
+</head>
+<body>
+    {% include 'top_buttons.html' %}
+    <div class="header_padding">
+        
+        {% if report_list %}
+        <h2>Summary for {{sponsor_name}}</h2>
+        <table>
+            <tr>
+                <th>Number of Orders</th>
+                <th>Total Cost</th>
+            </tr>
+            <tr>
+                <td>{{summary.total_orders}}</td>
+                <td>${{summary.total_price}}</td>
+            </tr>
+        </table>
+        <h2>{{sponsor_name}}'s Orders</h2>
+        <table>
+            <tr>
+                {% if sponsor_name == 'All Sponsors' %}
+                <th>Sponsor</th>
+                {%endif%}
+                
+                <th>Driver</th>
+                <th>Time of Order</th>
+                <th>Item Name</th>
+                <th>Point Total</th>
+                <th>Price</th>
+                <th>Status</th>
+                
+            </tr>
+            {% for entry in report_list %}
+                <tr>
+                    {% if sponsor_name == 'All Sponsors' %}
+                    <td>{{entry.sponsor}}</td>
+                    {%endif%}
+                    <td>{{entry.user}}</td>
+                    <td>{{entry.date_time}}</td>
+                    <td>{{entry.item_name}}</td>
+                    <td>{{entry.points}}</td>
+                    <td>{{entry.price}}</td>
+                    <td>{{entry.status}}</td>
+                </tr>
+            {% endfor %}
+        </table>
+        <br>
+        <div style="text-align: center;">
+            <button onclick="exportTableToCSV('Sales by {{sponsor_name}} Drivers Report.csv')">Download Report</button>
+        </div>
+        {% else %}
+        
+        <h2 style="text-align:center">No Orders</h2>
+        {% endif %}
+        </div>
+    </div>
+    
+    
+</body>
+</html>
