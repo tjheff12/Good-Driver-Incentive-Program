@@ -337,12 +337,7 @@ def admin_create_account(request):
 
                         sponsorUser = models.SponsorUser(user=user, sponsor=organization)
                         sponsorUser.save()
-                    elif user.user_type == 'Driver':
-                        # HAD TO MAKE sponsor=-1 SINCE WE SHOULDNT EVEN HAVE THAT FIELD (USELESS)
-                        driverUser = models.DriverUser(user=user, sponsor_id=-1)
-                        driverUser.save()
-                        '''driverSponsorCombo = models.DriverSponsor(user=driverUser, sponsor=Sponsor)
-                        driverSponsorCombo.save()'''
+                    
 
                     return redirect('done')
             else:
@@ -410,8 +405,7 @@ def admin_delete_account(request):
                         models.DriverSponsor.objects.filter(user=User).delete()
                     if models.Points.objects.filter(user=User).exists():
                         models.Points.objects.filter(user=User).delete()
-                    if models.DriverUser.objects.get(user=User).exists():
-                        models.DriverUser.objects.get(user=User).delete()
+                    
 
                 # Delete from base Users table
                 User.delete()
@@ -593,12 +587,12 @@ def sponsor_remove_driver(request):
             username = request.POST['username']
 
             # Checks that this user even exists within the shared table | Also counts as a check that the user is of "Driver" considering only drivers should be in this table
-            if models.Users.objects.filter(email=username).exists() and models.DriverUser.objects.filter(user=models.Users.objects.get(email=username)).exists():
-                # Gets the DriverUser object for the specified person
-                User = models.DriverUser.objects.get(user=models.Users.objects.get(email=username))
+            if models.Users.objects.filter(email=username).exists():
+          
+                
                 # Gets the User object for the requester (Sponsor user, not typed tho; just plain User)
                 RequestingUser = models.Users.objects.get(email=request.user.email)
-
+                User = RequestingUser
                 # Make sure that exisiting user that sponsor wants to remove is within THEIR organization already
                 #    by checking the bridge table entity Driver_Sponsor
                 if not models.DriverSponsor.objects.filter(user=User, sponsor=models.SponsorUser.objects.get(user=RequestingUser).sponsor).exists():
@@ -1174,8 +1168,8 @@ def admin_edit_account(request):
                 target = target_user_queryset[0]
 
                 #if the requested driver exists, find their sponsor_id
-                if models.DriverUser.objects.filter(user_id=target['user_id']).exists():
-                    target_sponsor_id = models.DriverUser.objects.filter(user_id=target['user_id']).values('sponsor_id')[0]['sponsor_id']
+                if models.DriverSponsor.objects.filter(user_id=target['user_id']).exists():
+                    target_sponsor_id = models.DriverSponsor.objects.filter(user_id=target['user_id']).values('sponsor_id')[0]['sponsor_id']
 
             #get the sponsor ID for the logged in user
             if models.SponsorUser.objects.filter(user_id=request.user.user_id).exists():
