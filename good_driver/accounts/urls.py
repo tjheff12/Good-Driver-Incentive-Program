@@ -115,4 +115,5 @@ urlpatterns = [
 
     path('adminInfo/', views.adminInfo, name='adminInfo'),
     #path("home", views.home, name="home")
+    path('', views.home, name='home'),
 ]
