@@ -9,42 +9,99 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Audit</title> 
 </head>
+{% if user.user_type == 'Sponsor' %}
 <body>
-    <div class="audit">
-        {% include 'top_buttons.html' %}
-        <form method="post">
-            <h2 class="title"> Sales by Sponsor Report </h2>
-            <div class="sponsorOptions">
-                <label class="sponsorListTitle">Sponsors:</label>
-                <select class="formatting" multiple>
-                    <option>Josiah</option>
-                    <option>Kevin</option>
-                </select>
-            </div>            
-            <br>
-            <div class="dates" style="text-align: center; width: 300px;">
-                <div>
-                    <label class="start">Start Date: </label>
-                    <input type="date" class="start" size="50" name="start_date">
+    {% include 'top_buttons.html' %}
+    <div class='header_padding'>
+        <div class="audit">
+            <form method="post">
+                {% csrf_token %}
+                <h2 class="title"> Audit Report </h2>
+                <div class="dates" style="text-align: center; width: 300px;">
+                    <div>
+                        <label class="start">Start Date: </label>
+                        <input type="date" class="start" size="50" name="start_date">
+                    </div>
+                    <div>
+                        <label class="end">End Date: </label>
+                        <input type="date" class="end" size="50" name="end_date">
+                    </div>
                 </div>
-                <div>
-                    <label class="end">End Date: </label>
-                    <input type="date" class="end" size="50" name="end_date">
+                <br>
+                <div class="categoryOptions">
+                    <label class="categoryListTitle">Category:</label>
+                    <select class="options" name="options">
+                        <option value="password_change">Password Change</option>
+                        <option value="login_attempt">Login Attempt</option>
+                        <option value="point_change">Point Change</option>
+                        <option value="driver_application">Driver Application</option>
+                    </select>
+                </div>        
+                <br>      
+                <input type="submit" class="download" value="Download" > 
+                <br>
+                {% for message in messages %}
+                <div role="alert" style="color:rgb(255,0,0);">
+                    {{message}}
                 </div>
-            </div>
-            <br>
-            <div class="categoryOptions">
-                <label class="categoryListTitle">Category:</label>
-                <select class="formatting">
-                    <option>Josiah</option>
-                    <option>Kevin</option>
-                </select>
-            </div>        
-            <br>      
-            <input type="submit" class="download" value="Download" > 
+                {% endfor %}
 
-        </form>
+            </form>
+        </div>
     </div>
-
 </body>
+{% endif %}
+{%if user.user_type == 'Admin' %}
+<body>
+    {% include 'top_buttons.html' %}
+    <div class='header_padding'>
+        <div class="audit">
+            <form method="post">
+                {% csrf_token %}
+                <h2 class="title"> Audit Report </h2>
+                <div class="dates" style="text-align: center; width: 300px;">
+                    <div>
+                        <label class="start">Start Date: </label>
+                        <input type="date" class="start" size="50" name="start_date">
+                    </div>
+                    <div>
+                        <label class="end">End Date: </label>
+                        <input type="date" class="end" size="50" name="end_date">
+                    </div>
+                </div>
+                <br>
+                <center>
+                    <select name="sponsor_list">
+                        <option value="">--Select--</option>
+                        <option value="all">All Drivers</option>
+                        <option value="sponsor1">Sponsor 1</option>
+                        <option value="sponsor2">Sponsor 2</option>
+                        <option value="sponsor3">Sponsor 3</option>
+                    </select>
+                </center>
+                <br>
+                <div class="categoryOptions">
+                    <label class="categoryListTitle">Category:</label>
+                    <select class="options" name="options">
+                        <option value="password_change">Password Change</option>
+                        <option value="login_attempt">Login Attempt</option>
+                        <option value="point_change">Point Change</option>
+                        <option value="driver_application">Driver Application</option>
+                    </select>
+                </div>        
+                <br>      
+                <input type="submit" class="download" value="Download" > 
+                <br>
+                <center>
+                    {% for message in messages %}
+                    <div role="alert" style="color:rgb(255,0,0);">
+                        {{message}}
+                    </div>
+                    {% endfor %}
+                </center>
+            </form>
+        </div>
+    </div>
+</body>
+{% endif %}
 </html>

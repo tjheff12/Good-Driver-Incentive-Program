@@ -10,7 +10,6 @@
     <title>SponsorReport</title> 
 </head>
 <body>
-    {% include 'top_buttons.html' %}
     <div class="sponsorReport">
         <form method="post">
             <h2 class="title"> Sponsor Report </h2>
@@ -18,17 +17,16 @@
             <br>
             <br>
             <a href='audit'><input type="button" class="buttonFormat" value="Audit Log"/></a>
-            <div style="text-align: center; padding:15px">
-                {% for message in messages %}
-                <div role="alert" style="color:rgb(255,0,0);">
-                  {{message}}
-                </div>
-                {% endfor %}
-            </div>
         </form>
     </div>
 
-    
-    
+    <!---<div class="home">
+        <img src="{% static 'images/home.png' %}" alt="My Image" >
+    </div> -->
+
+    <div class="switchView">
+        <input type="button" value="Light Mode"/>
+        <input type="button" value="Dark Mode"/>
+    </div>
 </body>
 </html>

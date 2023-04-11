@@ -12,19 +12,13 @@
 <body>
     <div class="pointTracking">
         <form method="post">
-            <h2 class="title"> Driver Point Tracking Report </h2>
-            <div class="driverOptions">
-                <label class="driverListTitle">Drivers:</label>
-                <select class="formatting" multiple>
-                    <option>Josiah</option>
-                    <option>Kevin</option>
-                </select>
-            </div>            
+            {% csrf_token %}
+            <h2 class="title"> Driver Point Tracking Report </h2>         
             <br>
             <div class="dates" style="text-align: center; width: 300px;">
                 <div>
                     <label class="start">Start Date: </label>
-                    <input type="date" class="start" size="50">
+                    <input type="date" class="start" size="50" name="start_date" name="end_date">
                 </div>
                 <div>
                     <label class="end">End Date: </label>
@@ -32,18 +26,33 @@
                 </div>
             </div>            
             <br>
+            <center>
+                <select name="driver_list">
+                    <option value="">--Select--</option>
+                    <option value="all">All Drivers</option>
+                    <option value="driver1">Driver 1</option>
+                    <option value="driver2">Driver 2</option>
+                    <option value="driver3">Driver 3</option>
+                </select>
+            </center>
+            <br>
             <input type="submit" class="download" value="Download" > 
-
+            <br>
+            {% for message in messages %}
+            <div role="alert" style="color:rgb(255,0,0);">
+                {{message}}
+            </div>
+            {% endfor %}
         </form>
     </div>
 
-    <div class="home">
+    <!--<div class="home">
         <img src="{% static 'images/home.png' %}" alt="My Image" >
     </div>
 
     <div class="switchView">
         <input type="button" value="Light Mode"/>
         <input type="button" value="Dark Mode"/>
-    </div>
+    </div>-->
 </body>
 </html>

@@ -18,6 +18,10 @@ table{
     
     border-collapse: collapse;
 }
+.download {
+    display: block;
+    margin: 0 auto;
+}
 </style>
 <head>
 
@@ -46,9 +50,11 @@ table{
             </tr>
         {% endfor %}
     </table>
+    <br>
+    <input type="submit" class="download" value="Download" > 
     {% else %}
     
-    <h2 style="text-align:center">N/A</h2>
+    <h2>N/A</h2>
     {% endif %}
     </div>
     

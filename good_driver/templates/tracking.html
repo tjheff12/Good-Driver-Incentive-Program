@@ -18,10 +18,6 @@ table{
     
     border-collapse: collapse;
 }
-.download {
-    display: block;
-    margin: 0 auto;
-}
 </style>
 <head>
 
@@ -29,20 +25,27 @@ table{
 <body>
     {% include 'top_buttons.html' %}
     <div class="header_padding">
-    <h1>Password Change Audit Report: {{start_date}} - {{end_date}}</h1>
-    <br><br><br>
+    <h1>Point Change Audit Report</h1>
+    <br>
     {% if driver_list %}
     <table>
         <tr>
-            <th>Date</th>
             <th>Name</th>
-            <th>Type of Change</th>
+            <th>Total Points</th>
+            <th>Point Changes</th>
+            <th>Sponsor Name Making the Change</th>
+            <th>Date</th>
+            <th>Reason</th>
         </tr>
         {% for driver in driver_list %}
             <tr>
-                <td>{{driver.date}}</td>
                 <td>{{driver.first_name}} {{driver.last_name}}</td>
-                <td>{{driver.type_change}}</td>
+                <td>{{driver.point_total}}</td>
+                <td>{{driver.point_change}}</td>
+                <td>{{sponsor_name}}</td>
+                <td>{{driver.date}}</td>
+                <td>{{driver.reason}}</td>
+                
             </tr>
         {% endfor %}
     </table>
