@@ -12,7 +12,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, UserManager
 
 class AdminUser(models.Model):
-    user = models.OneToOneField('Users', models.DO_NOTHING, db_column='User_ID', primary_key=True)  # Field name made lowercase.
+    user = models.OneToOneField('Users', models.CASCADE, db_column='User_ID', primary_key=True)  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -21,7 +21,7 @@ class AdminUser(models.Model):
 
 class ApplicationStateChange(models.Model):
     state_change_id = models.AutoField(db_column='State_Change_ID', primary_key=True)  # Field name made lowercase.
-    application = models.ForeignKey('DriverApplication', models.DO_NOTHING, db_column='Application_ID')  # Field name made lowercase.
+    application = models.ForeignKey('DriverApplication', models.CASCADE, db_column='Application_ID')  # Field name made lowercase.
     date_time = models.DateTimeField(db_column='Date_Time')  # Field name made lowercase.
     new_status = models.CharField(db_column='New_Status', max_length=15)  # Field name made lowercase.
     new_reason = models.CharField(db_column='New_Reason', max_length=30, blank=True, null=True)  # Field name made lowercase.
@@ -33,8 +33,8 @@ class ApplicationStateChange(models.Model):
 
 class DriverApplication(models.Model):
     application_id = models.AutoField(db_column='Application_ID', primary_key=True)  # Field name made lowercase.
-    driver = models.ForeignKey('Users', models.DO_NOTHING, db_column='Driver_ID')  # Field name made lowercase.
-    sponsor = models.ForeignKey('Sponsor', models.DO_NOTHING, db_column='Sponsor_ID')  # Field name made lowercase.
+    driver = models.ForeignKey('Users', models.CASCADE, db_column='Driver_ID')  # Field name made lowercase.
+    sponsor = models.ForeignKey('Sponsor', models.CASCADE, db_column='Sponsor_ID')  # Field name made lowercase.
     date_time = models.DateTimeField(db_column='Date_Time')  # Field name made lowercase.
     status = models.CharField(db_column='Status', max_length=15)  # Field name made lowercase.
     reason = models.CharField(db_column='Reason', max_length=30, blank=True, null=True)  # Field name made lowercase.
@@ -47,8 +47,8 @@ class DriverApplication(models.Model):
 
 class DriverSponsor(models.Model):
     id = models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
-    user = models.ForeignKey('Users', models.DO_NOTHING, db_column='User_ID')  # Field name made lowercase.
-    sponsor = models.ForeignKey('Sponsor', models.DO_NOTHING, db_column='Sponsor_ID')  # Field name made lowercase.
+    user = models.ForeignKey('Users', models.CASCADE, db_column='User_ID')  # Field name made lowercase.
+    sponsor = models.ForeignKey('Sponsor', models.CASCADE, db_column='Sponsor_ID')  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -57,7 +57,7 @@ class DriverSponsor(models.Model):
 
 
 class DriverUser(models.Model):
-    user = models.OneToOneField('Users', models.DO_NOTHING, db_column='User_ID', primary_key=True)  # Field name made lowercase.
+    user = models.OneToOneField('Users', models.CASCADE, db_column='User_ID', primary_key=True)  # Field name made lowercase.
     sponsor_id = models.IntegerField(db_column='Sponsor_ID')  # Field name made lowercase.
 
     class Meta:
@@ -77,7 +77,7 @@ class Item(models.Model):
 
 class LoginAttempt(models.Model):
     attempt_id = models.AutoField(db_column='Attempt_ID', primary_key=True)  # Field name made lowercase.
-    user = models.ForeignKey('Users', models.DO_NOTHING, db_column='User_ID')  # Field name made lowercase.
+    user = models.ForeignKey('Users', models.CASCADE, db_column='User_ID')  # Field name made lowercase.
     date_time = models.DateTimeField(db_column='Date_Time')  # Field name made lowercase.
     was_accepted = models.IntegerField(db_column='Was_Accepted')  # Field name made lowercase. This field type is a guess.
 
@@ -88,8 +88,8 @@ class LoginAttempt(models.Model):
 
 class Orders(models.Model):
     order_id = models.AutoField(db_column='Order_ID', primary_key=True)  # Field name made lowercase.
-    user = models.ForeignKey('Users', models.DO_NOTHING, db_column='User_ID')  # Field name made lowercase.
-    sponsor = models.ForeignKey('Sponsor', models.DO_NOTHING, db_column='Sponsor_ID')  # Field name made lowercase.
+    user = models.ForeignKey('Users', models.CASCADE, db_column='User_ID')  # Field name made lowercase.
+    sponsor = models.ForeignKey('Sponsor', models.CASCADE, db_column='Sponsor_ID')  # Field name made lowercase.
     date_time = models.DateTimeField()
     status = models.CharField(db_column='Status', max_length=20)  # Field name made lowercase.
     price = models.FloatField(db_column='Price')  # Field name made lowercase.
@@ -104,7 +104,7 @@ class Orders(models.Model):
 class PasswordChanges(models.Model):
     change_id = models.AutoField(db_column='Change_ID', primary_key=True)  # Field name made lowercase.
     date_time = models.DateTimeField(db_column='Date_Time')  # Field name made lowercase.
-    user = models.ForeignKey('Users', models.DO_NOTHING, db_column='User_ID')  # Field name made lowercase.
+    user = models.ForeignKey('Users', models.CASCADE, db_column='User_ID')  # Field name made lowercase.
     type_of_change = models.CharField(db_column='Type_Of_Change', max_length=10, blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
@@ -114,8 +114,8 @@ class PasswordChanges(models.Model):
 
 class Points(models.Model):
     points_id = models.AutoField(db_column='Points_ID', primary_key=True)  # Field name made lowercase.
-    user = models.ForeignKey('Users', models.DO_NOTHING, db_column='User_ID')  # Field name made lowercase.
-    sponsor = models.ForeignKey('Sponsor', models.DO_NOTHING, db_column='Sponsor_ID')  # Field name made lowercase.
+    user = models.ForeignKey('Users', models.CASCADE, db_column='User_ID')  # Field name made lowercase.
+    sponsor = models.ForeignKey('Sponsor', models.CASCADE, db_column='Sponsor_ID')  # Field name made lowercase.
     point_total = models.IntegerField(db_column='Point_Total')  # Field name made lowercase.
 
     class Meta:
@@ -125,8 +125,8 @@ class Points(models.Model):
 
 class PointsHistory(models.Model):
     change_id = models.AutoField(db_column='Change_ID', primary_key=True)  # Field name made lowercase.
-    user = models.ForeignKey('Users', models.DO_NOTHING, db_column='User_ID')  # Field name made lowercase.
-    sponsor = models.ForeignKey('Sponsor', models.DO_NOTHING, db_column='Sponsor_ID')  # Field name made lowercase.
+    user = models.ForeignKey('Users', models.CASCADE, db_column='User_ID')  # Field name made lowercase.
+    sponsor = models.ForeignKey('Sponsor', models.CASCADE, db_column='Sponsor_ID')  # Field name made lowercase.
     point_change = models.IntegerField(db_column='Point_Change')  # Field name made lowercase.
     date_time = models.DateTimeField(db_column='Date_Time')  # Field name made lowercase.
     reason = models.CharField(db_column='Reason', max_length=50)  # Field name made lowercase.
@@ -138,12 +138,12 @@ class PointsHistory(models.Model):
 
 class PointsOld(models.Model):
     transaction_id = models.AutoField(db_column='Transaction_ID', primary_key=True)  # Field name made lowercase.
-    user = models.ForeignKey(DriverUser, models.DO_NOTHING, db_column='User_ID')  # Field name made lowercase.
+    user = models.ForeignKey(DriverUser, models.CASCADE, db_column='User_ID')  # Field name made lowercase.
     point_total = models.IntegerField(db_column='Point_Total')  # Field name made lowercase.
     points_added_or_deducted = models.IntegerField(db_column='Points_Added_Or_Deducted')  # Field name made lowercase.
     date_time = models.DateTimeField(db_column='Date_Time')  # Field name made lowercase.
     reason = models.CharField(db_column='Reason', max_length=30)  # Field name made lowercase.
-    purchase = models.ForeignKey('Purchase', models.DO_NOTHING, db_column='Purchase_ID', blank=True, null=True)  # Field name made lowercase.
+    purchase = models.ForeignKey('Purchase', models.CASCADE, db_column='Purchase_ID', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -160,8 +160,8 @@ class Purchase(models.Model):
 
 
 class PurchaseItem(models.Model):
-    purchase = models.OneToOneField(Purchase, models.DO_NOTHING, db_column='Purchase_ID', primary_key=True)  # Field name made lowercase.
-    item = models.ForeignKey(Item, models.DO_NOTHING, db_column='Item_ID')  # Field name made lowercase.
+    purchase = models.OneToOneField(Purchase, models.CASCADE, db_column='Purchase_ID', primary_key=True)  # Field name made lowercase.
+    item = models.ForeignKey(Item, models.CASCADE, db_column='Item_ID')  # Field name made lowercase.
     quantity = models.IntegerField(db_column='Quantity')  # Field name made lowercase.
 
     class Meta:
@@ -182,8 +182,8 @@ class Sponsor(models.Model):
 
 
 class SponsorUser(models.Model):
-    user = models.OneToOneField('Users', models.DO_NOTHING, db_column='User_ID', primary_key=True)  # Field name made lowercase.
-    sponsor = models.ForeignKey(Sponsor, models.DO_NOTHING, db_column='Sponsor_ID')  # Field name made lowercase.
+    user = models.OneToOneField('Users', models.CASCADE, db_column='User_ID', primary_key=True)  # Field name made lowercase.
+    sponsor = models.ForeignKey(Sponsor, models.CASCADE, db_column='Sponsor_ID')  # Field name made lowercase.
 
     class Meta:
         managed = False

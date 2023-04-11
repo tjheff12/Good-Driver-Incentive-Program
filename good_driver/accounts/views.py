@@ -396,16 +396,7 @@ def admin_delete_account(request):
                 User = models.Users.objects.get(email=username)
 
                 # Logic block to delete from all exterior (non base-user) tables
-                if User.user_type == 'Admin' and models.AdminUser.objects.get(user=User).exists():
-                    models.AdminUser.objects.get(user=User).delete()
-                elif User.user_type == 'Sponsor' and models.SponsorUser.objects.get(user=User).exists():
-                    models.SponsorUser.objects.get(user=User).delete()
-                elif User.user_type == 'Driver':
-                    if models.DriverSponsor.objects.filter(user=User).exists():
-                        models.DriverSponsor.objects.filter(user=User).delete()
-                    if models.Points.objects.filter(user=User).exists():
-                        models.Points.objects.filter(user=User).delete()
-                    
+                
 
                 # Delete from base Users table
                 User.delete()
@@ -588,19 +579,22 @@ def sponsor_remove_driver(request):
 
             # Checks that this user even exists within the shared table | Also counts as a check that the user is of "Driver" considering only drivers should be in this table
             if models.Users.objects.filter(email=username).exists():
-          
-                
+                user_sponsor_obj = models.SponsorUser.objects.get(user_id=request.user.user_id)
+                sponsor_id = getattr(user_sponsor_obj, 'sponsor_id')
+                sponsor_obj = models.Sponsor.objects.get(sponsor_id=sponsor_id)
+                sponsor_name = getattr(sponsor_obj, 'name')
+                User = models.Users.objects.get(email=username)
                 # Gets the User object for the requester (Sponsor user, not typed tho; just plain User)
                 RequestingUser = models.Users.objects.get(email=request.user.email)
-                User = RequestingUser
+                
                 # Make sure that exisiting user that sponsor wants to remove is within THEIR organization already
                 #    by checking the bridge table entity Driver_Sponsor
-                if not models.DriverSponsor.objects.filter(user=User, sponsor=models.SponsorUser.objects.get(user=RequestingUser).sponsor).exists():
+                if not models.DriverSponsor.objects.filter(user=User, sponsor=sponsor_obj).exists():
                     messages.info(request, 'Username given is not associated with your Organization!')
                     return redirect(sponsor_remove_driver)
 
                 # Delete all records from DriverSponsor table that has the specified user associated with the sponsor's sponsor id
-                models.DriverSponsor.objects.filter(user=User, sponsor_id=models.SponsorUser.objects.get(user=RequestingUser).sponsor).delete()
+                models.DriverSponsor.objects.filter(user=User, sponsor_id=sponsor_obj).delete()
                 return redirect('done')
             else:
                 messages.info(request, 'Username does not exist')
