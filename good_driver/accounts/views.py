@@ -1164,7 +1164,9 @@ def admin_edit_account(request):
                 #if the requested driver exists, find their sponsor_id
                 if models.DriverSponsor.objects.filter(user_id=target['user_id']).exists():
                     target_sponsor_id = models.DriverSponsor.objects.filter(user_id=target['user_id']).values('sponsor_id')[0]['sponsor_id']
-
+            else:
+                messages.info(request, "Not a user")
+                return redirect('.')
             #get the sponsor ID for the logged in user
             if models.SponsorUser.objects.filter(user_id=request.user.user_id).exists():
                 sponsor_id = models.SponsorUser.objects.filter(user_id=request.user.user_id).values('sponsor_id')[0]['sponsor_id']

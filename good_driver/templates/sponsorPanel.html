@@ -1,23 +1,26 @@
 <!DOCTYPE html>
 
 <body>
-    <h1>Sponsor Panel:<br>
-        <h2>Choose from the options below to get started</h2>
-    </h1>
-    <form method="POST">
-        {% csrf_token %}
-        <a class="btn btn-dark" href="./sponsorCreateAccount" role="button">Create Sponsor Account</a>
-    </form>
-    <br>
-    <form method="POST">
-        {% csrf_token %}
-        <a class="btn btn-dark" href="./sponsorRemoveDriver" role="button">Remove A Driver From Your Organization</a>
-    </form>
-    <br>
-    <form method="POST">
-        {% csrf_token %}
-        <a class="btn btn-dark" href="./sponsorAddDriver" role="button">Add A Driver To Your Organization</a>
-    </form>
+    {% include 'top_buttons.html' %}
+    <div class="header_padding" style="text-align: center;">
+        <h1>Sponsor Panel:<br>
+            <h2>Choose from the options below to get started</h2>
+        </h1>
+        <form method="POST">
+            {% csrf_token %}
+            <a class="btn btn-dark" href="./sponsorCreateAccount" role="button">Create Sponsor Account</a>
+        </form>
+        <br>
+        <form method="POST">
+            {% csrf_token %}
+            <a class="btn btn-dark" href="./sponsorRemoveDriver" role="button">Remove A Driver From Your Organization</a>
+        </form>
+        <br>
+        <form method="POST">
+            {% csrf_token %}
+            <a class="btn btn-dark" href="./sponsorAddDriver" role="button">Add A Driver To Your Organization</a>
+        </form>
+    </div>
 </body>
 
 </html>

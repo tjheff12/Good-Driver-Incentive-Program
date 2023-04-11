@@ -14,81 +14,73 @@
 </head>
 
 <body>
-	<form action="/sponsorAddDriver/" method="POST" class="form-horizontal">
-		{% csrf_token%}
-		<div class="mx-auto" style="width: 400px;">
+	{% include 'top_buttons.html' %}
+	<div class='header_padding'>
+		<form action="/sponsorAddDriver/" method="POST" class="form-horizontal">
+			{% csrf_token%}
+			<div class="mx-auto" style="width: 400px;">
 
-			<div class="col-xs-8 col-xs-offset-4">
-				<h2 style="text-align:center;">Create & Add a New Driver to Your Organization</h2>
+				<div class="col-xs-8 col-xs-offset-4">
+					<h2 style="text-align:center;">Create & Add a New Driver to Your Organization</h2>
+				</div>
+				<hr />
+				<div class="form-group">
+					<label for="username">Driver's Email</label>
+					<input type="text" class="form-control" name="username" id="username" placeholder="Enter Email"
+						Required>
+				</div>
+				<div class="form-group">
+					<label for="fanme">Driver's First Name</label>
+					<input type="text" class="form-control" name="first_name" id="first_name" placeholder="Enter First Name"
+						Required>
+				</div>
+				<div class="form-group">
+					<label for="lname">Driver's Last Name</label>
+					<input type="text" class="form-control" name="last_name" id="last_name" placeholder="Enter Last Name"
+						Required>
+				</div>
+				<div class="form-group">
+					<label for="password">Driver's Password</label>
+					<input type="password" class="form-control" name="password" id="password" placeholder="Enter Password"
+						Required>
+				</div>
+				<div class="form-group">
+					<label for="confirm_password">Confirm Driver's Password</label>
+					<input type="password" class="form-control" name="confirm_password" id="confirm_password"
+						placeholder="Confirm Your Password" Required>
+				</div>
+				<div class="form-group">
+					<label for="street_address">Driver's Street Address</label>
+					<input type="text" class="form-control" name="street_address" id="street_address"
+						placeholder="Enter Address" Required>
+				</div>
+				<div class="form-group">
+					<label for="city">Driver's City</label>
+					<input type="text" class="form-control" name="city" id="city"
+						placeholder="Enter City" Required>
+				</div>
+				<div class="form-group">
+					<label for="zip_code">Driver's Zip Code</label>
+					<input type="text" class="form-control" name="zip_code" id="zip_code"
+						placeholder="Enter Zip Code" Required>
+				</div>
+				<div class="form-group">
+					<label for="phone_num">Driver's Phone Number</label>
+					<input type="text" class="form-control" name="phone_num" id="phone_num"
+						placeholder="Enter Phone Number" Required>
+				</div>
+				<button type="submit" class="btn btn-primary">SIGN UP DRIVER TO YOUR ORGANIZATION</button>
 			</div>
-			<hr />
-			<div class="form-group">
-				<label for="username">Driver's Email</label>
-				<input type="text" class="form-control" name="username" id="username" placeholder="Enter Email"
-					Required>
+		</form>
+		<div class="form-group">
+			{% for message in messages %}
+			<div class="alert alert-danger" role="alert">
+				{{message}}
 			</div>
-			<div class="form-group">
-				<label for="fanme">Driver's First Name</label>
-				<input type="text" class="form-control" name="first_name" id="first_name" placeholder="Enter First Name"
-					Required>
-			</div>
-			<div class="form-group">
-				<label for="lname">Driver's Last Name</label>
-				<input type="text" class="form-control" name="last_name" id="last_name" placeholder="Enter Last Name"
-					Required>
-			</div>
-			<div class="form-group">
-				<label for="password">Driver's Password</label>
-				<input type="password" class="form-control" name="password" id="password" placeholder="Enter Password"
-					Required>
-			</div>
-			<div class="form-group">
-				<label for="confirm_password">Confirm Driver's Password</label>
-				<input type="password" class="form-control" name="confirm_password" id="confirm_password"
-					placeholder="Confirm Your Password" Required>
-			</div>
-			<div class="form-group">
-				<label for="street_address">Driver's Street Address</label>
-				<input type="text" class="form-control" name="street_address" id="street_address"
-					placeholder="Enter Address" Required>
-			</div>
-			<div class="form-group">
-				<label for="city">Driver's City</label>
-				<input type="text" class="form-control" name="city" id="city"
-					placeholder="Enter City" Required>
-			</div>
-			<div class="form-group">
-				<label for="zip_code">Driver's Zip Code</label>
-				<input type="text" class="form-control" name="zip_code" id="zip_code"
-					placeholder="Enter Zip Code" Required>
-			</div>
-			<div class="form-group">
-				<label for="phone_num">Driver's Phone Number</label>
-				<input type="text" class="form-control" name="phone_num" id="phone_num"
-					placeholder="Enter Phone Number" Required>
-			</div>
-			<button type="submit" class="btn btn-primary">SIGN UP DRIVER TO YOUR ORGANIZATION</button>
+			{% endfor %}
 		</div>
-	</form>
-	<div class="form-group">
-		{% for message in messages %}
-		<div class="alert alert-danger" role="alert">
-			{{message}}
-		</div>
-		{% endfor %}
 	</div>
 
-	<!-- Optional JavaScript -->
-	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
-	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-		integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-		crossorigin="anonymous"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-		integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-		crossorigin="anonymous"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-		integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-		crossorigin="anonymous"></script>
 </body>
 
 </html>
