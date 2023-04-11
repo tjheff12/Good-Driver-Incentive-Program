@@ -12,6 +12,7 @@
   <form method="POST">
     {% csrf_token %}
     {{ form2 }}
+
     <input type="text" value="{{ other_email }}" readonly name='email' hidden="hidden">
     <input type="submit" value="Update Info" name="updateInfo">
   </form>
@@ -36,9 +37,7 @@
     <br>
     User Type-{{other_user_type}}
     <br>
-    <a href="../logout" role="button">Got to Logout</a>
-    <br>
-    <br>
+    
     
   </div>
   {% else %}
