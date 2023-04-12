@@ -656,6 +656,23 @@ def sponsor_add_driver(request):
     # Returns 403 Error (Permission Denied)    
     else: raise PermissionDenied
 
+def is_int(n):
+    try:
+        float_n = float(n)
+        int_n = int(float_n)
+    except ValueError:
+        return False
+    else:
+        return float_n == int_n
+
+def is_float(n):
+    try:
+        float_n = float(n)
+    except ValueError:
+        return False
+    else:
+        return True
+
 def sponsor_edit_organization(request):
     if request.user.is_anonymous == True:
         messages.info(request, 'You must be logged in as a sponsor')
@@ -680,6 +697,9 @@ def sponsor_edit_organization(request):
             if newName != "":
                 sponsorsOrg.name = newName
             if maxPrice != "":
+                if not is_int(maxPrice) and not is_float(maxPrice):
+                    messages.info(request, 'Max Price has to be a valid number!')
+                    return render(request, 'sponsorEditOrganization.html', {'sponsorName': sponsorsOrg.name})
                 sponsorsOrg.maxPrice = float(maxPrice)
 
             sponsorsOrg.save()

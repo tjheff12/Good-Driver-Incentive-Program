@@ -16,7 +16,7 @@
 <body>
 	{% include 'top_buttons.html' %}
 	<div class='header_padding'>
-		<form action="/sponsorAddDriver/" method="POST" class="form-horizontal">
+		<form action="" method="POST" class="form-horizontal">
 			{% csrf_token%}
 			<div class="mx-auto" style="width: 400px;">
 
@@ -31,18 +31,18 @@
 				</div>
 				<div class="form-group">
 					<label for="fanme">Driver's First Name</label>
-					<input type="text" class="form-control" name="first_name" id="first_name" placeholder="Enter First Name"
-						Required>
+					<input type="text" class="form-control" name="first_name" id="first_name"
+						placeholder="Enter First Name" Required>
 				</div>
 				<div class="form-group">
 					<label for="lname">Driver's Last Name</label>
-					<input type="text" class="form-control" name="last_name" id="last_name" placeholder="Enter Last Name"
-						Required>
+					<input type="text" class="form-control" name="last_name" id="last_name"
+						placeholder="Enter Last Name" Required>
 				</div>
 				<div class="form-group">
 					<label for="password">Driver's Password</label>
-					<input type="password" class="form-control" name="password" id="password" placeholder="Enter Password"
-						Required>
+					<input type="password" class="form-control" name="password" id="password"
+						placeholder="Enter Password" Required>
 				</div>
 				<div class="form-group">
 					<label for="confirm_password">Confirm Driver's Password</label>
@@ -56,13 +56,12 @@
 				</div>
 				<div class="form-group">
 					<label for="city">Driver's City</label>
-					<input type="text" class="form-control" name="city" id="city"
-						placeholder="Enter City" Required>
+					<input type="text" class="form-control" name="city" id="city" placeholder="Enter City" Required>
 				</div>
 				<div class="form-group">
 					<label for="zip_code">Driver's Zip Code</label>
-					<input type="text" class="form-control" name="zip_code" id="zip_code"
-						placeholder="Enter Zip Code" Required>
+					<input type="text" class="form-control" name="zip_code" id="zip_code" placeholder="Enter Zip Code"
+						Required>
 				</div>
 				<div class="form-group">
 					<label for="phone_num">Driver's Phone Number</label>
