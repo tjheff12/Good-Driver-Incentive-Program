@@ -664,6 +664,39 @@ def sponsor_add_driver(request):
     # Returns 403 Error (Permission Denied)    
     else: raise PermissionDenied
 
+def sponsor_edit_organization(request):
+    if request.user.is_anonymous == True:
+        messages.info(request, 'You must be logged in as a sponsor')
+        return redirect(login)
+    elif request.user.user_type == "Sponsor":
+        # check if sponsor is associated with an org, error out and return to sponsorpanel if not
+        if not models.SponsorUser.objects.filter(user=request.user.user_id).exists():
+            messages.info(request, 'You must be associated with a sponsor organization!')
+            return redirect(sponsor_panel)
+        
+        currSponsorUser = models.SponsorUser.objects.get(user=request.user.user_id)
+        sponsorsOrg = models.Sponsor.objects.get(sponsor_id=currSponsorUser.sponsor.sponsor_id)
+        #if has a valid org to change, go to the edit org page if GET request
+        if request.method == "GET":
+            return render(request, 'sponsorEditOrganization.html', {'sponsorName': sponsorsOrg.name})
+
+        #if POST req, update db
+        elif request.method == "POST":
+            newName = request.POST['newName']
+            maxPrice = request.POST['maxPrice']
+
+            if newName != "":
+                sponsorsOrg.name = newName
+            if maxPrice != "":
+                sponsorsOrg.maxPrice = float(maxPrice)
+
+            sponsorsOrg.save()
+            messages.info(request, 'Successfully Updated the Organization')
+            return render(request, 'sponsorEditOrganization.html', {'sponsorName': sponsorsOrg.name})
+    else:
+        messages.info(request, 'You must be logged in as a sponsor')
+        return redirect(home)
+
 def driverApplications(request):
     from datetime import datetime
     if request.user.is_anonymous == True:
@@ -1281,7 +1314,9 @@ def catalog_overview(request, sponsor, pageNum=1, search="search"):
             current_points = points_obj.point_total
         except:
             current_points = 0
-        results_tuple = search_ebay_products(search, pageNum)
+
+        sponsorMaxPrice = sponsor_obj.maxPrice
+        results_tuple = search_ebay_products(search, pageNum, sponsorMaxPrice)
 
         sponsor_entity = models.Sponsor.objects.get(name=sponsor)
         
@@ -1318,7 +1353,9 @@ def catalog_overview(request, sponsor, pageNum=1, search="search"):
             return redirect(catalog)
 
         #print(search)
-        results_tuple = search_ebay_products(search, pageNum)
+        currSponsorUser = models.SponsorUser.objects.get(user=request.user.user_id)
+        sponsorMaxPrice = models.Sponsor.objects.get(sponsor_id=currSponsorUser.sponsor.sponsor_id).maxPrice
+        results_tuple = search_ebay_products(search, pageNum, sponsorMaxPrice)
 
         sponsor_entity = models.Sponsor.objects.get(name=sponsor)
         
@@ -1333,7 +1370,7 @@ def catalog_overview(request, sponsor, pageNum=1, search="search"):
         
         return redirect('../pageNum=1&&search=' + request.POST['search'])
 
-def search_ebay_products(query, pageNum):
+def search_ebay_products(query, pageNum, sponsorMaxPrice):
     import datetime
     from ebaysdk.exception import ConnectionError
     from ebaysdk.finding import Connection as Finding
@@ -1346,8 +1383,7 @@ def search_ebay_products(query, pageNum):
             'itemFilter': [
                 # Category that excludes all NSFW results
                 {'name': 'ExcludeCategory', 'value': '176992'},
-                #{'name': 'MaxPrice', 'value': str(sponsorMaxPrice), 'paramName': 'Currency', 'paramValue': 'USD'},
-                #{'name': 'LocatedIn', 'value': 'US'}, if the sponsor only wants us-based items
+                {'name': 'MaxPrice', 'value': str(sponsorMaxPrice), 'paramName': 'Currency', 'paramValue': 'USD'}
             ],
             'paginationInput': { 
                 'entriesPerPage': 10,
@@ -1355,7 +1391,7 @@ def search_ebay_products(query, pageNum):
             }
         })
         
-        print(response.dict())
+        #print(response.dict())
         try:
             total_pages = response.reply.paginationOutput.totalPages
         except:

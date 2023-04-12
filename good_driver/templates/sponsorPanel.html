@@ -18,6 +18,12 @@
         {% csrf_token %}
         <a class="btn btn-dark" href="../sponsorAddDriver" role="button">Add A Driver To Your Organization</a>
     </form>
+    <br>
+    <form method="POST">
+        {% csrf_token %}
+        <a class="btn btn-dark" href="../sponsorEditOrganization" role="button">Edit Your Organization (inc.
+            Catalog)</a>
+    </form>
 </body>
 
 </html>
