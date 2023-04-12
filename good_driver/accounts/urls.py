@@ -24,6 +24,7 @@ urlpatterns = [
     path('home/sponsorPanel/sponsorCreateAccount/', views.sponsor_create_account, name='sponsorCreateAccount'),
     path('home/sponsorPanel/sponsorRemoveDriver/', views.sponsor_remove_driver, name='sponsorRemoveDriver'),
     path('home/sponsorPanel/sponsorAddDriver/', views.sponsor_add_driver, name='sponsorAddDriver'),
+    path('home/sponsorPanel/sponsorEditOrganization/', views.sponsor_edit_organization, name='sponsorEditOrganization'),
     path('application/', views.application, name='application'),
     path('sponsorHome/driverManagement/application/', views.application,name='application'),
     path('driverHome/applications/', views.driverApplications ,name='driver applications'),
