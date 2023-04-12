@@ -307,8 +307,10 @@ def admin_create_account(request):
             zip_code = request.POST['zip_code']
             phone_num = request.POST['phone_num']
             user_type = request.POST['user_type']
+            sec_question = request.POST['sec_question']
             
             password_hash = hashlib.md5(password.encode()).hexdigest()
+            sec_hash = hashlib.md5(sec_question.encode()).hexdigest()
             
             if password==confirm_password:
                 if models.Users.objects.filter(email=username).exists():
@@ -318,7 +320,7 @@ def admin_create_account(request):
                     user = models.Users(email=username, password=password_hash, 
                                             first_name=first_name, last_name=last_name, street_address=street_addr, 
                                             street_address_2=street_addr, city=city, zip_code=zip_code, 
-                                            phone_number=phone_num, user_type=user_type)
+                                            phone_number=phone_num, user_type=user_type, security_question_answer=sec_hash)
                     user.save()
                     
                     if user.user_type == 'Admin':
@@ -332,19 +334,14 @@ def admin_create_account(request):
                             organization = models.Sponsor.objects.get(name=sponsor)
                         # if not, make it, if so make it equal to organization
                         else:
-                            organization = models.Sponsor(point_value=0.0, name=sponsor)
+                            organization = models.Sponsor(point_value=0.01, name=sponsor)
                             organization.save()
 
                         sponsorUser = models.SponsorUser(user=user, sponsor=organization)
                         sponsorUser.save()
-                    elif user.user_type == 'Driver':
-                        # HAD TO MAKE sponsor=-1 SINCE WE SHOULDNT EVEN HAVE THAT FIELD (USELESS)
-                        driverUser = models.DriverUser(user=user, sponsor_id=-1)
-                        driverUser.save()
-                        '''driverSponsorCombo = models.DriverSponsor(user=driverUser, sponsor=Sponsor)
-                        driverSponsorCombo.save()'''
-
-                    return redirect('done')
+                    
+                    messages.info(request, 'User Created')
+                    return redirect('.')
             else:
                 messages.info(request, 'Both passwords are not matching')
                 return redirect(admin_create_account)
@@ -401,21 +398,12 @@ def admin_delete_account(request):
                 User = models.Users.objects.get(email=username)
 
                 # Logic block to delete from all exterior (non base-user) tables
-                if User.user_type == 'Admin' and models.AdminUser.objects.get(user=User).exists():
-                    models.AdminUser.objects.get(user=User).delete()
-                elif User.user_type == 'Sponsor' and models.SponsorUser.objects.get(user=User).exists():
-                    models.SponsorUser.objects.get(user=User).delete()
-                elif User.user_type == 'Driver':
-                    if models.DriverSponsor.objects.filter(user=User).exists():
-                        models.DriverSponsor.objects.filter(user=User).delete()
-                    if models.Points.objects.filter(user=User).exists():
-                        models.Points.objects.filter(user=User).delete()
-                    if models.DriverUser.objects.get(user=User).exists():
-                        models.DriverUser.objects.get(user=User).delete()
+                
 
                 # Delete from base Users table
                 User.delete()
-                return redirect('done')
+                messages.info(request, 'User has been removed from the system')
+                return redirect(admin_delete_account)
             else:
                 messages.info(request, 'Username does not exist')
                 return redirect(admin_delete_account)
@@ -593,21 +581,25 @@ def sponsor_remove_driver(request):
             username = request.POST['username']
 
             # Checks that this user even exists within the shared table | Also counts as a check that the user is of "Driver" considering only drivers should be in this table
-            if models.Users.objects.filter(email=username).exists() and models.DriverUser.objects.filter(user=models.Users.objects.get(email=username)).exists():
-                # Gets the DriverUser object for the specified person
-                User = models.DriverUser.objects.get(user=models.Users.objects.get(email=username))
+            if models.Users.objects.filter(email=username).exists():
+                user_sponsor_obj = models.SponsorUser.objects.get(user_id=request.user.user_id)
+                sponsor_id = getattr(user_sponsor_obj, 'sponsor_id')
+                sponsor_obj = models.Sponsor.objects.get(sponsor_id=sponsor_id)
+                sponsor_name = getattr(sponsor_obj, 'name')
+                User = models.Users.objects.get(email=username)
                 # Gets the User object for the requester (Sponsor user, not typed tho; just plain User)
                 RequestingUser = models.Users.objects.get(email=request.user.email)
-
+                
                 # Make sure that exisiting user that sponsor wants to remove is within THEIR organization already
                 #    by checking the bridge table entity Driver_Sponsor
-                if not models.DriverSponsor.objects.filter(user=User, sponsor=models.SponsorUser.objects.get(user=RequestingUser).sponsor).exists():
+                if not models.DriverSponsor.objects.filter(user=User, sponsor=sponsor_obj).exists():
                     messages.info(request, 'Username given is not associated with your Organization!')
                     return redirect(sponsor_remove_driver)
 
                 # Delete all records from DriverSponsor table that has the specified user associated with the sponsor's sponsor id
-                models.DriverSponsor.objects.filter(user=User, sponsor_id=models.SponsorUser.objects.get(user=RequestingUser).sponsor).delete()
-                return redirect('done')
+                models.DriverSponsor.objects.filter(user=User, sponsor_id=sponsor_obj).delete()
+                messages.info(request, 'Successfully removed driver')
+                return redirect(sponsor_remove_driver)
             else:
                 messages.info(request, 'Username does not exist')
                 return redirect(sponsor_remove_driver)
@@ -1182,6 +1174,7 @@ def admin_edit_account(request):
     if request.method == "GET":
         return render(request, 'adminEditAccount.html', both_forms)
     elif request.method == "POST":
+        print(request.POST)
         #get the requested email from the POST request
         form1 = forms.getDriverEmail(request.POST)
 
@@ -1205,11 +1198,14 @@ def admin_edit_account(request):
                 #get the user from the database
                 target_user_queryset = models.Users.objects.filter(email=target_user_email).values('email', 'first_name', 'last_name', 'phone_number', 'street_address', 'street_address_2', 'user_type', 'zip_code', 'city', 'user_id')
                 target = target_user_queryset[0]
+                user_id = target['user_id']
 
                 #if the requested driver exists, find their sponsor_id
-                if models.DriverUser.objects.filter(user_id=target['user_id']).exists():
-                    target_sponsor_id = models.DriverUser.objects.filter(user_id=target['user_id']).values('sponsor_id')[0]['sponsor_id']
-
+                if models.DriverSponsor.objects.filter(user_id=target['user_id']).exists():
+                    target_sponsor_id = models.DriverSponsor.objects.filter(user_id=target['user_id']).values('sponsor_id')[0]['sponsor_id']
+            else:
+                messages.info(request, "Not a user")
+                return redirect('.')
             #get the sponsor ID for the logged in user
             if models.SponsorUser.objects.filter(user_id=request.user.user_id).exists():
                 sponsor_id = models.SponsorUser.objects.filter(user_id=request.user.user_id).values('sponsor_id')[0]['sponsor_id']
@@ -1217,49 +1213,51 @@ def admin_edit_account(request):
             #if the web user is authorized to see and modify the target user's data
             if  sponsor_id == target_sponsor_id or request.user.user_type == 'Admin':
                 #populate the returned page with the data about the requested driver
-                context_data =  {"form1": forms.getDriverEmail, "form2": forms.getDriverInfo, 'other_email': target['email'], 'other_first_name': target['first_name'], 'other_last_name':target['last_name'], 'other_street_address':target['street_address'], 'other_city':target['city'], 'other_zip_code':target['zip_code'], 'other_phone_number':target['phone_number'], 'other_user_type':target['user_type']}
+                context_data =  {"form1": forms.getDriverEmail, "form2": forms.getDriverInfo, 'other_email': target['email'], 'other_first_name': target['first_name'], 'other_last_name':target['last_name'], 'other_street_address':target['street_address'], 'other_city':target['city'], 'other_zip_code':target['zip_code'], 'other_phone_number':target['phone_number'], 'other_user_type':target['user_type'], 'user_id':user_id}
             else:
                 #do non populate any context data, only provide the blank forms
                 context_data = both_forms
-    
-        #
+            return render(request, 'adminEditAccount.html', context_data)
+        #   
         #  If the "Update Provided Fields" button is pressed
         #
         elif 'updateInfo' in request.POST:
             #print('Updating info')
             #get form submission data
-
+            context_data = {}
             first_name = request.POST['first_name']
             last_name = request.POST['last_name']
             street_addr = request.POST['street_address']
             city = request.POST['city']
             zip_code = request.POST['zip_code']
             phone_num = request.POST['phone_number']
+            email = request.POST['email']
 
+            target_user_queryset = models.Users.objects.get(email=email)#.values('email', 'first_name', 'last_name', 'phone_number', 'street_address', 'street_address_2', 'user_type', 'zip_code', 'city', 'user_id')
             #update queryset for updated info
             if first_name != "":
-                target_user_queryset.update(first_name=first_name)
+                target_user_queryset.first_name = first_name
                 context_data['other_first_name'] = first_name 
             if last_name != "":
-                target_user_queryset.update(last_name=last_name)
+                target_user_queryset.last_name =last_name
                 context_data['other_last_name'] = last_name
             if street_addr != "":
-                target_user_queryset.update(street_address=street_addr)
+                target_user_queryset.street_address=street_addr
                 context_data['other_street_address'] = street_addr
             if city != "":
-                target_user_queryset.update(city=city)
+                target_user_queryset.city=city
                 context_data['other_city'] = city
             if zip_code != "" and zip_code.isnumeric():
-                target_user_queryset.update(zip_code=zip_code)
+                target_user_queryset.zip_code=zip_code
                 context_data['other_zip_code'] = zip_code
             if phone_num != "":
-                target_user_queryset.update(phone_number=phone_num)
+                target_user_queryset.phone_number=phone_num
                 context_data['other_phone_number'] = phone_num
-
+            target_user_queryset.save()
         else:
             context_data = both_forms
-    
-    return render(request, 'adminEditAccount.html', context_data)
+        messages.info(request, 'User ' + request.POST['email'] + " has been updated")
+        return redirect(".")
 
 def catalog(request):
     if request.user.is_anonymous == True:

@@ -65,7 +65,7 @@ table{
     <table>
         <tr>
             <th>Application ID</th>
-            <th>Sponsor Name</th>
+            
             <th>Last Name</th>
             <th>Street Address</th>
             <th>City</th>
@@ -81,7 +81,7 @@ table{
             <form method="POST">
                 {% csrf_token %}
             <td ><input type="number" class="app_id" name='application_id' value={{application.application_id}} readonly></td>
-            <td>{{application.sponsor_name}}</td>
+            
             <td>{{application.last_name}}</td>
             <td>{{application.street_address}}</td>
             <td>{{application.city}}</td>
@@ -102,9 +102,9 @@ table{
     {% endif %}
     </table>
     </div>
-    <div >
+    <div>
         {% for message in messages %}
-        <div role="alert">
+        <div role="alert" style="color:rgb(255,0,0);">
             {{message}}
         </div>
         {% endfor %}

@@ -34,7 +34,7 @@
 <body>
 	{% include 'top_buttons.html' %}
 	<div class="header_padding">
-		<form action="/adminCreateAccount/" method="POST" class="form-horizontal">
+		<form  method="POST" class="form-horizontal">
 			{% csrf_token %}
 			<div class="mx-auto" style="width: 400px;">
 
@@ -100,12 +100,17 @@
 					<input type="text" class="form-control" name="sponsor" id="sponsor" placeholder="Enter Sponsor Name"
 						required>
 				</div>
+				<div class="form-group">
+					<label for="sec_question">Security Question: What is their mother's maiden name?</label>
+					<input type="text" class="form-control" name="sec_question" id="sec_question"
+						placeholder="Enter Mother's Maiden Name" Required>
+				</div>
 				<button type="submit" class="btn btn-primary">Create Account</button>
 			</div>
 		</form>
 		<div class="form-group">
 			{% for message in messages %}
-			<div class="alert alert-danger" role="alert">
+			<div class="alert alert-danger" role="alert" >
 				{{message}}
 			</div>
 			{% endfor %}
