@@ -9,6 +9,8 @@
 	<!-- Bootstrap CSS -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
 		integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
+	integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 	<title>New User (Any Type)</title>
 
@@ -30,6 +32,61 @@
 
 	</script>
 </head>
+
+<style>
+	@import url('https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+	
+	.container{
+		background-color: #2bd5e9;
+	}
+	input{
+		color:#022255 !important;
+	}
+	input[type=email]:focus,
+	input[type=password]:focus,
+	input[type=text]:focus{
+		box-shadow: 0 0 5px rgba(8, 159, 246, 0.8);
+		border: 1px solid rgba(8, 12, 246, 0.8);
+	}
+	.control-label {
+		text-align: left !important;
+		padding-bottom: 4px;
+	}
+	.progress {
+		height: 3px !important;
+	}
+	.form-group {
+		margin-bottom: 10px;
+	}
+	.show-pass{
+		position: absolute;
+		top:5%;
+		right: 8%;
+	}
+	.progress-bar-danger {
+		background-color: #e90f10;
+	}
+	.progress-bar-warning{
+		background-color: #ffad00;
+	}
+	.progress-bar-success{
+		background-color: #02b502;
+	}
+	.fa-eye{
+		color: #022255;
+		cursor: pointer;
+	}
+	.ex-account p a{
+		color: #f6086e;
+		text-decoration: underline;
+	}
+	.fa-circle{
+		font-size: 6px;  
+	}
+	.fa-check{
+		color: #02b502;
+	}
+</style>
 
 <body>
 	{% include 'top_buttons.html' %}
@@ -61,6 +118,45 @@
 					<label for="password">Password</label>
 					<input type="password" class="form-control" name="password" id="password" placeholder="Enter Password"
 						Required>
+						<div id="popover-password">
+                            <p><span id="result"></span></p>
+                            <div class="progress">
+                                <div id="password-strength" 
+                                    class="progress-bar" 
+                                    role="progressbar" 
+                                    aria-valuenow="40" 
+                                    aria-valuemin="0" 
+                                    aria-valuemax="100" 
+                                    style="width:0%">
+                                </div>
+                            </div>
+                            <ul class="list-unstyled">
+                                <li class="">
+                                    <span class="low-upper-case">
+                                        <i class="fas fa-circle" aria-hidden="true"></i>
+                                        &nbsp;A Lowercase &amp; An Uppercase Letter
+                                    </span>
+                                </li>
+                                <li class="">
+                                    <span class="one-number">
+                                        <i class="fas fa-circle" aria-hidden="true"></i>
+                                        &nbsp;A Number (0-9)
+                                    </span> 
+                                </li>
+                                <li class="">
+                                    <span class="one-special-char">
+                                        <i class="fas fa-circle" aria-hidden="true"></i>
+                                        &nbsp;A Special Character (!@#$%^&*)
+                                    </span>
+                                </li>
+                                <li class="">
+                                    <span class="eight-character">
+                                        <i class="fas fa-circle" aria-hidden="true"></i>
+                                        &nbsp;Atleast 8 Characters
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
 				</div>
 				<div class="form-group">
 					<label for="confirm_password">Confirm Password</label>
@@ -105,7 +201,7 @@
 					<input type="text" class="form-control" name="sec_question" id="sec_question"
 						placeholder="Enter Mother's Maiden Name" Required>
 				</div>
-				<button type="submit" class="btn btn-primary">Create Account</button>
+				<button type="submit" class="btn btn-primary" id="signUp" disabled>Create Account</button>
 			</div>
 		</form>
 		<div class="form-group">
@@ -129,5 +225,92 @@
 		integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
 		crossorigin="anonymous"></script>
 </body>
+
+<script>
+	let state = false;
+	let password = document.getElementById("password");
+	let passwordStrength = document.getElementById("password-strength");
+	let lowUpperCase = document.querySelector(".low-upper-case i");
+	let number = document.querySelector(".one-number i");
+	let specialChar = document.querySelector(".one-special-char i");
+	let eightChar = document.querySelector(".eight-character i");
+
+	password.addEventListener("keyup", function(){
+		let pass = document.getElementById("password").value;
+		checkStrength(pass);
+	});
+
+	function toggle(){
+		if(state){
+			document.getElementById("password").setAttribute("type","password");
+			state = false;
+		}else{
+			document.getElementById("password").setAttribute("type","text")
+			state = true;
+		}
+	}
+
+	function checkStrength(password) {
+		let strength = 0;
+
+		//If password contains both lower and uppercase characters
+		if (password.match(/([a-z].*[A-Z])|([A-Z].*[a-z])/)) {
+			strength += 1;
+			lowUpperCase.classList.remove('fa-circle');
+			lowUpperCase.classList.add('fa-check');
+		} else {
+			lowUpperCase.classList.add('fa-circle');
+			lowUpperCase.classList.remove('fa-check');
+		}
+		//If it has numbers and characters
+		if (password.match(/([0-9])/)) {
+			strength += 1;
+			number.classList.remove('fa-circle');
+			number.classList.add('fa-check');
+		} else {
+			number.classList.add('fa-circle');
+			number.classList.remove('fa-check');
+		}
+		//If it has one special character
+		if (password.match(/([!,%,&,@,#,$,^,*,?,_,~])/)) {
+			strength += 1;
+			specialChar.classList.remove('fa-circle');
+			specialChar.classList.add('fa-check');
+		} else {
+			specialChar.classList.add('fa-circle');
+			specialChar.classList.remove('fa-check');
+		}
+		//If password is greater than 7
+		if (password.length > 7) {
+			strength += 1;
+			eightChar.classList.remove('fa-circle');
+			eightChar.classList.add('fa-check');
+		} else {
+			eightChar.classList.add('fa-circle');
+			eightChar.classList.remove('fa-check');   
+		}
+
+		// If value is less than 2
+		if (strength < 2) {
+			passwordStrength.classList.remove('progress-bar-warning');
+			passwordStrength.classList.remove('progress-bar-success');
+			passwordStrength.classList.add('progress-bar-danger');
+			passwordStrength.style = 'width: 10%';
+			document.getElementById('signUp').disabled = true;
+		} else if (strength == 3) {
+			passwordStrength.classList.remove('progress-bar-success');
+			passwordStrength.classList.remove('progress-bar-danger');
+			passwordStrength.classList.add('progress-bar-warning');
+			passwordStrength.style = 'width: 60%';
+			document.getElementById('signUp').disabled = true;
+		} else if (strength == 4) {
+			passwordStrength.classList.remove('progress-bar-warning');
+			passwordStrength.classList.remove('progress-bar-danger');
+			passwordStrength.classList.add('progress-bar-success');
+			passwordStrength.style = 'width: 100%';
+			document.getElementById('signUp').disabled = false;
+		}
+	}
+</script>
 
 </html>

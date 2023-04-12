@@ -40,8 +40,12 @@ def register(request):
                 user = models.Users(email=username, password=password_hash, 
                                          first_name=first_name, last_name=last_name, street_address=street_addr, street_address_2=street_addr, city=city, zip_code=zip_code, phone_number=phone_num, user_type='Driver', security_question_answer=question_hash)
                 user.save()
-                
-                return redirect('done')
+                # Log into the new user
+                user = backends.CustomAuthBackend.authenticate( username=username, password=password)
+                auth_login(request, user)
+                message = 'You are logged in as a new user, welcome!'
+                messages.info(request, message)
+                return redirect(user_profile)
 
 
         else:
@@ -137,6 +141,14 @@ def resetPassword(request):
         confirm_password = request.POST['confirm_password']
         sec_question_answer = request.POST['sec_question']
 
+        if new_password != confirm_password:
+            messages.info(request, 'Error: Both passwords did not match! Please try again.')
+            return redirect(resetPassword)
+
+        if request.user.email != username or not models.Users.objects.filter(email=username).exists():
+            messages.info(request, 'Error: Wrong username! Please try again.')
+            return redirect(resetPassword)
+        
         answer_hash = hashlib.md5(sec_question_answer.encode()).hexdigest()
         user = models.Users.objects.get(email=username)
         correct_answer_hash = user.security_question_answer
@@ -150,16 +162,21 @@ def resetPassword(request):
                 user.save()
                 pass_change_obj = models.PasswordChanges(user=user, date_time=datetime.datetime.utcnow(), type_of_change=change_type)
                 pass_change_obj.save()
-                return redirect('done')
+                messages.info(request, 'Successfully changed your password!')
+
+                user = backends.CustomAuthBackend.prehashed_auth(username=username, password=hashed_password)
+                if user is not None:
+                    auth_login(request, user)
+                return redirect(resetPassword)
             
             else:
-                message = "New password and confirm password do not match"
+                message = "Error: New password and confirm password do not match"
                 messages.info(request, message)
-                return render(request, 'resetPassword.html', {"message":message})
+                return redirect(resetPassword)
         else:
-            message = "Your mother's maiden name was entered incorrectly."
+            message = "Error: Your mother's maiden name was entered incorrectly."
             messages.info(request, message)
-            return render(request, 'resetPassword.html', {"message":message})
+            return redirect(resetPassword)
             
     else:
         return render(request, 'resetPassword.html')
