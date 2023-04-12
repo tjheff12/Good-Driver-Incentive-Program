@@ -1343,13 +1343,19 @@ def search_ebay_products(query, pageNum):
         api = Finding(domain='svcs.sandbox.ebay.com', appid='HaydenSt-DriverIn-SBX-0cd4f0a51-76ca4c5c', config_file=None)
         response = api.execute('findItemsAdvanced', {
             'keywords': query,
+            'itemFilter': [
+                # Category that excludes all NSFW results
+                {'name': 'ExcludeCategory', 'value': '176992'},
+                #{'name': 'MaxPrice', 'value': str(sponsorMaxPrice), 'paramName': 'Currency', 'paramValue': 'USD'},
+                #{'name': 'LocatedIn', 'value': 'US'}, if the sponsor only wants us-based items
+            ],
             'paginationInput': { 
                 'entriesPerPage': 10,
-                'pageNumber': pageNum,
-                
+                'pageNumber': pageNum
             }
         })
-        #print(response.reply)
+        
+        print(response.dict())
         try:
             total_pages = response.reply.paginationOutput.totalPages
         except:
