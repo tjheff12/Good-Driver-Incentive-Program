@@ -1,37 +1,117 @@
 <!DOCTYPE html>
 <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+		integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <title>Admin Panel</title>
 </head>
+
+    <style>
+    .btn-primary {
+        color: #f4f6f8;
+        background-color: rgb(128, 15, 194);
+        border-color: rgb(228, 114, 8)
+    }
+
+    .btn-primary:hover {
+        color: #f4f6f8;
+        background-color: rgb(228, 114, 8);
+        border-color: rgb(228, 114, 8)
+    }
+
+    .btn-primary:focus,
+    .btn-primary.focus {
+        box-shadow: 0 0 0 .2rem rgba(91, 194, 194, 0.5)
+    }
+
+    .btn-primary.disabled,
+    .btn-primary:disabled {
+        color: #f4f6f8;
+        background-color: rgb(128, 15, 194);
+        border-color: rgb(228, 114, 8)
+    }
+
+    .btn-primary:not(:disabled):not(.disabled):active,
+    .btn-primary:not(:disabled):not(.disabled).active,
+    .show>.btn-primary.dropdown-toggle {
+        color: #f4f6f8;
+        background-color: #9cdada;
+        border-color: #2e7c7c
+    }
+
+    .btn-primary:not(:disabled):not(.disabled):active:focus,
+    .btn-primary:not(:disabled):not(.disabled).active:focus,
+    .show>.btn-primary.dropdown-toggle:focus {
+        box-shadow: 0 0 0 .2rem rgba(91, 194, 194, 0.5)
+    }
+
+    .btn-outline-primary {
+        color: rgb(128, 15, 194);
+        background-color: transparent;
+        background-image: none;
+        border-color: rgb(128, 15, 194)
+    }
+
+    .btn-outline-primary:hover {
+        color: #222;
+        background-color: rgb(228, 114, 8);
+        border-color: rgb(128, 15, 194)
+    }
+
+    .btn-outline-primary:focus,
+    .btn-outline-primary.focus {
+        box-shadow: 0 0 0 .2rem rgb(228, 114, 8)
+    }
+
+    .btn-outline-primary.disabled,
+    .btn-outline-primary:disabled {
+        color: rgb(128, 15, 194);
+        background-color: transparent
+    }
+
+    .btn-outline-primary:not(:disabled):not(.disabled):active,
+    .btn-outline-primary:not(:disabled):not(.disabled).active,
+    .show>.btn-outline-primary.dropdown-toggle {
+        color: #f4f6f8;
+        background-color: rgb(228, 114, 8);
+        border-color: rgb(128, 15, 194)
+    }
+
+    .btn-outline-primary:not(:disabled):not(.disabled):active:focus,
+    .btn-outline-primary:not(:disabled):not(.disabled).active:focus,
+    .show>.btn-outline-primary.dropdown-toggle:focus {
+        box-shadow: 0 0 0 .2rem rgb(228, 114, 8)
+    }
+</style>
+
 <body>
     {% include 'top_buttons.html' %}
     <div class="header_padding" style="text-align: center;">
-        <h1>Administration Panel:<br>
-            <h2>Choose from the options below to get started</h2>
-        </h1>
+        <h2>Administration Panel:<br></h2>
+        <h3>Choose from the options below to get started<br><br></h3>
         
-            <a class="btn btn-dark" href="./adminCreateAccount" role="button">Create Account</a>
+            <a href="./adminCreateAccount" role="button"><button class="btn btn-primary">Create Account</button></a>
        
         <br>
         <br>
-        <a class="btn btn-dark" href="./adminEditAccount" role="button">Edit a Driver's Profile</a>
+        <a href="./adminEditAccount" role="button"><button class="btn btn-primary">Edit a Driver's Profile</button></a>
         <br>
         <br>
         
-            <a class="btn btn-dark" href="./adminDeleteAccount" role="button">Delete Account</a>
-        
-        <br>
-        <br>
-        
-            <a class="btn btn-dark" href="./adminCreateSponsor" role="button">Create Sponsor Entity</a>
+            <a href="./adminDeleteAccount" role="button"><button class="btn btn-primary">Delete Account</button></a>
         
         <br>
         <br>
         
-            <a class="btn btn-dark" href="./adminChangeUserPassword" role="button">Change a User's Password</a>
+            <a href="./adminCreateSponsor" role="button"><button class="btn btn-primary">Create Sponsor Entity</button></a>
         
         <br>
         <br>
-            <a class="btn btn-dark" href="./adminAddDriverToOrganization" role="button">Add a Driver to an Organization</a>
+        
+            <a href="./adminChangeUserPassword" role="button"><button class="btn btn-primary">Change a User's Password</button></a>
+        
+        <br>
+        <br>
+            <a href="./adminAddDriverToOrganization" role="button"><button class="btn btn-primary">Add a Driver to an Organization</button></a>
         
     </div>
 </body>
