@@ -873,6 +873,7 @@ def audit(request):
         if request.method == "GET":
             form = forms.SponsorFormWithAllOption()
             return render(request, 'audit.html', {'form':form})
+        
         elif request.method == "POST":
             start_date = request.POST.get('start_date')
             end_date = request.POST.get('end_date')
@@ -894,10 +895,12 @@ def audit(request):
                 messages.info(request, 'Please enter an end date')
                 return redirect('.')
             
-            user_sponsor_obj = models.SponsorUser.objects.get(user_id=request.user.user_id)
+            sponsor = models.Sponsor.objects.get(sponsor_id=request.POST['id_sponsor_name'])
+            user_sponsor_obj = models.SponsorUser.objects.get(user_id=sponsor)
             sponsor_id = getattr(user_sponsor_obj, 'sponsor_id')
             sponsor_obj = models.Sponsor.objects.get(sponsor_id=sponsor_id)
             sponsor_name = getattr(sponsor_obj, 'name')
+            
 
             if request.POST['driverChoice'] == "All Sponsors":
                 driver_list = []
@@ -961,9 +964,16 @@ def audit(request):
 
             else:
                 driver_list = []
-            
+
+                sponsor = models.Users.objects.get(user_id=request.POST['id_sponsor_name'])
+                user_sponsor_obj = models.SponsorUser.objects.get(user_id=sponsor)
+                sponsor_id = getattr(user_sponsor_obj, 'sponsor_id')
+                sponsor_obj = models.Sponsor.objects.get(sponsor_id=sponsor_id)
+
+                user_obj = models.Users.objects.get(user_id=request.POST['driverChoice'])
+                driver_query = models.PointsHistory.objects.select_related('user').filter(user=user_obj, date_time__range=(start_date,end_date)).order_by('date_time')
+
                 if request.POST['options'] == "password_change":
-                
                     driver_query = models.DriverSponsor.objects.select_related('user').filter(sponsor=sponsor_obj)
                     for driver in driver_query:
                         pass_change_query = models.PasswordChanges.objects.filter(user=driver.user, date_time__range=(start_date,end_date)).order_by('date_time')
