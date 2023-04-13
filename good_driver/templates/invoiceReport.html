@@ -1,0 +1,127 @@
+
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<link rel="stylesheet" href="{% static 'sponsorSales.css' %}">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Report</title> 
+    <style>
+        th, td{
+        padding:15px;
+        border:3px solid black;
+        
+    }
+    
+    h1,h2{
+        text-align: center;
+    }
+    
+    table{
+        margin-left: auto;
+        margin-right: auto;
+        
+        border-collapse: collapse;
+    }
+    </style>
+    <script>
+        function downloadCSV(csv, filename) {
+            var csvFile;
+            var downloadLink;
+
+            // CSV file
+            csvFile = new Blob([csv], {type: "text/csv"});
+
+            // Download link
+            downloadLink = document.createElement("a");
+
+            // File name
+            downloadLink.download = filename;
+
+            // Create a link to the file
+            downloadLink.href = window.URL.createObjectURL(csvFile);
+
+            // Hide download link
+            downloadLink.style.display = "none";
+
+            // Add the link to DOM
+            document.body.appendChild(downloadLink);
+
+            // Click download link
+            downloadLink.click();
+        }
+        function exportTableToCSV(filename) {
+            var csv = [];
+            var rows = document.querySelectorAll("table tr");
+            
+            for (var i = 0; i < rows.length; i++) {
+                var row = [], cols = rows[i].querySelectorAll("td, th");
+                
+                for (var j = 0; j < cols.length; j++) 
+                    row.push("\"" + cols[j].innerText + "\"");
+                
+                csv.push(row.join(","));        
+            }
+
+            // Download CSV file
+            downloadCSV(csv.join("\n"), filename);
+        }
+    </script>
+</head>
+<body>
+    {% include 'top_buttons.html' %}
+    <div class="header_padding">
+        
+        {% if driver_list %}
+        <h2>Summary Invoice for {{sponsor_name}}</h2>
+        <table>
+            <tr>
+                <th>Sponsor Name</th>
+                <th>Total Cost of Orders</th>
+                <th>Fee Generated</th>
+            </tr>
+            {% for entry in sponsor_list %}
+            <tr>
+                <td>{{entry.name}}</td>
+                <td>{{entry.total_cost}}</td>
+                <td>{{entry.total_fee}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        <h2>{{sponsor_name}}'s Detailed Invoice</h2>
+        <br>
+        <table>
+            <caption>
+            <tr>
+                
+                <th>Sponsor</th>
+                <th>Driver</th>
+                <th>Total Cost of Orders</th>
+                <th>Fee Generated</th>
+                
+            </tr>
+            {% for entry in driver_list %}
+                <tr>
+                    <td>{{entry.sponsor}}</td>
+                    <td>{{entry.name}}</td>
+                    <td>{{entry.total_cost}}</td>
+                    <td>{{entry.total_fee}}</td>
+                </tr>
+            {% endfor %}
+        </table>
+        <br>
+        <div style="text-align: center;">
+            <button onclick="exportTableToCSV('Invoice for {{sponsor_name}}.csv')">Download Report</button>
+        </div>
+        {% else %}
+        
+        <h2 style="text-align:center">No Orders During Time Period</h2>
+        {% endif %}
+        </div>
+    </div>
+    
+    
+</body>
+</html>

@@ -14,34 +14,36 @@
 </head>
 
 <body>
-    <form action="" method="POST" class="form-horizontal">
-        {% csrf_token%}
-        <div class="mx-auto" style="width: 400px;">
+    {% include 'top_buttons.html' %}
+	<div class="header_padding">
+        <form action="" method="POST" class="form-horizontal">
+            {% csrf_token%}
+            <div class="mx-auto" style="width: 400px;">
 
-            <div class="col-xs-8 col-xs-offset-4">
-                <h2 style="text-align:center;">Edit Sponsor Organization</h2>
+                <div class="col-xs-8 col-xs-offset-4">
+                    <h2 style="text-align:center;">Edit Sponsor Organization</h2>
+                </div>
+                <hr />
+                <div class="form-group">
+                    <label for="newName">New Organization Name</label>
+                    <input type="text" class="form-control" name="newName" id="newName"
+                        placeholder="Enter New Name for your Organization">
+                    <br>
+                    <label for="maxPrice">New Maximum Price for the Catalog</label>
+                    <input type="text" class="form-control" name="maxPrice" id="maxPrice"
+                        placeholder="Enter New Max Price for your Organization">
+                </div>
+                <button type="Update Organization" class="btn btn-primary">Update Organization</button>
             </div>
-            <hr />
-            <div class="form-group">
-                <label for="newName">New Organization Name</label>
-                <input type="text" class="form-control" name="newName" id="newName"
-                    placeholder="Enter New Name for your Organization">
-                <br>
-                <label for="maxPrice">New Maximum Price for the Catalog</label>
-                <input type="text" class="form-control" name="maxPrice" id="maxPrice"
-                    placeholder="Enter New Max Price for your Organization">
+        </form>
+        <div class="form-group">
+            {% for message in messages %}
+            <div class="alert alert-danger" role="alert">
+                {{message}}
             </div>
-            <button type="Update Organization" class="btn btn-primary">Update Organization</button>
+            {% endfor %}
         </div>
-    </form>
-    <div class="form-group">
-        {% for message in messages %}
-        <div class="alert alert-danger" role="alert">
-            {{message}}
-        </div>
-        {% endfor %}
     </div>
-
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
