@@ -1485,7 +1485,7 @@ def search_ebay_products(query, pageNum, sponsorMaxPrice):
     from ebaysdk.exception import ConnectionError
     from ebaysdk.finding import Connection as Finding
     from ebaysdk.shopping import Connection as Shopping
-
+    
     try:
         api = Finding(domain='svcs.sandbox.ebay.com', appid='HaydenSt-DriverIn-SBX-0cd4f0a51-76ca4c5c', config_file=None)
         response = api.execute('findItemsAdvanced', {
@@ -1500,8 +1500,11 @@ def search_ebay_products(query, pageNum, sponsorMaxPrice):
                 'pageNumber': pageNum
             }
         })
-        
-        #print(response.dict())
+        #print(response.reply)
+        if(response.reply.ack == "Failure"):
+            return {}, 0
+        if(response.reply.searchResult._count == '0'):
+            return {}, 0
         try:
             total_pages = response.reply.paginationOutput.totalPages
         except:
@@ -1532,9 +1535,14 @@ def order_item(request, sponsor):
     elif request.method == "POST":
         if request.user.user_type == "Driver":
             #print(request.POST)
+            
+
             user=request.user
+            sponsor_user = models.Users.objects.get(user_id=0)
             sponsor_obj = models.Sponsor.objects.get(name=sponsor)
             sponsor_id = sponsor_obj.sponsor_id
+            
+            
             conversion_rate = sponsor_obj.point_value
             
             
@@ -1559,7 +1567,7 @@ def order_item(request, sponsor):
                 messages.info(request, "You do not have enough points to order that item")
                 return redirect("./catalogOverview/pageNum=1")
             
-            point_history_obj = models.PointsHistory(user=user, sponsor=sponsor_obj, point_change=(point_cost * -1), date_time=current_time, reason="Item Ordered")
+            point_history_obj = models.PointsHistory(user=user, sponsor=sponsor_obj, point_change=(point_cost * -1), date_time=current_time, reason="Item Ordered", sponsor_user=None)
             point_history_obj.save()
 
             new_order = models.Orders(user=user, sponsor=sponsor_obj, date_time=current_time, status='Pending', price=price, points=point_cost, item_id=item_id, item_name=item_name)
@@ -1568,7 +1576,47 @@ def order_item(request, sponsor):
 
             messages.info(request, "Item Ordered")
             return redirect("./catalogOverview/pageNum=1")
+        elif request.user.user_type == "Sponsor":
+            ### IN THIS WHOLE IF STATEMENT THE sponsor VARIABLE IS A DRIVER'S ID
+            sponsor_user = models.Users.objects.get(user_id=request.user.user_id)
+            user= models.Users.objects.get(user_id=sponsor)
+            user_sponsor_obj = models.SponsorUser.objects.get(user_id=request.user.user_id)
+            sponsor_id = getattr(user_sponsor_obj, 'sponsor_id')
+            sponsor_obj = models.Sponsor.objects.get(sponsor_id=sponsor_id)
+
+            conversion_rate = sponsor_obj.point_value
+
             
+            
+            price = float(request.POST['price'][1:])
+            current_time = datetime.datetime.utcnow()
+            
+            item_id = request.POST['item_id']
+            
+
+            
+            
+            
+            point_cost = math.ceil(float(price) / float(conversion_rate))
+            
+
+            points_obj = models.Points.objects.get(user=user, sponsor=sponsor_obj)
+            current_points = points_obj.point_total
+            item_name = request.POST['item_name']
+
+            if(current_points < point_cost):
+                messages.info(request, "The driver does not have enough points to order that item")
+                return redirect("./catalog/pageNum=1")
+            
+            point_history_obj = models.PointsHistory(user=user, sponsor=sponsor_obj, point_change=(point_cost * -1), date_time=current_time, reason="Item Ordered by Sponsor", sponsor_user=sponsor_user)
+            point_history_obj.save()
+
+            new_order = models.Orders(user=user, sponsor=sponsor_obj, date_time=current_time, status='Pending', price=price, points=point_cost, item_id=item_id, item_name=item_name)
+            new_order.save()
+            
+
+            messages.info(request, "Item Ordered")
+            return redirect("./catalog/pageNum=1")
         else:
             raise Http404
     
@@ -1887,3 +1935,114 @@ def end_admin_sponsor_impersonation(request):
 
     messages.info(request, "You have successfully ended the impostor session, and are now logged back into your original account.")
     return redirect(user_profile)
+
+def index(request):
+    if request.method == "GET":
+        return redirect(home)
+    elif request.method == "POST":
+        raise PermissionDenied
+    
+def itemForDriver(request):
+    if request.user.user_type != "Sponsor":
+        raise PermissionDenied
+    else:
+        if request.method == "GET":
+            user_sponsor_obj = models.SponsorUser.objects.get(user_id=request.user.user_id)
+            sponsor_id = getattr(user_sponsor_obj, 'sponsor_id')
+            sponsor_obj = models.Sponsor.objects.get(sponsor_id=sponsor_id)
+            driver_query = models.DriverSponsor.objects.select_related('user').filter(sponsor=sponsor_obj).order_by('user__first_name')
+            driver_list = []
+            
+            for driver in driver_query:
+                
+                id = driver.user.user_id
+                first_name = driver.user.first_name
+                last_name = driver.user.last_name
+                street_address = driver.user.street_address
+                city = driver.user.city
+                zip_code = driver.user.zip_code
+                phone_number = driver.user.phone_number
+                new_dict = {'id':id,'name':first_name + " " + last_name,'street_address':street_address,'city':city,'zip_code':zip_code, 'phone_number':phone_number}
+                
+                driver_list.append(new_dict)
+            return render(request, 'itemForDriver.html', {'driver_list':driver_list})
+        elif request.method == "POST":
+            print(request.POST)
+            return redirect("./itemForDriver/" + request.POST['driver_name'] + "/catalog/pageNum=1")
+
+def sponsor_catalog_overview(request, driver, pageNum=1, search="search"):
+    import math
+    # We will need to determine what sponsors can choose for filtering the catalog page ex: name, category, price, etc. (or all the above!)
+        # this currently just tests it with a simple query for the name of the item (IN SANDBOX MODE)
+    if request.method == "GET" and request.user.user_type == "Sponsor":
+        # Validate that the driver's link with the sponsor is one of their actual sponsors
+        user_sponsor_obj = models.SponsorUser.objects.get(user_id=request.user.user_id)
+        sponsor_id = getattr(user_sponsor_obj, 'sponsor_id')
+        sponsor_obj = models.Sponsor.objects.get(sponsor_id=sponsor_id)
+        
+        driver_obj = models.Users.objects.get(user_id = driver)
+        driver_name = driver_obj.first_name + " " + driver_obj.last_name
+        conversion_rate = sponsor_obj.point_value
+        try:
+            points_obj = models.Points.objects.get(user=driver_obj, sponsor=sponsor_obj)
+            current_points = points_obj.point_total
+        except:
+            current_points = 0
+
+        sponsorMaxPrice = sponsor_obj.maxPrice
+        print(sponsorMaxPrice)
+        results_tuple = search_ebay_products(search, pageNum, sponsorMaxPrice)
+
+        
+        
+        
+        try:
+            
+
+            productResultsDict = results_tuple[0]
+            
+            total_pages = results_tuple[1]
+            if(productResultsDict != {}):
+                for item in productResultsDict['searchResult']['item']:
+                    item["point_cost"] = math.ceil(float(item['sellingStatus']['currentPrice']['value']) / float(conversion_rate))
+                
+            
+            return render(request, 'sponsorCatalogOverview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search, 'driver':driver_name, 'points':current_points, 'sponsorPointConversion':conversion_rate})
+        except Exception as e:
+            print(e)
+            productResultsDict = {}
+            total_pages = 0
+            return render(request, 'sponsorCatalogOverview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search
+                                                             , 'points': current_points, 'sponsorPointConversion': conversion_rate, 
+                                                             'driver': driver_name})
+    # If a sponsor user decides to use the catalog, they can only access their own
+    if request.method == "POST" and request.user.user_type == "Sponsor" and False:
+        
+        # Validate that the driver's link with the sponsor is one of their actual sponsors
+        sponsor = 0
+        sponsor_list_query = models.SponsorUser.objects.select_related('sponsor').filter(user=request.user.user_id)
+        sponsor_found = False
+        for obj in sponsor_list_query:
+           if obj.sponsor.name == sponsor:
+               sponsor_found = True
+        if sponsor_found == False:
+            messages.info(request, 'An Invalid Organization Was Chosen!')
+            return redirect(catalog)
+
+        #print(search)
+        currSponsorUser = models.SponsorUser.objects.get(user=request.user.user_id)
+        sponsorMaxPrice = models.Sponsor.objects.get(sponsor_id=currSponsorUser.sponsor.sponsor_id).maxPrice
+        results_tuple = search_ebay_products(search, pageNum, sponsorMaxPrice)
+
+        sponsor_entity = models.Sponsor.objects.get(name=sponsor)
+        
+        productResultsDict = results_tuple[0]
+        
+        total_pages = results_tuple[1]
+        return render(request, 'catalog_overview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search
+                                                            , 'pointsAvailable': 0, 'sponsorPointConversion': sponsor_entity.point_value, 
+                                                            'sponsor': sponsor, 'minPointsForADollar': 0})
+
+    elif request.method == "POST":
+        
+        return redirect('../pageNum=1&&search=' + request.POST['search'])

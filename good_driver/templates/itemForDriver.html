@@ -1,0 +1,50 @@
+</style>
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<link rel="stylesheet" href="{% static 'catalog.css' %}">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalog</title> 
+</head>
+<body>
+    {% include 'top_buttons.html' %}
+    <div class="header_padding">
+        <div style="text-align: center;">
+            {% if driver_list %}
+            <h1>Pick a Driver</h1>
+            <form method="POST" class="driverForm">
+                {% csrf_token %}
+                <select name="driver_name" id = "driver_name">
+                    {% for entry in driver_list%}
+                    <option value="{{entry.id}}">{{entry.name}}</option>
+                    {% endfor %}
+                </select>
+                <br>
+                <br>
+                <button type="submit">Submit</button>
+            </form>
+            {% else %} 
+            <h1>Your Organization has no drivers</h1>
+            <input type="button" class="button" value="Return to Panel" onclick="window.location.href='/home/sponsorPanel'"/>
+            {% endif %}
+            <div >
+                {% for message in messages %}
+                <div role="alert">
+                   <font color="red">{{message}}</font> 
+                </div>
+                {% endfor %}
+            </div>
+            
+        </div>
+    </div>
+
+
+
+
+
+
+</body>
+</html>

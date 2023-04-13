@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+    <title>Catalog Overview</title>
+</head>
+<style>
+    td,
+    th {
+        border-left: 100px solid #FFF;
+    }
+
+    img {
+        width: 100%;
+        max-width: 90px;
+    }
+</style>
+
+
+
+<body>
+    {% include 'top_buttons.html' %}
+    <div class="header_padding">
+        <div style="text-align: center;">
+            <h1>Your Points Available to Spend:
+                {% if points >= 0 %}
+                <font color="#50C878">{{points}}
+                    {% else %}
+                    <font color="red">{{points}}
+                        {% endif %}
+                        points
+            </h1>
+            </font>
+            <h3>Point to Dollar Conversion Rate: <b>1 Point = ${{sponsorPointConversion}}*</b></h3>
+            <h3>Selected Driver: <b>{{driver}}</b></h3>
+        </div>
+
+        <br>
+
+        <div class="search" style="text-align: center;">
+            <form method="POST">
+                {% csrf_token %}
+                <input type="text" id="search" name="search" placeholder="Search Catalog">
+                <button type="submit">Go</button>
+            </form>
+        </div>
+
+        {% if product_result_list.searchResult.item %}
+        <br>
+        <table style="margin-left: auto; margin-right: auto">
+            <tr>
+                <th>Product Image</th>
+                <th>Item Name</th>
+                <th>Item Price</th>
+                <th>In Stock?</th>
+                <th>Point Cost</th>
+                <th>Order Item?</th>
+            </tr>
+
+            {% for product in product_result_list.searchResult.item %}
+            <tr>
+                <form action="../../order" method="POST">
+                    {% csrf_token %}
+                    <td hidden="hidden"><input type="number" class="item_id" name='item_id' value={{product.itemId}}
+                            readonly></td>
+                    <input hidden="hidden" name="item_name" type="text" value="{{product.title}}">
+                    <td><img src="{{product.galleryURL}}" alt="No image provided"></td>
+                    <td><a href="//{{product.viewItemURL|urlencode}}">{{product.title}}</a></td>
+                    <td><input style='border: 0;' type="text" class="price" name='price'
+                            value=${{product.sellingStatus.currentPrice.value}} readonly></td>
+                    <td>
+                        {% if product.sellingStatus.sellingState == 'Active' %}
+                        <font color="green">Yes</font>
+                        {% else %}
+                        <font color="red">No</font>
+                        {% endif %}
+                    </td>
+                    <td>{{product.point_cost}}</td>
+                    {% if product.sellingStatus.sellingState == 'Active' and product.point_cost < points and user.is_impersonation == 0 %} <td><button type="submit">Order Item</button></td>
+                        {% elif user.is_impersonation == 1 %}
+                        <td><button type="submit" disabled>Orders Disabled for Impersonation Mode</button></td>
+                        {% else %}
+                        <td><button type="submit" disabled>Not Enough Points</button></td>
+                        {% endif %}
+                </form>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <br><br><br>
+        <div style="text-align: center; align-items: center;">
+            <h3>No items to show</h3>
+        </div>
+        <br><br><br>
+        {% endif %}
+        <br>
+
+        <br>
+        <div style="text-align: center;">
+
+            <p>Page {{pageNum}} of {{totalPages}} </p>
+
+        </div>
+        <div style="text-align: center;">
+            {% if pageNum > 1 %}
+            <a href='../pageNum={{pageNum|add:-1}}&&search={{search}}' style="text-align: center;">Prev Page</a>
+            {% endif %}
+            {% if pageNum < totalPages %} <a href='../pageNum={{pageNum|add:1}}&&search={{search}}'
+                style="text-align: center;">Next Page</a>
+        </div>
+        {% endif %}
+
+        <div style="text-align: center;">
+            <br>
+            <small><b>*</b> - Set by your Organization, amounts in USD</small>
+            <br>
+            <small><b>**</b> - Orders will be sent to your current Address</small>
+        </div>
+
+        <div class="form-group">
+            {% for message in messages %}
+            <div class="alert alert-danger" role="alert" style="color:rgb(255,0,0);">
+                {{message}}
+            </div>
+            {% endfor %}
+        </div>
+
+
+    </div>
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

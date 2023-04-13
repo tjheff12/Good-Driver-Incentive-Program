@@ -6,27 +6,25 @@
         <h1>Sponsor Panel:<br>
             <h2>Choose from the options below to get started</h2>
         </h1>
-        <form method="POST">
-            {% csrf_token %}
+        
             <a class="btn btn-dark" href="./sponsorCreateAccount" role="button">Create Sponsor Account</a>
-        </form>
-        <br>
-        <form method="POST">
-            {% csrf_token %}
+        
+        <br><br>
+    
             <a class="btn btn-dark" href="./sponsorRemoveDriver" role="button">Remove A Driver From Your
                 Organization</a>
-        </form>
-        <br>
-        <form method="POST">
-            {% csrf_token %}
+        
+        <br><br>
+        
             <a class="btn btn-dark" href="./sponsorAddDriver" role="button">Add A Driver To Your Organization</a>
-        </form>
-        <br>
-        <form method="POST">
-            {% csrf_token %}
+        
+        <br><br>
+        
             <a class="btn btn-dark" href="./sponsorEditOrganization" role="button">Edit Your Organization (inc.
                 Catalog)</a>
-        </form>
+        <br><br>
+        <a class="btn btn-dark" href="./itemForDriver" role="button">Buy an item for a driver</a>
+
     </div>
 </body>
 
