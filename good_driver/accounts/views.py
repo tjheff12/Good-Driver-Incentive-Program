@@ -708,6 +708,8 @@ def sponsor_edit_organization(request):
         elif request.method == "POST":
             newName = request.POST['newName']
             maxPrice = request.POST['maxPrice']
+            pointValue = request.POST['pointValue']
+            autoPoints = request.POST['autoPoints']
 
             if newName != "":
                 sponsorsOrg.name = newName
@@ -716,6 +718,14 @@ def sponsor_edit_organization(request):
                     messages.info(request, 'Max Price has to be a valid number!')
                     return render(request, 'sponsorEditOrganization.html', {'sponsorName': sponsorsOrg.name})
                 sponsorsOrg.maxPrice = float(maxPrice)
+            if pointValue != "":
+                sponsorsOrg.point_value = float(pointValue)
+            if autoPoints != "":
+                sponsorsOrg.autoPoints = int(autoPoints)
+
+            print("sid" + str(sponsorsOrg.sponsor_id))
+            print("pv " + pointValue + str(pointValue == ""))
+            print("ap " + autoPoints + str(autoPoints == ""))
 
             sponsorsOrg.save()
             messages.info(request, 'Successfully Updated the Organization')
