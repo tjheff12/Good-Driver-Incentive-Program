@@ -384,7 +384,8 @@ def admin_create_sponsor(request):
                 new_sponsor = models.Sponsor(point_value=point_value, name=sponsor_name)
                 new_sponsor.save()
 
-                return redirect('done')
+                messages.info(request, 'Sponsor organization successfully created.')
+                return redirect(admin_panel)
             else:
                 messages.info(request, 'Sponsor Company Name Already Taken! Please Try a Different Name.')
                 return redirect(admin_create_sponsor)
@@ -461,7 +462,8 @@ def admin_change_user_password(request):
                 userToUpdate.save()
                 pass_change_obj = models.PasswordChanges(user=userToUpdate, date_time=datetime.datetime.utcnow(), type_of_change='Admin')
                 pass_change_obj.save()
-                return redirect('done')
+                messages.info(request, 'User password successfully updated.')
+                return redirect(admin_panel)
             else:
                 messages.info(request, 'Username does not exist')
                 return redirect(admin_change_user_password)
@@ -575,7 +577,8 @@ def sponsor_create_account(request):
                     sponsorUser = models.SponsorUser(user=user, sponsor=Sponsor)
                     sponsorUser.save()
                     
-                    return redirect('done')
+                    messages.info(request, 'New sponsor account successfully created.')
+                    return redirect(sponsor_panel)
             else:
                 messages.info(request, 'Both passwords are not matching')
                 return redirect(sponsor_create_account)
@@ -666,7 +669,8 @@ def sponsor_add_driver(request):
                     
                     driverSponsor.save()
                     
-                    return redirect('done')
+                    messages.info(request, 'Driver successfully added to your organization.')
+                    return redirect(sponsor_panel)
         else: raise Http404
     # Returns 403 Error (Permission Denied)    
     else: raise PermissionDenied
