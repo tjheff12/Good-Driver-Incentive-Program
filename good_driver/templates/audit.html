@@ -8,6 +8,74 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Audit</title> 
+
+    <script type="text/javascript">
+        window.onload = CheckSponsorWrap;
+        
+        function removeAll(selectElement) {
+            var i, L = selectElement.options.length - 1;
+            for(i = L; i >= 0; i--) {
+                selectElement.remove(i);
+            }
+        }
+        //Makes sure that when loading this webpage "All Sponsors" is the chosen drop down
+        function CheckSponsorWrap(){
+           
+            document.getElementById('id_sponsor_name').selectedIndex = 0;
+            return true;
+            
+        }
+
+        function getDriverID(name){
+            let driverIDs = JSON.parse('{{idList|safe}}')
+            for(let i = 0; i < driverIDs.length; i++){
+                if(driverIDs[i]['name'] == name){
+                    return driverIDs[i]['id'];
+                }
+            }
+            return 0;
+        }
+
+		function CheckSponsor(val) {
+            let first = true;
+            let driverList = JSON.parse('{{driverList|safe}}');
+            
+			var sponsor_elm = document.getElementById('id_sponsor_name');
+			var driver_elm = document.getElementById('driverChoice');
+            let driver_select = document.querySelector(".driverChoice");
+            var driver_label = document.getElementById('driverLabel');
+			if (val != 'All Sponsors') {
+                removeAll(driver_elm);
+				driver_elm.removeAttribute('hidden');
+				driver_label.removeAttribute('hidden');
+                //driver_select.empty();
+                for(let i = 0; i < driverList.length; i++){
+                    if(driverList[i]['sponsor'] == val){
+                        if(first) {
+                            let opt = document.createElement('option');
+                            let optionText = document.createTextNode('All Drivers');
+                            opt.appendChild(optionText);
+                            opt.setAttribute('value', 'All Drivers');
+                            driver_select.appendChild(opt);
+                            first = false;
+                        }
+                        let opt = document.createElement('option');
+                        let optionText = document.createTextNode(driverList[i]['name']);
+                        opt.appendChild(optionText);
+                        opt.setAttribute('value', getDriverID(driverList[i]['name']));
+                        driver_select.appendChild(opt);
+                    }
+                }
+
+			}
+			else {
+				
+				driver_elm.setAttribute('hidden', 'hidden');
+                driver_label.setAttribute('hidden', 'hidden');
+			}
+		}
+       
+	</script>
 </head>
 {% if user.user_type == 'Sponsor' %}
 <body>
@@ -71,13 +139,7 @@
                 </div>
                 <br>
                 <center>
-                    <select name="sponsor_list">
-                        <option value="">--Select--</option>
-                        <option value="all">All Drivers</option>
-                        <option value="sponsor1">Sponsor 1</option>
-                        <option value="sponsor2">Sponsor 2</option>
-                        <option value="sponsor3">Sponsor 3</option>
-                    </select>
+                    {{form}}
                 </center>
                 <br>
                 <div class="categoryOptions">

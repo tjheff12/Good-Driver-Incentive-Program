@@ -10,23 +10,18 @@
     <title>SponsorReport</title> 
 </head>
 <body>
-    <div class="sponsorReport">
-        <form method="post">
-            <h2 class="title"> Sponsor Report </h2>
-            <a href='pointTracking'><input type="button" class="buttonFormat" value="Driver Point Tracking"/></a>
-            <br>
-            <br>
-            <a href='audit'><input type="button" class="buttonFormat" value="Audit Log"/></a>
-        </form>
-    </div>
+    {% include 'top_buttons.html' %}
+    <div class='header_padding'>
+        <div class="sponsorReport">
+            <form method="post">
+                <h2 class="title"> Sponsor Report </h2>
+                <a href='pointTracking'><input type="button" class="buttonFormat" value="Driver Point Tracking"/></a>
+                <br>
+                <br>
+                <a href='audit'><input type="button" class="buttonFormat" value="Audit Log"/></a>
+            </form>
+        </div>
 
-    <!---<div class="home">
-        <img src="{% static 'images/home.png' %}" alt="My Image" >
-    </div> -->
-
-    <div class="switchView">
-        <input type="button" value="Light Mode"/>
-        <input type="button" value="Dark Mode"/>
     </div>
 </body>
 </html>
