@@ -202,7 +202,7 @@ def pointChange(request):
             
             return render(request, 'pointChange.html', {'driver_list': driver_list})
         elif request.method == "POST":
-           
+            sponsor_user_obj = models.Users.objects.get(email=request.user.email)
             user_sponsor_obj = models.SponsorUser.objects.get(user_id=request.user.user_id)
             sponsor_id = getattr(user_sponsor_obj, 'sponsor_id')
             point_amount = request.POST['point_amount']
@@ -219,7 +219,7 @@ def pointChange(request):
                 messages.info(request,"Points Added")
             
             
-            new_point_history = models.PointsHistory(user=models.Users.objects.get(user_id = request.POST['driver_id']), sponsor=models.Sponsor.objects.get(sponsor_id=sponsor_id), point_change=point_amount, date_time=datetime.utcnow(), reason=reasoning)
+            new_point_history = models.PointsHistory(user=models.Users.objects.get(user_id = request.POST['driver_id']), sponsor=models.Sponsor.objects.get(sponsor_id=sponsor_id), point_change=point_amount, date_time=datetime.utcnow(), reason=reasoning, sponsor_user=sponsor_user_obj)
             new_point_history.save()
             
             return redirect(pointChange)
@@ -340,10 +340,8 @@ def admin_create_account(request):
                                             phone_number=phone_num, user_type=user_type, security_question_answer=sec_hash)
                     user.save()
                     
-                    if user.user_type == 'Admin':
-                        adminUser = models.AdminUser(user=user)
-                        adminUser.save()
-                    elif user.user_type == 'Sponsor':
+                    
+                    if user.user_type == 'Sponsor':
                         
                         sponsor = request.POST['sponsor']
                         # Check if the organization exists
@@ -881,7 +879,10 @@ def driverSales(request):
             driver_name = "none"
             order_query = models.Orders.objects.select_related('sponsor', 'user').filter(date_time__range=(request.POST['start_date'],request.POST['end_date'])).order_by("sponsor")
             total_orders = len(order_query)
-            total_price = round(models.Orders.objects.filter(date_time__range=(request.POST['start_date'],request.POST['end_date'])).aggregate(price__sum = Sum('price', filter=~Q(status='Cancelled')))['price__sum'], 2)
+            if total_orders != 0:
+                total_price = round(models.Orders.objects.filter(date_time__range=(request.POST['start_date'],request.POST['end_date'])).aggregate(price__sum = Sum('price', filter=~Q(status='Cancelled')))['price__sum'], 2)
+            else:
+                total_price = 0
             order_list = []
             for order in order_query:
                 sponsor = order.sponsor.name
@@ -1014,9 +1015,73 @@ def invoice(request):
         return redirect(login)
     elif request.user.user_type != "Admin":
         raise PermissionDenied
-    if request.method == "GET":
-        form = forms.SponsorFormWithAllOption()
-        return render(request, 'invoice.html', {'form':form})
+    else:
+        if request.method == "GET":
+            form = forms.SponsorFormWithAllOption()
+            return render(request, 'invoice.html', {'form':form})
+        if request.method == "POST":
+            print(request.POST)
+            if(request.POST['start_date'] == ''):
+                messages.info(request, 'Please Enter a Start Date')
+                return redirect('.')
+            if(request.POST['end_date'] == ''):
+                messages.info(request, 'Please Enter an End Date')
+                return redirect('.')
+            if(request.POST['end_date'] < request.POST['start_date']):
+                messages.info(request, 'End Date must be after Start Date')
+                return redirect('.')
+            if request.POST['sponsor_name'] != 'All Sponsors':
+                sponsor_obj = models.Sponsor.objects.get(name=request.POST['sponsor_name'])
+                driver_query = models.DriverSponsor.objects.select_related('user').filter(sponsor=sponsor_obj)
+                driver_list = []
+                total_sponsor_fee = 0
+                total_sponsor_cost = 0
+                for driver in driver_query:
+                    total_cost = models.Orders.objects.filter(user=driver.user ,date_time__range=( request.POST['start_date'],request.POST['end_date'])).aggregate(price__sum = Sum('price', filter=~Q(status='Cancelled')))['price__sum']
+                    
+                    if total_cost is None:
+                        total_cost = 0
+                    else:
+                        total_cost = round(total_cost, 2)
+                    driver_name = driver.user.first_name + " " + driver.user.last_name
+                    
+                    total_fee = round(total_cost * 0.3, 2)
+                    total_sponsor_cost = total_sponsor_cost + total_cost
+                    total_sponsor_fee = total_sponsor_fee + total_fee
+                    new_dict = {'name':driver_name,'total_cost':total_cost,'total_fee':total_fee, 'sponsor':request.POST['sponsor_name']}
+                    driver_list.append(new_dict)
+                sponsor_list = [{'name':request.POST['sponsor_name'],'total_cost':total_sponsor_cost,'total_fee':total_sponsor_fee}]
+            else:
+                all_sponsor_query = models.Sponsor.objects.all()
+                sponsor_list = []
+                driver_list = []
+                for sponsor in all_sponsor_query:
+                    print(sponsor.name)
+                    sponsor_obj = models.Sponsor.objects.get(name=sponsor.name)
+                    driver_query = models.DriverSponsor.objects.select_related('user').filter(sponsor=sponsor_obj).order_by('user__first_name')
+                    
+                    total_sponsor_fee = 0
+                    total_sponsor_cost = 0
+                    for driver in driver_query:
+                        total_cost = models.Orders.objects.filter(user=driver.user ,date_time__range=( request.POST['start_date'],request.POST['end_date'])).aggregate(price__sum = Sum('price', filter=~Q(status='Cancelled')))['price__sum']
+                        
+                        if total_cost is None:
+                            total_cost = 0
+                        else:
+                            total_cost = round(total_cost, 2)
+                        driver_name = driver.user.first_name + " " + driver.user.last_name
+                        
+                        total_fee = round(total_cost * 0.3, 2)
+                        total_sponsor_cost = total_sponsor_cost + total_cost
+                        total_sponsor_fee = total_sponsor_fee + total_fee
+                        new_dict = {'name':driver_name,'total_cost':total_cost,'total_fee':total_fee, 'sponsor':sponsor.name}
+                        driver_list.append(new_dict)
+                    sponsor_list.append({'name':sponsor.name,'total_cost':total_sponsor_cost,'total_fee':total_sponsor_fee})
+                    #driver_list_list.append({'sponsor_name':sponsor.name, 'driver_list':driver_list})
+                    
+            return render(request,'invoiceReport.html',{'driver_list':driver_list, 'sponsor_name':request.POST['sponsor_name'], 'sponsor_list':sponsor_list})
+
+
 
 def audit(request):
     if request.user.is_anonymous == True:

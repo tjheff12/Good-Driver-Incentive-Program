@@ -125,11 +125,12 @@ class Points(models.Model):
 
 class PointsHistory(models.Model):
     change_id = models.AutoField(db_column='Change_ID', primary_key=True)  # Field name made lowercase.
-    user = models.ForeignKey('Users', models.CASCADE, db_column='User_ID')  # Field name made lowercase.
+    user = models.ForeignKey('Users', models.CASCADE, db_column='User_ID', related_name='user')  # Field name made lowercase.
     sponsor = models.ForeignKey('Sponsor', models.CASCADE, db_column='Sponsor_ID')  # Field name made lowercase.
     point_change = models.IntegerField(db_column='Point_Change')  # Field name made lowercase.
     date_time = models.DateTimeField(db_column='Date_Time')  # Field name made lowercase.
     reason = models.CharField(db_column='Reason', max_length=50)  # Field name made lowercase.
+    sponsor_user = models.ForeignKey('Users', models.CASCADE, db_column='Sponsor_User_ID', related_name='sponsor_user')  # Field name made lowercase.
 
     class Meta:
         managed = False
