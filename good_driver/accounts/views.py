@@ -2016,32 +2016,7 @@ def sponsor_catalog_overview(request, driver, pageNum=1, search="search"):
                                                              , 'points': current_points, 'sponsorPointConversion': conversion_rate, 
                                                              'driver': driver_name})
     # If a sponsor user decides to use the catalog, they can only access their own
-    if request.method == "POST" and request.user.user_type == "Sponsor" and False:
-        
-        # Validate that the driver's link with the sponsor is one of their actual sponsors
-        sponsor = 0
-        sponsor_list_query = models.SponsorUser.objects.select_related('sponsor').filter(user=request.user.user_id)
-        sponsor_found = False
-        for obj in sponsor_list_query:
-           if obj.sponsor.name == sponsor:
-               sponsor_found = True
-        if sponsor_found == False:
-            messages.info(request, 'An Invalid Organization Was Chosen!')
-            return redirect(catalog)
-
-        #print(search)
-        currSponsorUser = models.SponsorUser.objects.get(user=request.user.user_id)
-        sponsorMaxPrice = models.Sponsor.objects.get(sponsor_id=currSponsorUser.sponsor.sponsor_id).maxPrice
-        results_tuple = search_ebay_products(search, pageNum, sponsorMaxPrice)
-
-        sponsor_entity = models.Sponsor.objects.get(name=sponsor)
-        
-        productResultsDict = results_tuple[0]
-        
-        total_pages = results_tuple[1]
-        return render(request, 'catalog_overview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search
-                                                            , 'pointsAvailable': 0, 'sponsorPointConversion': sponsor_entity.point_value, 
-                                                            'sponsor': sponsor, 'minPointsForADollar': 0})
+   
 
     elif request.method == "POST":
         
