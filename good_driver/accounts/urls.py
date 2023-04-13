@@ -74,7 +74,7 @@ urlpatterns = [
     path('adminInfo/', views.adminInfo, name='adminInfo'),
     
     path('home/adminPanel/adminEditAccount/', views.admin_edit_account, name='adminEditAccount'),
-    #path('sponsorPanel/', views.sponsor_panel, name='sponsorPanel'),
+    
     path('sponsorCreateAccount/', views.sponsor_create_account, name='sponsorCreateAccount'),
     path('sponsorRemoveDriver/', views.sponsor_remove_driver, name='sponsorRemoveDriver'),
     path('application/', views.application, name='application'),    
@@ -91,7 +91,7 @@ urlpatterns = [
 
     path('sponsorHome/', views.sponsorHome, name='sponsorHome'),
 
-    #path('home/', views.driverHome, name="home"),
+
 
     path('adminHome/', views.adminHome, name="adminHome"),
 
@@ -100,21 +100,22 @@ urlpatterns = [
 
     path('home/report/pointTracking/', views.pointTracking, name='pointTracking'),
 
-    #path('adminHome/adminReport/driverSales/', views.driverSales, name='driverSales'),
-
-    #path('adminHome/adminReport/sponsorSales/', views.sponsorSales, name='sponsorSales'),
-
-    #path('adminHome/adminReport/invoice/', views.invoice, name='invoice'),
+    
 
     path('home/report/audit/', views.audit, name='audit'),
 
-    #path('adminHome/adminReport/audit/', views.audit, name='adminAudit'),
-
-    #path('sponsorHome/sponsorReport/', views.sponsorReport, name='sponsorReport'),
+   
 
     path('home/report/', views.report, name='adminReport'),
 
     path('adminInfo/', views.adminInfo, name='adminInfo'),
-    #path("home", views.home, name="home")
-    path('', views.home, name='home'),
+    
+    path('', views.index, name='index'),
+
+    path('home/sponsorPanel/itemForDriver', views.itemForDriver, name='itemForDriver'),
+
+    path('home/sponsorPanel/itemForDriver/<str:driver>/catalog/pageNum=<int:pageNum>/', views.sponsor_catalog_overview, name='sponsor_catalog_overview'),
+    path('home/sponsorPanel/itemForDriver/<str:driver>/catalog/pageNum=<int:pageNum>&&search=/', views.sponsor_catalog_overview, name='sponsor_catalog_overview'),
+    path('home/sponsorPanel/itemForDriver/<str:driver>/catalog/pageNum=<int:pageNum>&&search=<str:search>/', views.sponsor_catalog_overview, name='sponsor_catalog_overview'),
+    path('home/sponsorPanel/itemForDriver/<str:sponsor>/order', views.order_item, name='order_item'),
 ]

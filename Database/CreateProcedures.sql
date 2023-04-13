@@ -16,7 +16,7 @@ WHILE i < numOfSponsors DO
 	SELECT COUNT(*) FROM driver_sponsor where Sponsor_ID = currID INTO drivers;
 	WHILE j < drivers DO
 		SELECT (User_ID) from driver_sponsor ds where Sponsor_ID = currID LIMIT j,1 INTO driverID;
-		INSERT INTO points_history(User_ID,Sponsor_ID,Point_Change,Date_Time,Reason,Sponsor_User_ID) VALUES (driverID,currID,pointChange,NOW(),'Automatic Reward',0);
+		INSERT INTO points_history(User_ID,Sponsor_ID,Point_Change,Date_Time,Reason,Sponsor_User_ID) VALUES (driverID,currID,pointChange,NOW(),'Automatic Reward',NULL);
 		SET j = j+1;
 	END WHILE;
     SET j=0;
