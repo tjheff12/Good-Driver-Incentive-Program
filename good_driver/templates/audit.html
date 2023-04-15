@@ -38,31 +38,31 @@
 
 		function CheckSponsor(val) {
             let first = true;
-            let driverList = JSON.parse('{{driverList|safe}}');
+            let sponsorList = JSON.parse('{{sponsorList|safe}}');
             
 			var sponsor_elm = document.getElementById('id_sponsor_name');
-			var driver_elm = document.getElementById('driverChoice');
-            let driver_select = document.querySelector(".driverChoice");
+			var driver_elm = document.getElementById('sponsorChoice');
+            let driver_select = document.querySelector(".sponsorChoice");
             var driver_label = document.getElementById('driverLabel');
 			if (val != 'All Sponsors') {
                 removeAll(driver_elm);
 				driver_elm.removeAttribute('hidden');
 				driver_label.removeAttribute('hidden');
                 //driver_select.empty();
-                for(let i = 0; i < driverList.length; i++){
-                    if(driverList[i]['sponsor'] == val){
+                for(let i = 0; i < sponsorList.length; i++){
+                    if(sponsorList[i]['sponsor'] == val){
                         if(first) {
                             let opt = document.createElement('option');
-                            let optionText = document.createTextNode('All Drivers');
+                            let optionText = document.createTextNode('All Sponsors');
                             opt.appendChild(optionText);
-                            opt.setAttribute('value', 'All Drivers');
+                            opt.setAttribute('value', 'All Sponsors');
                             driver_select.appendChild(opt);
                             first = false;
                         }
                         let opt = document.createElement('option');
-                        let optionText = document.createTextNode(driverList[i]['name']);
+                        let optionText = document.createTextNode(sponsorList[i]['name']);
                         opt.appendChild(optionText);
-                        opt.setAttribute('value', getDriverID(driverList[i]['name']));
+                        opt.setAttribute('value', getDriverID(sponsorList[i]['name']));
                         driver_select.appendChild(opt);
                     }
                 }
