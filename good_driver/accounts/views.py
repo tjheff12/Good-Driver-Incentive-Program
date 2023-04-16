@@ -202,7 +202,7 @@ def pointChange(request):
             
             return render(request, 'pointChange.html', {'driver_list': driver_list})
         elif request.method == "POST":
-           
+            sponsor_user_obj = models.Users.objects.get(email=request.user.email)
             user_sponsor_obj = models.SponsorUser.objects.get(user_id=request.user.user_id)
             sponsor_id = getattr(user_sponsor_obj, 'sponsor_id')
             point_amount = request.POST['point_amount']
@@ -219,7 +219,7 @@ def pointChange(request):
                 messages.info(request,"Points Added")
             
             
-            new_point_history = models.PointsHistory(user=models.Users.objects.get(user_id = request.POST['driver_id']), sponsor=models.Sponsor.objects.get(sponsor_id=sponsor_id), point_change=point_amount, date_time=datetime.utcnow(), reason=reasoning)
+            new_point_history = models.PointsHistory(user=models.Users.objects.get(user_id = request.POST['driver_id']), sponsor=models.Sponsor.objects.get(sponsor_id=sponsor_id), point_change=point_amount, date_time=datetime.utcnow(), reason=reasoning, sponsor_user=sponsor_user_obj)
             new_point_history.save()
             
             return redirect(pointChange)
@@ -340,10 +340,8 @@ def admin_create_account(request):
                                             phone_number=phone_num, user_type=user_type, security_question_answer=sec_hash)
                     user.save()
                     
-                    if user.user_type == 'Admin':
-                        adminUser = models.AdminUser(user=user)
-                        adminUser.save()
-                    elif user.user_type == 'Sponsor':
+                    
+                    if user.user_type == 'Sponsor':
                         
                         sponsor = request.POST['sponsor']
                         # Check if the organization exists
@@ -386,7 +384,8 @@ def admin_create_sponsor(request):
                 new_sponsor = models.Sponsor(point_value=point_value, name=sponsor_name)
                 new_sponsor.save()
 
-                return redirect('done')
+                messages.info(request, 'Sponsor organization successfully created.')
+                return redirect(admin_panel)
             else:
                 messages.info(request, 'Sponsor Company Name Already Taken! Please Try a Different Name.')
                 return redirect(admin_create_sponsor)
@@ -463,7 +462,8 @@ def admin_change_user_password(request):
                 userToUpdate.save()
                 pass_change_obj = models.PasswordChanges(user=userToUpdate, date_time=datetime.datetime.utcnow(), type_of_change='Admin')
                 pass_change_obj.save()
-                return redirect('done')
+                messages.info(request, 'User password successfully updated.')
+                return redirect(admin_panel)
             else:
                 messages.info(request, 'Username does not exist')
                 return redirect(admin_change_user_password)
@@ -577,7 +577,8 @@ def sponsor_create_account(request):
                     sponsorUser = models.SponsorUser(user=user, sponsor=Sponsor)
                     sponsorUser.save()
                     
-                    return redirect('done')
+                    messages.info(request, 'New sponsor account successfully created.')
+                    return redirect(sponsor_panel)
             else:
                 messages.info(request, 'Both passwords are not matching')
                 return redirect(sponsor_create_account)
@@ -668,7 +669,8 @@ def sponsor_add_driver(request):
                     
                     driverSponsor.save()
                     
-                    return redirect('done')
+                    messages.info(request, 'Driver successfully added to your organization.')
+                    return redirect(sponsor_panel)
         else: raise Http404
     # Returns 403 Error (Permission Denied)    
     else: raise PermissionDenied
@@ -918,7 +920,10 @@ def driverSales(request):
             driver_name = "none"
             order_query = models.Orders.objects.select_related('sponsor', 'user').filter(date_time__range=(request.POST['start_date'],request.POST['end_date'])).order_by("sponsor")
             total_orders = len(order_query)
-            total_price = round(models.Orders.objects.filter(date_time__range=(request.POST['start_date'],request.POST['end_date'])).aggregate(price__sum = Sum('price', filter=~Q(status='Cancelled')))['price__sum'], 2)
+            if total_orders != 0:
+                total_price = round(models.Orders.objects.filter(date_time__range=(request.POST['start_date'],request.POST['end_date'])).aggregate(price__sum = Sum('price', filter=~Q(status='Cancelled')))['price__sum'], 2)
+            else:
+                total_price = 0
             order_list = []
             for order in order_query:
                 sponsor = order.sponsor.name
@@ -1051,9 +1056,73 @@ def invoice(request):
         return redirect(login)
     elif request.user.user_type != "Admin":
         raise PermissionDenied
-    if request.method == "GET":
-        form = forms.SponsorFormWithAllOption()
-        return render(request, 'invoice.html', {'form':form})
+    else:
+        if request.method == "GET":
+            form = forms.SponsorFormWithAllOption()
+            return render(request, 'invoice.html', {'form':form})
+        if request.method == "POST":
+            print(request.POST)
+            if(request.POST['start_date'] == ''):
+                messages.info(request, 'Please Enter a Start Date')
+                return redirect('.')
+            if(request.POST['end_date'] == ''):
+                messages.info(request, 'Please Enter an End Date')
+                return redirect('.')
+            if(request.POST['end_date'] < request.POST['start_date']):
+                messages.info(request, 'End Date must be after Start Date')
+                return redirect('.')
+            if request.POST['sponsor_name'] != 'All Sponsors':
+                sponsor_obj = models.Sponsor.objects.get(name=request.POST['sponsor_name'])
+                driver_query = models.DriverSponsor.objects.select_related('user').filter(sponsor=sponsor_obj)
+                driver_list = []
+                total_sponsor_fee = 0
+                total_sponsor_cost = 0
+                for driver in driver_query:
+                    total_cost = models.Orders.objects.filter(user=driver.user ,date_time__range=( request.POST['start_date'],request.POST['end_date'])).aggregate(price__sum = Sum('price', filter=~Q(status='Cancelled')))['price__sum']
+                    
+                    if total_cost is None:
+                        total_cost = 0
+                    else:
+                        total_cost = round(total_cost, 2)
+                    driver_name = driver.user.first_name + " " + driver.user.last_name
+                    
+                    total_fee = round(total_cost * 0.3, 2)
+                    total_sponsor_cost = total_sponsor_cost + total_cost
+                    total_sponsor_fee = total_sponsor_fee + total_fee
+                    new_dict = {'name':driver_name,'total_cost':total_cost,'total_fee':total_fee, 'sponsor':request.POST['sponsor_name']}
+                    driver_list.append(new_dict)
+                sponsor_list = [{'name':request.POST['sponsor_name'],'total_cost':total_sponsor_cost,'total_fee':total_sponsor_fee}]
+            else:
+                all_sponsor_query = models.Sponsor.objects.all()
+                sponsor_list = []
+                driver_list = []
+                for sponsor in all_sponsor_query:
+                    print(sponsor.name)
+                    sponsor_obj = models.Sponsor.objects.get(name=sponsor.name)
+                    driver_query = models.DriverSponsor.objects.select_related('user').filter(sponsor=sponsor_obj).order_by('user__first_name')
+                    
+                    total_sponsor_fee = 0
+                    total_sponsor_cost = 0
+                    for driver in driver_query:
+                        total_cost = models.Orders.objects.filter(user=driver.user ,date_time__range=( request.POST['start_date'],request.POST['end_date'])).aggregate(price__sum = Sum('price', filter=~Q(status='Cancelled')))['price__sum']
+                        
+                        if total_cost is None:
+                            total_cost = 0
+                        else:
+                            total_cost = round(total_cost, 2)
+                        driver_name = driver.user.first_name + " " + driver.user.last_name
+                        
+                        total_fee = round(total_cost * 0.3, 2)
+                        total_sponsor_cost = total_sponsor_cost + total_cost
+                        total_sponsor_fee = total_sponsor_fee + total_fee
+                        new_dict = {'name':driver_name,'total_cost':total_cost,'total_fee':total_fee, 'sponsor':sponsor.name}
+                        driver_list.append(new_dict)
+                    sponsor_list.append({'name':sponsor.name,'total_cost':total_sponsor_cost,'total_fee':total_sponsor_fee})
+                    #driver_list_list.append({'sponsor_name':sponsor.name, 'driver_list':driver_list})
+                    
+            return render(request,'invoiceReport.html',{'driver_list':driver_list, 'sponsor_name':request.POST['sponsor_name'], 'sponsor_list':sponsor_list})
+
+
 
 def audit(request):
     if request.user.is_anonymous == True:
@@ -1447,7 +1516,7 @@ def search_ebay_products(query, pageNum, sponsorMaxPrice):
     from ebaysdk.exception import ConnectionError
     from ebaysdk.finding import Connection as Finding
     from ebaysdk.shopping import Connection as Shopping
-
+    
     try:
         api = Finding(domain='svcs.sandbox.ebay.com', appid='HaydenSt-DriverIn-SBX-0cd4f0a51-76ca4c5c', config_file=None)
         response = api.execute('findItemsAdvanced', {
@@ -1462,8 +1531,11 @@ def search_ebay_products(query, pageNum, sponsorMaxPrice):
                 'pageNumber': pageNum
             }
         })
-        
-        #print(response.dict())
+        #print(response.reply)
+        if(response.reply.ack == "Failure"):
+            return {}, 0
+        if(response.reply.searchResult._count == '0'):
+            return {}, 0
         try:
             total_pages = response.reply.paginationOutput.totalPages
         except:
@@ -1494,9 +1566,14 @@ def order_item(request, sponsor):
     elif request.method == "POST":
         if request.user.user_type == "Driver":
             #print(request.POST)
+            
+
             user=request.user
+            sponsor_user = models.Users.objects.get(user_id=0)
             sponsor_obj = models.Sponsor.objects.get(name=sponsor)
             sponsor_id = sponsor_obj.sponsor_id
+            
+            
             conversion_rate = sponsor_obj.point_value
             
             
@@ -1521,7 +1598,7 @@ def order_item(request, sponsor):
                 messages.info(request, "You do not have enough points to order that item")
                 return redirect("./catalogOverview/pageNum=1")
             
-            point_history_obj = models.PointsHistory(user=user, sponsor=sponsor_obj, point_change=(point_cost * -1), date_time=current_time, reason="Item Ordered")
+            point_history_obj = models.PointsHistory(user=user, sponsor=sponsor_obj, point_change=(point_cost * -1), date_time=current_time, reason="Item Ordered", sponsor_user=None)
             point_history_obj.save()
 
             new_order = models.Orders(user=user, sponsor=sponsor_obj, date_time=current_time, status='Pending', price=price, points=point_cost, item_id=item_id, item_name=item_name)
@@ -1530,7 +1607,47 @@ def order_item(request, sponsor):
 
             messages.info(request, "Item Ordered")
             return redirect("./catalogOverview/pageNum=1")
+        elif request.user.user_type == "Sponsor":
+            ### IN THIS WHOLE IF STATEMENT THE sponsor VARIABLE IS A DRIVER'S ID
+            sponsor_user = models.Users.objects.get(user_id=request.user.user_id)
+            user= models.Users.objects.get(user_id=sponsor)
+            user_sponsor_obj = models.SponsorUser.objects.get(user_id=request.user.user_id)
+            sponsor_id = getattr(user_sponsor_obj, 'sponsor_id')
+            sponsor_obj = models.Sponsor.objects.get(sponsor_id=sponsor_id)
+
+            conversion_rate = sponsor_obj.point_value
+
             
+            
+            price = float(request.POST['price'][1:])
+            current_time = datetime.datetime.utcnow()
+            
+            item_id = request.POST['item_id']
+            
+
+            
+            
+            
+            point_cost = math.ceil(float(price) / float(conversion_rate))
+            
+
+            points_obj = models.Points.objects.get(user=user, sponsor=sponsor_obj)
+            current_points = points_obj.point_total
+            item_name = request.POST['item_name']
+
+            if(current_points < point_cost):
+                messages.info(request, "The driver does not have enough points to order that item")
+                return redirect("./catalog/pageNum=1")
+            
+            point_history_obj = models.PointsHistory(user=user, sponsor=sponsor_obj, point_change=(point_cost * -1), date_time=current_time, reason="Item Ordered by Sponsor", sponsor_user=sponsor_user)
+            point_history_obj.save()
+
+            new_order = models.Orders(user=user, sponsor=sponsor_obj, date_time=current_time, status='Pending', price=price, points=point_cost, item_id=item_id, item_name=item_name)
+            new_order.save()
+            
+
+            messages.info(request, "Item Ordered")
+            return redirect("./catalog/pageNum=1")
         else:
             raise Http404
     
@@ -1849,3 +1966,89 @@ def end_admin_sponsor_impersonation(request):
 
     messages.info(request, "You have successfully ended the impostor session, and are now logged back into your original account.")
     return redirect(user_profile)
+
+def index(request):
+    if request.method == "GET":
+        return redirect(home)
+    elif request.method == "POST":
+        raise PermissionDenied
+    
+def itemForDriver(request):
+    if request.user.user_type != "Sponsor":
+        raise PermissionDenied
+    else:
+        if request.method == "GET":
+            user_sponsor_obj = models.SponsorUser.objects.get(user_id=request.user.user_id)
+            sponsor_id = getattr(user_sponsor_obj, 'sponsor_id')
+            sponsor_obj = models.Sponsor.objects.get(sponsor_id=sponsor_id)
+            driver_query = models.DriverSponsor.objects.select_related('user').filter(sponsor=sponsor_obj).order_by('user__first_name')
+            driver_list = []
+            
+            for driver in driver_query:
+                
+                id = driver.user.user_id
+                first_name = driver.user.first_name
+                last_name = driver.user.last_name
+                street_address = driver.user.street_address
+                city = driver.user.city
+                zip_code = driver.user.zip_code
+                phone_number = driver.user.phone_number
+                new_dict = {'id':id,'name':first_name + " " + last_name,'street_address':street_address,'city':city,'zip_code':zip_code, 'phone_number':phone_number}
+                
+                driver_list.append(new_dict)
+            return render(request, 'itemForDriver.html', {'driver_list':driver_list})
+        elif request.method == "POST":
+            print(request.POST)
+            return redirect("./itemForDriver/" + request.POST['driver_name'] + "/catalog/pageNum=1")
+
+def sponsor_catalog_overview(request, driver, pageNum=1, search="search"):
+    import math
+    # We will need to determine what sponsors can choose for filtering the catalog page ex: name, category, price, etc. (or all the above!)
+        # this currently just tests it with a simple query for the name of the item (IN SANDBOX MODE)
+    if request.method == "GET" and request.user.user_type == "Sponsor":
+        # Validate that the driver's link with the sponsor is one of their actual sponsors
+        user_sponsor_obj = models.SponsorUser.objects.get(user_id=request.user.user_id)
+        sponsor_id = getattr(user_sponsor_obj, 'sponsor_id')
+        sponsor_obj = models.Sponsor.objects.get(sponsor_id=sponsor_id)
+        
+        driver_obj = models.Users.objects.get(user_id = driver)
+        driver_name = driver_obj.first_name + " " + driver_obj.last_name
+        conversion_rate = sponsor_obj.point_value
+        try:
+            points_obj = models.Points.objects.get(user=driver_obj, sponsor=sponsor_obj)
+            current_points = points_obj.point_total
+        except:
+            current_points = 0
+
+        sponsorMaxPrice = sponsor_obj.maxPrice
+        print(sponsorMaxPrice)
+        results_tuple = search_ebay_products(search, pageNum, sponsorMaxPrice)
+
+        
+        
+        
+        try:
+            
+
+            productResultsDict = results_tuple[0]
+            
+            total_pages = results_tuple[1]
+            if(productResultsDict != {}):
+                for item in productResultsDict['searchResult']['item']:
+                    item["point_cost"] = math.ceil(float(item['sellingStatus']['currentPrice']['value']) / float(conversion_rate))
+                
+            
+            return render(request, 'sponsorCatalogOverview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search, 'driver':driver_name, 'points':current_points, 'sponsorPointConversion':conversion_rate})
+        except Exception as e:
+            print(e)
+            productResultsDict = {}
+            total_pages = 0
+            return render(request, 'sponsorCatalogOverview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search
+                                                             , 'points': current_points, 'sponsorPointConversion': conversion_rate, 
+                                                             'driver': driver_name})
+    # If a sponsor user decides to use the catalog, they can only access their own
+   
+
+    elif request.method == "POST":
+        
+        return redirect('../pageNum=1&&search=' + request.POST['search'])

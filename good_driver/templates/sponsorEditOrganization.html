@@ -16,9 +16,11 @@
 {% include 'top_buttons.html' %}
 <div class="header_padding">
 <body>
-    <form action="" method="POST" class="form-horizontal">
-        {% csrf_token%}
-        <div class="mx-auto" style="width: 400px;">
+    {% include 'top_buttons.html' %}
+	<div class="header_padding">
+        <form action="" method="POST" class="form-horizontal">
+            {% csrf_token%}
+            <div class="mx-auto" style="width: 400px;">
 
             <div class="col-xs-8 col-xs-offset-4">
                 <h2 style="text-align:center;">Edit Sponsor Organization</h2>
