@@ -725,13 +725,40 @@ def sponsor_edit_organization(request):
             if autoPoints != "":
                 sponsorsOrg.autoPoints = int(autoPoints)
 
-            print("sid" + str(sponsorsOrg.sponsor_id))
-            print("pv " + pointValue + str(pointValue == ""))
-            print("ap " + autoPoints + str(autoPoints == ""))
-
             sponsorsOrg.save()
             messages.info(request, 'Successfully Updated the Organization')
             return render(request, 'sponsorEditOrganization.html', {'sponsorName': sponsorsOrg.name})
+    elif request.user.user_type == "Admin":
+            if request.method == "GET":
+                form = forms.SponsorForm()
+                return render(request,'sponsorEditOrganization.html', {'form': form})
+            else: # request.method == "POST"
+                print(list(request.POST.items()))
+                form = forms.SponsorForm()
+
+                newName = request.POST['newName']
+                maxPrice = request.POST['maxPrice']
+                pointValue = request.POST['pointValue']
+                autoPoints = request.POST['autoPoints']
+                sponsorName = request.POST['sponsor_name']
+
+                sponsorsOrg = models.Sponsor.objects.get(name=sponsorName)
+
+                if newName != "":
+                    sponsorsOrg.name = newName
+                if maxPrice != "":
+                    if not is_int(maxPrice) and not is_float(maxPrice):
+                        messages.info(request, 'Max Price has to be a valid number!')
+                        return render(request, 'sponsorEditOrganization.html', {'sponsorName': sponsorsOrg.name})
+                    sponsorsOrg.maxPrice = float(maxPrice)
+                if pointValue != "":
+                    sponsorsOrg.point_value = float(pointValue)
+                if autoPoints != "":
+                    sponsorsOrg.autoPoints = int(autoPoints)
+
+                sponsorsOrg.save()
+                messages.info(request, 'Successfully Updated the Organization')
+                return render(request, 'sponsorEditOrganization.html', {'sponsorName': sponsorsOrg.name, 'form': form})
     else:
         messages.info(request, 'You must be logged in as a sponsor')
         return redirect(home)
