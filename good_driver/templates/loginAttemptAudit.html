@@ -78,12 +78,14 @@ table{
         <tr>
             <th>Date</th>
             <th>Name</th>
+            <th>Sponsor Name</th>
             <th>Accepted</th>
         </tr>
         {% for driver in driver_list %}
             <tr>
                 <td>{{driver.date}}</td>
                 <td>{{driver.first_name}} {{driver.last_name}}</td>
+                <td>{{driver.sponsor_name}}</td>
                 <td>{{driver.was_accepted}}</td>
         {% endfor %}
     </table>
