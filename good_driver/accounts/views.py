@@ -960,7 +960,7 @@ def pointTracking(request):
                 driver_list.append(new_dict)
             
             return render(request, 'tracking.html', {'driver_list': driver_list,'sponsor_name':sponsor_name})    
-            
+
 def driverSales(request):
     import json
     if request.user.is_anonymous == True:
@@ -1205,7 +1205,170 @@ def invoice(request):
 
 def audit(request):
     if request.user.is_anonymous == True:
-        raise FileNotFoundError
+        raise FileNotFoundError        
+    
+    elif request.user.user_type == "Admin":
+        if request.method == "GET":
+            form = forms.SponsorFormWithAllOption()
+            return render(request, 'audit.html', {'form':form})
+        
+        elif request.method == "POST":
+            start_date = request.POST.get('start_date')
+            end_date = request.POST.get('end_date')
+            current_date = datetime.now().strftime('%Y-%m-%d')
+
+            if start_date and end_date and start_date > end_date:
+                messages.info(request, 'Start date must before end date')
+                return redirect('.')
+            elif start_date and end_date and start_date > current_date:
+                messages.info(request, 'Start date should be before current date')
+                return redirect('.')
+            elif start_date and end_date and end_date > current_date:
+                messages.info(request, 'End date should be before current date')
+                return redirect('.')
+            elif not start_date:
+                messages.info(request, 'Please enter a start date')
+                return redirect('.')
+            elif not end_date:
+                messages.info(request, 'Please enter an end date')
+                return redirect('.')
+
+            if request.POST['sponsor_name'] == "All Sponsors":
+                driver_list = []
+                sponsor_query = models.Sponsor.objects.all()
+
+                if request.POST['options'] == "password_change":
+                    for sponsor in sponsor_query:
+                        sponsor_id = sponsor.sponsor_id
+                        sponsor_obj = models.Sponsor.objects.get(sponsor_id=sponsor_id)
+                        driver_query = models.DriverSponsor.objects.select_related('user').filter(sponsor=sponsor_obj)
+                        for driver in driver_query:
+                            pass_change_query = models.PasswordChanges.objects.filter(user=driver.user, date_time__range=(start_date,end_date)).order_by('date_time')
+                            for entry in pass_change_query:
+                                date = entry.date_time
+                                first_name = driver.user.first_name
+                                last_name = driver.user.last_name
+                                type_change = entry.type_of_change
+                                new_dict = {'date':date,'first_name':first_name,'last_name':last_name,'type_change':type_change}
+                                driver_list.append(new_dict)
+                    return render(request, 'passwordChangeAudit.html', {'driver_list': driver_list})
+                    
+                elif request.POST['options'] == "login_attempt":
+                    for sponsor in sponsor_query:
+                        sponsor_id = sponsor.sponsor_id
+                        sponsor_obj = models.Sponsor.objects.get(sponsor_id=sponsor_id)
+                        driver_query = models.DriverSponsor.objects.select_related('user').filter(sponsor=sponsor_obj)
+                        for driver in driver_query:
+                            login_query = models.LoginAttempt.objects.filter(user=driver.user, date_time__range=(start_date,end_date)).order_by('date_time')
+                            for entry in login_query:
+                                date = entry.date_time
+                                first_name = driver.user.first_name
+                                last_name = driver.user.last_name
+                                if entry.was_accepted == b"\x01":
+                                    was_accepted = "True"
+                                else:
+                                    was_accepted = "False"
+                                new_dict = {'date':date,'first_name':first_name,'last_name':last_name,'was_accepted':was_accepted}
+                                driver_list.append(new_dict)
+                    return render(request, 'loginAttemptAudit.html', {'driver_list': driver_list})
+                
+                elif request.POST['options'] == "point_change":
+                    for sponsor in sponsor_query:
+                        sponsor_id = sponsor.sponsor_id
+                        sponsor_obj = models.Sponsor.objects.get(sponsor_id=sponsor_id)
+                        driver_query = models.PointsHistory.objects.select_related('user').filter(sponsor=sponsor_obj, date_time__range=(start_date,end_date)).order_by('date_time')
+                        for driver in driver_query:
+                            total_points = models.Points.objects.filter(user=driver.user).values('point_total')
+                            first_name = driver.user.first_name
+                            last_name = driver.user.last_name
+                            point_total = total_points[0]['point_total']
+                            point_change = driver.point_change
+                            reason = driver.reason
+                            date = driver.date_time
+                            new_dict = {'first_name':first_name,'last_name':last_name,'point_total':point_total,'point_change':point_change,'reason':reason,'date':date}
+                            driver_list.append(new_dict)
+                    return render(request, 'pointChangeAudit.html', {'driver_list': driver_list})
+                
+                elif request.POST['options'] == "driver_application":
+                    for sponsor in sponsor_query:
+                        sponsor_id = sponsor.sponsor_id
+                        sponsor_obj = models.Sponsor.objects.get(sponsor_id=sponsor_id)
+                        application_query = models.DriverApplication.objects.select_related('sponsor','driver')
+                        for app in application_query:
+                            driver_app_query = models.ApplicationStateChange.objects.filter(application=app.application_id, date_time__range=(start_date,end_date)).order_by('date_time')
+                            for entry in driver_app_query:
+                                date = entry.date_time
+                                first_name = app.driver.first_name
+                                last_name = app.driver.last_name
+                                status = entry.new_status
+                                reason = entry.new_reason
+                                new_dict = {'date':date,'first_name':first_name,'last_name':last_name,'status':status,'reason':reason}
+                                driver_list.append(new_dict)
+                    return render(request, 'driverApplicationAudit.html', {'driver_list': driver_list})
+
+            else:
+                driver_list = []
+
+                sponsor_name = request.POST['sponsor_name']
+                sponsor_choice = models.Sponsor.objects.get(name=sponsor_name)
+
+                if request.POST['options'] == "password_change":
+                    driver_query = models.DriverSponsor.objects.select_related('user').filter(sponsor=sponsor_choice)
+                    for driver in driver_query:
+                        pass_change_query = models.PasswordChanges.objects.filter(user=driver.user, date_time__range=(start_date,end_date)).order_by('date_time')
+                        for entry in pass_change_query:
+                            date = entry.date_time
+                            first_name = driver.user.first_name
+                            last_name = driver.user.last_name
+                            type_change = entry.type_of_change
+                            new_dict = {'date':date,'first_name':first_name,'last_name':last_name,'type_change':type_change}
+                            driver_list.append(new_dict)
+                    return render(request, 'passwordChangeAudit.html', {'driver_list': driver_list})
+                    
+                elif request.POST['options'] == "login_attempt":
+                    driver_query = models.DriverSponsor.objects.select_related('user').filter(sponsor=sponsor_choice)
+                    for driver in driver_query:
+                        login_query = models.LoginAttempt.objects.filter(user=driver.user, date_time__range=(start_date,end_date)).order_by('date_time')
+                        for entry in login_query:
+                            date = entry.date_time
+                            first_name = driver.user.first_name
+                            last_name = driver.user.last_name
+                            if entry.was_accepted == b"\x01":
+                                was_accepted = "True"
+                            else:
+                                was_accepted = "False"
+                            new_dict = {'date':date,'first_name':first_name,'last_name':last_name,'was_accepted':was_accepted}
+                            driver_list.append(new_dict)
+                    return render(request, 'loginAttemptAudit.html', {'driver_list': driver_list})
+                
+                elif request.POST['options'] == "point_change":
+                    driver_query = models.PointsHistory.objects.select_related('user').filter(sponsor=sponsor_choice, date_time__range=(start_date,end_date)).order_by('date_time')
+                    for driver in driver_query:
+                        total_points = models.Points.objects.filter(user=driver.user).values('point_total')
+                        first_name = driver.user.first_name
+                        last_name = driver.user.last_name
+                        point_total = total_points[0]['point_total']
+                        point_change = driver.point_change
+                        reason = driver.reason
+                        date = driver.date_time
+                        new_dict = {'first_name':first_name,'last_name':last_name,'point_total':point_total,'point_change':point_change,'reason':reason,'date':date}
+                        driver_list.append(new_dict)
+                    return render(request, 'pointChangeAudit.html', {'driver_list': driver_list})
+                
+                elif request.POST['options'] == "driver_application":
+                    application_query = models.DriverApplication.objects.select_related('sponsor','driver')
+                    for app in application_query:
+                        driver_app_query = models.ApplicationStateChange.objects.filter(application=app.application_id, date_time__range=(start_date,end_date)).order_by('date_time')
+                        for entry in driver_app_query:
+                            date = entry.date_time
+                            first_name = app.driver.first_name
+                            last_name = app.driver.last_name
+                            status = entry.new_status
+                            reason = entry.new_reason
+                            new_dict = {'date':date,'first_name':first_name,'last_name':last_name,'status':status,'reason':reason}
+                            driver_list.append(new_dict)
+                    return render(request, 'driverApplicationAudit.html', {'driver_list': driver_list})
+            
     elif request.user.user_type == "Sponsor":
         if request.method == "GET":
             return render(request, 'audit.html')
@@ -1215,11 +1378,20 @@ def audit(request):
             current_date = datetime.now().strftime('%Y-%m-%d')
 
             if start_date and end_date and start_date > end_date:
-                return render(request, 'audit.html', {'error': 'Start date should be before end date'})
+                messages.info(request, 'Start date must before end date')
+                return redirect('.')
             elif start_date and end_date and start_date > current_date:
-                return render(request, 'audit.html', {'error': 'Start date should be before current date'})
+                messages.info(request, 'Start date should be before current date')
+                return redirect('.')
             elif start_date and end_date and end_date > current_date:
-                return render(request, 'audit.html', {'error': 'End date should be before current date'})
+                messages.info(request, 'End date should be before current date')
+                return redirect('.')
+            elif not start_date:
+                messages.info(request, 'Please enter a start date')
+                return redirect('.')
+            elif not end_date:
+                messages.info(request, 'Please enter an end date')
+                return redirect('.')
 
             user_sponsor_obj = models.SponsorUser.objects.get(user_id=request.user.user_id)
             sponsor_id = getattr(user_sponsor_obj, 'sponsor_id')
@@ -1232,7 +1404,7 @@ def audit(request):
                
                 driver_query = models.DriverSponsor.objects.select_related('user').filter(sponsor=sponsor_obj)
                 for driver in driver_query:
-                    pass_change_query = models.PasswordChanges.objects.filter(user=driver.user)
+                    pass_change_query = models.PasswordChanges.objects.filter(user=driver.user, date_time__range=(start_date,end_date)).order_by('date_time')
                     for entry in pass_change_query:
                         date = entry.date_time
                         first_name = driver.user.first_name
@@ -1245,7 +1417,7 @@ def audit(request):
             elif request.POST['options'] == "login_attempt":
                 driver_query = models.DriverSponsor.objects.select_related('user').filter(sponsor=sponsor_obj)
                 for driver in driver_query:
-                    login_query = models.LoginAttempt.objects.filter(user=driver.user)
+                    login_query = models.LoginAttempt.objects.filter(user=driver.user, date_time__range=(start_date,end_date)).order_by('date_time')
                     for entry in login_query:
                         date = entry.date_time
                         first_name = driver.user.first_name
@@ -1259,11 +1431,12 @@ def audit(request):
                 return render(request, 'loginAttemptAudit.html', {'driver_list': driver_list})
             
             elif request.POST['options'] == "point_change":
-                driver_query = models.PointsHistory.objects.select_related('user').filter(sponsor=sponsor_obj,date__range=[start_date,end_date])
+                driver_query = models.PointsHistory.objects.select_related('user').filter(sponsor=sponsor_obj, date_time__range=(start_date,end_date)).order_by('date_time')
                 for driver in driver_query:
+                    total_points = models.Points.objects.filter(user=driver.user).values('point_total')
                     first_name = driver.user.first_name
                     last_name = driver.user.last_name
-                    point_total = 0
+                    point_total = total_points[0]['point_total']
                     point_change = driver.point_change
                     reason = driver.reason
                     date = driver.date_time
@@ -1274,7 +1447,7 @@ def audit(request):
             elif request.POST['options'] == "driver_application":
                 application_query = models.DriverApplication.objects.select_related('sponsor','driver')
                 for app in application_query:
-                    driver_app_query = models.ApplicationStateChange.objects.filter(application=app.application_id)
+                    driver_app_query = models.ApplicationStateChange.objects.filter(application=app.application_id, date_time__range=(start_date,end_date)).order_by('date_time')
                     for entry in driver_app_query:
                         date = entry.date_time
                         first_name = app.driver.first_name
