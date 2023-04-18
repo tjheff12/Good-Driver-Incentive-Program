@@ -77,7 +77,7 @@ table{
     <table>
         <tr>
             <th>Name</th>
-            <th>Point Total</th>
+            <th>Sponsor Name</th>
             <th>Point Change</th>
             <th>Reason</th>
             <th>Date</th>
@@ -85,7 +85,7 @@ table{
         {% for driver in driver_list %}
             <tr>
                 <td>{{driver.first_name}} {{driver.last_name}}</td>
-                <td>{{driver.point_total}}</td>
+                <td>{{driver.sponsor_name}}</td>
                 <td>{{driver.point_change}}</td>
                 <td>{{driver.reason}}</td>
                 <td>{{driver.date}}</td>
