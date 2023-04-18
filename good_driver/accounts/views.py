@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
-from django.db.models import Q, Sum
+from django.db.models import Q
 from datetime import datetime
 from . import backends
 from . import models
@@ -89,9 +89,7 @@ def login(request):
             messages.info(request, message)
             return redirect(login)
     elif request.method == "GET":
-        if request.user.is_anonymous == False:
-            messages.info(request, "Already logged in")
-            return redirect(user_profile)
+        
         return render(request, 'registration/login.html')
 
 def get_trailing_number(s):
@@ -199,7 +197,7 @@ def pointChange(request):
                 id = driver.user.user_id
                 name = driver.user.first_name + " " + driver.user.last_name
                 driver_list.append({'Name':name, 'id':id})
-            
+            print(driver_list)
             return render(request, 'pointChange.html', {'driver_list': driver_list})
         elif request.method == "POST":
             sponsor_user_obj = models.Users.objects.get(email=request.user.email)
@@ -666,7 +664,7 @@ def sponsor_add_driver(request):
 
                     # Get user just created, and create a new entry matching it inside the Driver_Sponsor table
                     driverSponsor = models.DriverSponsor(user=user, sponsor=Sponsor)
-                    
+                    print(driverSponsor)
                     driverSponsor.save()
                     
                     messages.info(request, 'Driver successfully added to your organization.')
@@ -849,9 +847,10 @@ def application(request):
             
             return render(request, 'application.html', {'app_list': list_of_apps, 'sponsor_name':sponsor_name})
         elif request.method == "POST":
-            
+            print(request.POST)
             application_obj = models.DriverApplication.objects.select_related('sponsor').get(application_id=request.POST['application_id'])
-            
+            print(application_obj.driver)
+            print(application_obj.sponsor)
             if(request.POST['decision'] == "Accept"):
                 new_DriverSponsor = models.DriverSponsor(user=application_obj.driver, sponsor=application_obj.sponsor)
                 new_DriverSponsor.save()
@@ -876,23 +875,22 @@ def driverManagement(request):
     return render(request, 'driverManagement.html')
 
 def pointTracking(request):
-    if request.user.is_anonymous == True:
-        return redirect(login)
-    elif request.user.user_type == "Sponsor":
-        if request.method == "GET":
-            return render(request, 'pointTracking.html')
-    raise Http404
-def driverSales(request):
     import json
     if request.user.is_anonymous == True:
-        return redirect(login)
-    elif request.user.user_type != "Admin":
+        raise FileNotFoundError
+    elif request.user.user_type != "Sponsor":
         raise PermissionDenied
+
     if request.method == "GET":
         form = forms.SponsorFormWithAllOption()
         driverQuery = models.DriverSponsor.objects.select_related('user', 'sponsor').all()
         driverList = []
         driverIDs = []
+        user_sponsor_obj = models.SponsorUser.objects.get(user_id=request.user.user_id)
+        sponsor_id = getattr(user_sponsor_obj, 'sponsor_id')
+        sponsor_obj = models.Sponsor.objects.get(sponsor_id=sponsor_id)
+        sponsor_name = getattr(sponsor_obj, 'name')
+        
         for driver in driverQuery:
             new_dict = {'name': driver.user.first_name + " " + driver.user.last_name, 'sponsor': driver.sponsor.name}
             id_dict = {'name': driver.user.first_name + " " + driver.user.last_name, 'id': driver.user.user_id}
@@ -900,20 +898,28 @@ def driverSales(request):
             if id_dict not in driverIDs:
                 driverIDs.append(id_dict)
         
-        return render(request, 'driverSales.html', {'form':form,'driverList': json.dumps(driverList), 'idList':json.dumps(driverIDs)})
+        return render(request, 'pointTracking.html', {'form':form,'driverList': json.dumps(driverList), 'idList':json.dumps(driverIDs), 'sponsor_name':sponsor_name})
+
     elif request.method == "POST":
-        
-        ## Sanity checks
-        if(request.POST['start_date'] == ''):
-            messages.info(request, 'Please Enter a Start Date')
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+        current_date = datetime.now().strftime('%Y-%m-%d')
+
+        if start_date and end_date and start_date > end_date:
+            messages.info(request, 'Start date must before end date')
             return redirect('.')
-        if(request.POST['end_date'] == ''):
-            messages.info(request, 'Please Enter an End Date')
+        elif start_date and end_date and start_date > current_date:
+            messages.info(request, 'Start date should be before current date')
             return redirect('.')
-        if(request.POST['end_date'] < request.POST['start_date']):
-            messages.info(request, 'End Date must be after Start Date')
+        elif start_date and end_date and end_date > current_date:
+            messages.info(request, 'End date should be before current date')
             return redirect('.')
-        ##Start of actual code
+        elif not start_date:
+            messages.info(request, 'Please enter a start date')
+            return redirect('.')
+        elif not end_date:
+            messages.info(request, 'Please enter an end date')
+            return redirect('.')
         
         
         if(request.POST['sponsor_name'] == 'All Sponsors'):
@@ -991,6 +997,12 @@ def driverSales(request):
 
 
 def sponsorSales(request):
+    return render(request, 'sponsorSales.html')
+
+def invoice(request):
+    return render(request, 'invoice.html')
+
+def audit(request):
     if request.user.is_anonymous == True:
         return redirect(login)
     elif request.user.user_type != "Admin":
@@ -1136,11 +1148,20 @@ def audit(request):
             current_date = datetime.now().strftime('%Y-%m-%d')
 
             if start_date and end_date and start_date > end_date:
-                return render(request, 'audit.html', {'error': 'Start date should be before end date'})
+                messages.info(request, 'Start date must before end date')
+                return redirect('.')
             elif start_date and end_date and start_date > current_date:
-                return render(request, 'audit.html', {'error': 'Start date should be before current date'})
+                messages.info(request, 'Start date should be before current date')
+                return redirect('.')
             elif start_date and end_date and end_date > current_date:
-                return render(request, 'audit.html', {'error': 'End date should be before current date'})
+                messages.info(request, 'End date should be before current date')
+                return redirect('.')
+            elif not start_date:
+                messages.info(request, 'Please enter a start date')
+                return redirect('.')
+            elif not end_date:
+                messages.info(request, 'Please enter an end date')
+                return redirect('.')
 
             user_sponsor_obj = models.SponsorUser.objects.get(user_id=request.user.user_id)
             sponsor_id = getattr(user_sponsor_obj, 'sponsor_id')
@@ -1153,7 +1174,7 @@ def audit(request):
                
                 driver_query = models.DriverSponsor.objects.select_related('user').filter(sponsor=sponsor_obj)
                 for driver in driver_query:
-                    pass_change_query = models.PasswordChanges.objects.filter(user=driver.user)
+                    pass_change_query = models.PasswordChanges.objects.filter(user=driver.user, date_time__range=(start_date,end_date)).order_by('date_time')
                     for entry in pass_change_query:
                         date = entry.date_time
                         first_name = driver.user.first_name
@@ -1166,7 +1187,7 @@ def audit(request):
             elif request.POST['options'] == "login_attempt":
                 driver_query = models.DriverSponsor.objects.select_related('user').filter(sponsor=sponsor_obj)
                 for driver in driver_query:
-                    login_query = models.LoginAttempt.objects.filter(user=driver.user)
+                    login_query = models.LoginAttempt.objects.filter(user=driver.user, date_time__range=(start_date,end_date)).order_by('date_time')
                     for entry in login_query:
                         date = entry.date_time
                         first_name = driver.user.first_name
@@ -1180,11 +1201,12 @@ def audit(request):
                 return render(request, 'loginAttemptAudit.html', {'driver_list': driver_list})
             
             elif request.POST['options'] == "point_change":
-                driver_query = models.PointsHistory.objects.select_related('user').filter(sponsor=sponsor_obj,date__range=[start_date,end_date])
+                driver_query = models.PointsHistory.objects.select_related('user').filter(sponsor=sponsor_obj, date_time__range=(start_date,end_date)).order_by('date_time')
                 for driver in driver_query:
+                    total_points = models.Points.objects.filter(user=driver.user).values('point_total')
                     first_name = driver.user.first_name
                     last_name = driver.user.last_name
-                    point_total = 0
+                    point_total = total_points[0]['point_total']
                     point_change = driver.point_change
                     reason = driver.reason
                     date = driver.date_time
@@ -1195,7 +1217,7 @@ def audit(request):
             elif request.POST['options'] == "driver_application":
                 application_query = models.DriverApplication.objects.select_related('sponsor','driver')
                 for app in application_query:
-                    driver_app_query = models.ApplicationStateChange.objects.filter(application=app.application_id)
+                    driver_app_query = models.ApplicationStateChange.objects.filter(application=app.application_id, date_time__range=(start_date,end_date)).order_by('date_time')
                     for entry in driver_app_query:
                         date = entry.date_time
                         first_name = app.driver.first_name
@@ -1212,13 +1234,6 @@ def sponsorReport(request):
 def adminReport(request):
     return render(request, 'adminReport.html')
 
-def report(request):
-    if request.user.is_anonymous == True:
-        return redirect(login)
-    if request.user.user_type == "Sponsor":
-        return render(request, 'sponsorReport.html')
-    if request.user.user_type == "Admin":
-        return render(request, 'adminReport.html')
 def adminInfo(request):
     return render(request, 'adminInfo.html')
 
@@ -1254,44 +1269,6 @@ def sponsor_see_all_drivers(request):
         elif request.method == "POST":
             return None
 
-
-def pointChangeAudit(request):
-    if request.user.is_anonymous == True:
-        raise FileNotFoundError
-    elif request.user.user_type == "Sponsor":
-        if request.method == "GET":
-            user_sponsor_obj = models.SponsorUser.objects.get(user_id=request.user.user_id)
-            sponsor_id = getattr(user_sponsor_obj, 'sponsor_id')
-            sponsor_obj = models.Sponsor.objects.get(sponsor_id=sponsor_id)
-            sponsor_name = getattr(sponsor_obj, 'name')
-
-            start_date = request.GET.get('start_date')
-            end_date = request.GET.get('end_date')
-
-            driver_query = models.PointsOld.objects.select_related('user').filter(sponsor=sponsor_obj,date_time__range=(start_date, end_date))
-            driver_list = []
-            
-            for driver in driver_query:
-                first_name = driver.user.first_name
-                last_name = driver.user.last_name
-                point_total = driver.point_total
-                point_change = driver.points_added_or_deducted
-                reason = driver.reason
-                date = driver.date_time
-                new_dict = {'first_name':first_name,'last_name':last_name,'point_total':point_total,'point_change':point_change,'reason':reason,'date':date}
-                driver_list.append(new_dict)
-
-            response = HttpResponse(content_type='text/csv')
-            response['Content-Disposition'] = 'attachment; filename="Point_Change_Audit.csv"'
-            writer = csv.writer(response)
-            writer.writerow(['Driver', 'Last Name', 'Point Total', 'Point Change', 'Reason', 'Date'])
-            for driver in driver_list:
-                writer.writerow([driver['first_name'], driver['last_name'], driver['point_total'], driver['point_change'], driver['reason'], driver['date']])
-
-            return response and render(request, 'pointChangeAudit.html', {'driver_list': driver_list, 'sponsor_name':sponsor_name})
-    elif request.method == "POST":
-            return None
-
 def home(request):
     
     if request.user.is_anonymous == True:
@@ -1310,7 +1287,7 @@ def admin_edit_account(request):
     if  request.user.is_anonymous == True or (request.user.user_type != "Admin" and request.user.user_type != "Sponsor"):
         raise PermissionDenied
 
-    #print('User ID:', request.user.user_id)
+    print('User ID:', request.user.user_id)
 
     both_forms = {"form1": forms.getDriverEmail, "form2": forms.getDriverInfo}
 
@@ -1365,7 +1342,7 @@ def admin_edit_account(request):
         #  If the "Update Provided Fields" button is pressed
         #
         elif 'updateInfo' in request.POST:
-            #print('Updating info')
+            print('Updating info')
             #get form submission data
             context_data = {}
             first_name = request.POST['first_name']
@@ -1413,7 +1390,7 @@ def catalog(request):
             for obj in driver_sponsor_query:
                 sponsor_list.append(obj.sponsor.name)
             
-            #print(sponsor_list)
+            print(sponsor_list)
             return render(request, 'catalog.html', {'sponsor_list':sponsor_list})
         elif request.method == "POST" and 'sponsor_name' in request.POST:
             url = './' + request.POST['sponsor_name'] + '/catalogOverview/pageNum=1'
@@ -1425,7 +1402,7 @@ def catalog(request):
             for obj in driver_sponsor_query:
                 sponsor_list.append(obj.sponsor.name)
             
-            #print(sponsor_list)
+            print(sponsor_list)
             messages.info(request, 'An Invalid Organization Was Chosen!')
             return render(request, 'catalog.html', {'sponsor_list':sponsor_list})
     elif request.user.user_type == "Sponsor":
@@ -1675,7 +1652,7 @@ def order(request):
                 sponsor = entry.sponsor.name
                 new_dict = {'date':date, 'status':status,'points':points, 'item_id':item_id, 'sponsor':sponsor, 'order_id':order_id, 'item_name':item_name}
                 curr_order_list.append(new_dict)
-            #print(curr_order_list)
+            print(curr_order_list)
             for entry in completed_order_query:
                 order_id = entry.order_id
                 date = entry.date_time

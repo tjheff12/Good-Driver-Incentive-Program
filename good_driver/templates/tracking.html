@@ -18,10 +18,6 @@ table{
     
     border-collapse: collapse;
 }
-.download {
-    display: block;
-    margin: 0 auto;
-}
 </style>
 <script>
     function downloadCSV(csv, filename) {
@@ -72,29 +68,32 @@ table{
 <body>
     {% include 'top_buttons.html' %}
     <div class="header_padding">
-    <h1>Point Change Audit Report</h1>
+    <h1>Driver Point Tracking Report</h1>
     {% if driver_list %}
     <table>
         <tr>
             <th>Name</th>
-            <th>Point Total</th>
-            <th>Point Change</th>
-            <th>Reason</th>
+            <th>Total Points</th>
+            <th>Point Changes</th>
+            <th>Sponsor Name Making the Change</th>
             <th>Date</th>
+            <th>Reason</th>
         </tr>
         {% for driver in driver_list %}
             <tr>
                 <td>{{driver.first_name}} {{driver.last_name}}</td>
                 <td>{{driver.point_total}}</td>
                 <td>{{driver.point_change}}</td>
-                <td>{{driver.reason}}</td>
+                <td>{{sponsor_name}}</td>
                 <td>{{driver.date}}</td>
+                <td>{{driver.reason}}</td>
+                
             </tr>
         {% endfor %}
     </table>
     <br>
     <div style="text-align: center;">
-        <button onclick="exportTableToCSV('{{sponsor_name}} Point Change Audit Report.csv')">Download Report</button>
+        <button onclick="exportTableToCSV('{{sponsor_name}} Point Tracking Report.csv')">Download Report</button>
     </div>
     {% else %}
     
