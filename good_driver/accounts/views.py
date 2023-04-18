@@ -876,12 +876,91 @@ def driverManagement(request):
     return render(request, 'driverManagement.html')
 
 def pointTracking(request):
+    import json
     if request.user.is_anonymous == True:
-        return redirect(login)
-    elif request.user.user_type == "Sponsor":
-        if request.method == "GET":
-            return render(request, 'pointTracking.html')
-    raise Http404
+        raise FileNotFoundError
+    elif request.user.user_type != "Sponsor":
+        raise PermissionDenied
+
+    if request.method == "GET":
+        form = forms.SponsorFormWithAllOption()
+        driverQuery = models.DriverSponsor.objects.select_related('user', 'sponsor').all()
+        driverList = []
+        driverIDs = []
+        user_sponsor_obj = models.SponsorUser.objects.get(user_id=request.user.user_id)
+        sponsor_id = getattr(user_sponsor_obj, 'sponsor_id')
+        sponsor_obj = models.Sponsor.objects.get(sponsor_id=sponsor_id)
+        sponsor_name = getattr(sponsor_obj, 'name')
+        
+        for driver in driverQuery:
+            new_dict = {'name': driver.user.first_name + " " + driver.user.last_name, 'sponsor': driver.sponsor.name}
+            id_dict = {'name': driver.user.first_name + " " + driver.user.last_name, 'id': driver.user.user_id}
+            driverList.append(new_dict)
+            if id_dict not in driverIDs:
+                driverIDs.append(id_dict)
+        
+        return render(request, 'pointTracking.html', {'form':form,'driverList': json.dumps(driverList), 'idList':json.dumps(driverIDs), 'sponsor_name':sponsor_name})
+
+    elif request.method == "POST":
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+        current_date = datetime.now().strftime('%Y-%m-%d')
+
+        if start_date and end_date and start_date > end_date:
+            messages.info(request, 'Start date must before end date')
+            return redirect('.')
+        elif start_date and end_date and start_date > current_date:
+            messages.info(request, 'Start date should be before current date')
+            return redirect('.')
+        elif start_date and end_date and end_date > current_date:
+            messages.info(request, 'End date should be before current date')
+            return redirect('.')
+        elif not start_date:
+            messages.info(request, 'Please enter a start date')
+            return redirect('.')
+        elif not end_date:
+            messages.info(request, 'Please enter an end date')
+            return redirect('.')
+        
+        user_sponsor_obj = models.SponsorUser.objects.get(user_id=request.user.user_id)
+        sponsor_id = getattr(user_sponsor_obj, 'sponsor_id')
+        sponsor_obj = models.Sponsor.objects.get(sponsor_id=sponsor_id)
+        sponsor_name = getattr(sponsor_obj, 'name')
+
+        if request.POST['driverChoice'] == "All Drivers":
+            driver_list = []
+            driver_query = models.PointsHistory.objects.select_related('user').filter(sponsor=sponsor_obj, date_time__range=(start_date,end_date)).order_by('date_time')
+            for driver in driver_query:
+                total_points = models.Points.objects.filter(user=driver.user).values('point_total')
+                first_name = driver.user.first_name
+                last_name = driver.user.last_name
+                point_total = total_points[0]['point_total']
+                point_change = driver.point_change
+                reason = driver.reason
+                date = driver.date_time
+                new_dict = {'first_name':first_name,'last_name':last_name,'point_total': point_total,'point_change':point_change,'reason':reason,'date':date}
+                driver_list.append(new_dict)
+
+            return render(request, 'tracking.html', {'driver_list': driver_list, 'sponsor_name':sponsor_name})
+
+        else:
+            user_obj = models.Users.objects.get(user_id=request.POST['driverChoice'])
+            driver_query = models.PointsHistory.objects.select_related('user').filter(user=user_obj, date_time__range=(start_date,end_date)).order_by('date_time')
+            driver_list = []
+
+            for driver in driver_query:
+                total_points = models.Points.objects.filter(user=driver.user).values('point_total')
+                first_name = driver.user.first_name
+                last_name = driver.user.last_name
+                point_total = total_points[0]['point_total']
+                point_change = driver.point_change
+                reason = driver.reason
+                date = driver.date_time
+                new_dict = {'first_name':first_name,'last_name':last_name,'point_total':point_total,'point_change':point_change,'reason':reason,'date':date}
+                driver_list.append(new_dict)
+            
+            return render(request, 'tracking.html', {'driver_list': driver_list,'sponsor_name':sponsor_name})    
+            
 def driverSales(request):
     import json
     if request.user.is_anonymous == True:
