@@ -11,17 +11,24 @@
 </head>
 <body>
     {% include 'top_buttons.html' %}
-    <div class='header_padding'>
-        <div class="sponsorReport">
-            <form method="post">
-                <h2 class="title"> Sponsor Report </h2>
-                <a href='pointTracking'><input type="button" class="buttonFormat" value="Driver Point Tracking"/></a>
-                <br>
-                <br>
-                <a href='audit'><input type="button" class="buttonFormat" value="Audit Log"/></a>
-            </form>
-        </div>
-
+    <div class="sponsorReport">
+        <form method="post">
+            <h2 class="title"> Sponsor Report </h2>
+            <a href='pointTracking'><input type="button" class="buttonFormat" value="Driver Point Tracking"/></a>
+            <br>
+            <br>
+            <a href='audit'><input type="button" class="buttonFormat" value="Audit Log"/></a>
+            <div style="text-align: center; padding:15px">
+                {% for message in messages %}
+                <div role="alert" style="color:rgb(255,0,0);">
+                  {{message}}
+                </div>
+                {% endfor %}
+            </div>
+        </form>
     </div>
+
+    
+    
 </body>
 </html>

@@ -1,4 +1,4 @@
-.audit {
+.driverSales {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -33,7 +33,7 @@
     display: block;
 }
 
-.sponsorOptions {
+.driverOptions {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -58,22 +58,7 @@
     padding: 5px;
 }
 
-.sponsorListTitle {
+.driverListTitle {
     margin-right: 10px;
 }
 
-.categoryOptions {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.categoryListTitle {
-    margin-right: 10px;
-}
-
-.alert {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}

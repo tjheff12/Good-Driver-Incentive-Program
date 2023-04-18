@@ -49,7 +49,7 @@ urlpatterns = [
 
     path('sponsorHome/', views.sponsorHome, name='sponsorHome'),
 
-    #path('pointChangeAudit/', views.pointChangeAudit, name='pointChangeAudit'),
+    path('pointChangeAudit/', views.pointChangeAudit, name='pointChangeAudit'),
 
     path('adminHome/', views.adminHome, name="adminHome"),
 
@@ -57,21 +57,20 @@ urlpatterns = [
     
     path('sponsorHome/driverManagement/allDrivers', views.sponsor_see_all_drivers, name='all_drivers'),
 
-    path('home/sponsorReport/pointTracking/', views.pointTracking, name='pointTracking'),
+    
+    path('home/report/driverSales/', views.driverSales, name='driverSales'),
 
-    path('home/adminReport/driverSales/', views.driverSales, name='driverSales'),
+    path('home/report/sponsorSales/', views.sponsorSales, name='sponsorSales'),
 
-    path('home/adminReport/sponsorSales/', views.sponsorSales, name='sponsorSales'),
+    path('home/report/invoice/', views.invoice, name='invoice'),
 
-    path('home/adminReport/invoice/', views.invoice, name='invoice'),
+    path('sponsorHome/sponsorReport/audit/', views.audit, name='sponsorAudit'),
 
-    path('home/sponsorReport/audit/', views.audit, name='sponsorAudit'),
+    path('adminHome/adminReport/audit/', views.audit, name='adminAudit'),
 
-    path('home/adminReport/audit/', views.audit, name='adminAudit'),
+    path('sponsorHome/sponsorReport/', views.sponsorReport, name='sponsorReport'),
 
-    path('home/sponsorReport/', views.sponsorReport, name='sponsorReport'),
-
-    path('home/adminReport/', views.adminReport, name='adminReport'),
+    path('adminHome/adminReport/', views.adminReport, name='adminReport'),
 
     path('adminInfo/', views.adminInfo, name='adminInfo'),
     
@@ -100,15 +99,15 @@ urlpatterns = [
     path('sponsorHome/driverManagement/', views.driverManagement, name='driverManagement'),
     
 
-    path('home/sponsorReport/pointTracking/', views.pointTracking, name='pointTracking'),
+    path('home/report/pointTracking/', views.pointTracking, name='pointTracking'),
 
     
 
-    path('home/sponsorReport/audit/', views.audit, name='sponsorAudit'),
+    path('home/report/audit/', views.audit, name='audit'),
 
    
 
-    path('home/adminReport/', views.adminReport, name='adminReport'),
+    path('home/report/', views.report, name='adminReport'),
 
     path('adminInfo/', views.adminInfo, name='adminInfo'),
     
