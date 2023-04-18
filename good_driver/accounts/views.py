@@ -1230,9 +1230,11 @@ def audit(request):
                                 date = entry.date_time
                                 first_name = driver.user.first_name
                                 last_name = driver.user.last_name
+                                sponsor_name = driver.sponsor.name
                                 type_change = entry.type_of_change
-                                new_dict = {'date':date,'first_name':first_name,'last_name':last_name,'type_change':type_change}
+                                new_dict = {'date':date,'first_name':first_name,'sponsor_name':sponsor_name,'last_name':last_name,'type_change':type_change}
                                 driver_list.append(new_dict)
+                    driver_list = sorted(driver_list, key=lambda x: x['date'])
                     return render(request, 'passwordChangeAudit.html', {'driver_list': driver_list})
                     
                 elif request.POST['options'] == "login_attempt":
@@ -1246,12 +1248,14 @@ def audit(request):
                                 date = entry.date_time
                                 first_name = driver.user.first_name
                                 last_name = driver.user.last_name
+                                sponsor_name = driver.sponsor.name
                                 if entry.was_accepted == b"\x01":
                                     was_accepted = "True"
                                 else:
                                     was_accepted = "False"
-                                new_dict = {'date':date,'first_name':first_name,'last_name':last_name,'was_accepted':was_accepted}
+                                new_dict = {'date':date,'first_name':first_name,'last_name':last_name,'sponsor_name':sponsor_name,'was_accepted':was_accepted}
                                 driver_list.append(new_dict)
+                    driver_list = sorted(driver_list, key=lambda x: x['date'])
                     return render(request, 'loginAttemptAudit.html', {'driver_list': driver_list})
                 
                 elif request.POST['options'] == "point_change":
@@ -1260,15 +1264,15 @@ def audit(request):
                         sponsor_obj = models.Sponsor.objects.get(sponsor_id=sponsor_id)
                         driver_query = models.PointsHistory.objects.select_related('user').filter(sponsor=sponsor_obj, date_time__range=(start_date,end_date)).order_by('date_time')
                         for driver in driver_query:
-                            total_points = models.Points.objects.filter(user=driver.user).values('point_total')
                             first_name = driver.user.first_name
                             last_name = driver.user.last_name
-                            point_total = total_points[0]['point_total']
+                            sponsor_name = driver.sponsor.name
                             point_change = driver.point_change
                             reason = driver.reason
                             date = driver.date_time
-                            new_dict = {'first_name':first_name,'last_name':last_name,'point_total':point_total,'point_change':point_change,'reason':reason,'date':date}
+                            new_dict = {'first_name':first_name,'last_name':last_name,'sponsor_name':sponsor_name,'point_change':point_change,'reason':reason,'date':date}
                             driver_list.append(new_dict)
+                    driver_list = sorted(driver_list, key=lambda x: x['date'])
                     return render(request, 'pointChangeAudit.html', {'driver_list': driver_list})
                 
                 elif request.POST['options'] == "driver_application":
@@ -1286,6 +1290,7 @@ def audit(request):
                                 reason = entry.new_reason
                                 new_dict = {'date':date,'first_name':first_name,'last_name':last_name,'status':status,'reason':reason}
                                 driver_list.append(new_dict)
+                    driver_list = sorted(driver_list, key=lambda x: x['date'])
                     return render(request, 'driverApplicationAudit.html', {'driver_list': driver_list})
 
             else:
@@ -1302,9 +1307,11 @@ def audit(request):
                             date = entry.date_time
                             first_name = driver.user.first_name
                             last_name = driver.user.last_name
+                            sponsor_name = driver.sponsor.name
                             type_change = entry.type_of_change
-                            new_dict = {'date':date,'first_name':first_name,'last_name':last_name,'type_change':type_change}
+                            new_dict = {'date':date,'first_name':first_name,'last_name':last_name,'sponsor_name':sponsor_name,'type_change':type_change}
                             driver_list.append(new_dict)
+                    driver_list = sorted(driver_list, key=lambda x: x['date'])
                     return render(request, 'passwordChangeAudit.html', {'driver_list': driver_list})
                     
                 elif request.POST['options'] == "login_attempt":
@@ -1315,26 +1322,28 @@ def audit(request):
                             date = entry.date_time
                             first_name = driver.user.first_name
                             last_name = driver.user.last_name
+                            sponsor_name = driver.sponsor.name
                             if entry.was_accepted == b"\x01":
                                 was_accepted = "True"
                             else:
                                 was_accepted = "False"
-                            new_dict = {'date':date,'first_name':first_name,'last_name':last_name,'was_accepted':was_accepted}
+                            new_dict = {'date':date,'first_name':first_name,'last_name':last_name,'sponsor_name':sponsor_name,'was_accepted':was_accepted}
                             driver_list.append(new_dict)
+                    driver_list = sorted(driver_list, key=lambda x: x['date'])
                     return render(request, 'loginAttemptAudit.html', {'driver_list': driver_list})
                 
                 elif request.POST['options'] == "point_change":
                     driver_query = models.PointsHistory.objects.select_related('user').filter(sponsor=sponsor_choice, date_time__range=(start_date,end_date)).order_by('date_time')
                     for driver in driver_query:
-                        total_points = models.Points.objects.filter(user=driver.user).values('point_total')
                         first_name = driver.user.first_name
                         last_name = driver.user.last_name
-                        point_total = total_points[0]['point_total']
+                        sponsor_name = driver.sponsor.name
                         point_change = driver.point_change
                         reason = driver.reason
                         date = driver.date_time
-                        new_dict = {'first_name':first_name,'last_name':last_name,'point_total':point_total,'point_change':point_change,'reason':reason,'date':date}
+                        new_dict = {'first_name':first_name,'last_name':last_name,'sponsor_name':sponsor_name,'point_change':point_change,'reason':reason,'date':date}
                         driver_list.append(new_dict)
+                    driver_list = sorted(driver_list, key=lambda x: x['date'])
                     return render(request, 'pointChangeAudit.html', {'driver_list': driver_list})
                 
                 elif request.POST['options'] == "driver_application":
@@ -1349,6 +1358,7 @@ def audit(request):
                             reason = entry.new_reason
                             new_dict = {'date':date,'first_name':first_name,'last_name':last_name,'status':status,'reason':reason}
                             driver_list.append(new_dict)
+                    driver_list = sorted(driver_list, key=lambda x: x['date'])
                     return render(request, 'driverApplicationAudit.html', {'driver_list': driver_list})
             
     elif request.user.user_type == "Sponsor":
@@ -1391,9 +1401,11 @@ def audit(request):
                         date = entry.date_time
                         first_name = driver.user.first_name
                         last_name = driver.user.last_name
+                        sponsor_name = driver.sponsor.name
                         type_change = entry.type_of_change
-                        new_dict = {'date':date,'first_name':first_name,'last_name':last_name,'type_change':type_change}
+                        new_dict = {'date':date,'first_name':first_name,'last_name':last_name,'sponsor_name':sponsor_name,'type_change':type_change}
                         driver_list.append(new_dict)
+                driver_list = sorted(driver_list, key=lambda x: x['date'])
                 return render(request, 'passwordChangeAudit.html', {'driver_list': driver_list})
                 
             elif request.POST['options'] == "login_attempt":
@@ -1404,26 +1416,28 @@ def audit(request):
                         date = entry.date_time
                         first_name = driver.user.first_name
                         last_name = driver.user.last_name
+                        sponsor_name = driver.sponsor.name
                         if entry.was_accepted == b"\x01":
                             was_accepted = "True"
                         else:
                             was_accepted = "False"
-                        new_dict = {'date':date,'first_name':first_name,'last_name':last_name,'was_accepted':was_accepted}
+                        new_dict = {'date':date,'first_name':first_name,'last_name':last_name,'sponsor_name':sponsor_name,'was_accepted':was_accepted}
                         driver_list.append(new_dict)
+                driver_list = sorted(driver_list, key=lambda x: x['date'])
                 return render(request, 'loginAttemptAudit.html', {'driver_list': driver_list})
             
             elif request.POST['options'] == "point_change":
                 driver_query = models.PointsHistory.objects.select_related('user').filter(sponsor=sponsor_obj, date_time__range=(start_date,end_date)).order_by('date_time')
                 for driver in driver_query:
-                    total_points = models.Points.objects.filter(user=driver.user).values('point_total')
                     first_name = driver.user.first_name
                     last_name = driver.user.last_name
-                    point_total = total_points[0]['point_total']
+                    sponsor_name = driver.sponsor.name
                     point_change = driver.point_change
                     reason = driver.reason
                     date = driver.date_time
-                    new_dict = {'first_name':first_name,'last_name':last_name,'point_total':point_total,'point_change':point_change,'reason':reason,'date':date}
+                    new_dict = {'first_name':first_name,'last_name':last_name,'sponsor_name':sponsor_name,'point_change':point_change,'reason':reason,'date':date}
                     driver_list.append(new_dict)
+                driver_list = sorted(driver_list, key=lambda x: x['date'])
                 return render(request, 'pointChangeAudit.html', {'driver_list': driver_list})
             
             elif request.POST['options'] == "driver_application":
@@ -1438,6 +1452,7 @@ def audit(request):
                         reason = entry.new_reason
                         new_dict = {'date':date,'first_name':first_name,'last_name':last_name,'status':status,'reason':reason}
                         driver_list.append(new_dict)
+                driver_list = sorted(driver_list, key=lambda x: x['date'])
                 return render(request, 'driverApplicationAudit.html', {'driver_list': driver_list})
 
 def sponsorReport(request):
