@@ -940,26 +940,8 @@ def pointTracking(request):
                 date = driver.date_time
                 new_dict = {'first_name':first_name,'last_name':last_name,'point_total': point_total,'point_change':point_change,'reason':reason,'date':date}
                 driver_list.append(new_dict)
-
+            driver_list = sorted(driver_list, key=lambda x: x['date'])
             return render(request, 'tracking.html', {'driver_list': driver_list, 'sponsor_name':sponsor_name})
-
-        else:
-            user_obj = models.Users.objects.get(user_id=request.POST['driverChoice'])
-            driver_query = models.PointsHistory.objects.select_related('user').filter(user=user_obj, date_time__range=(start_date,end_date)).order_by('date_time')
-            driver_list = []
-
-            for driver in driver_query:
-                total_points = models.Points.objects.filter(user=driver.user).values('point_total')
-                first_name = driver.user.first_name
-                last_name = driver.user.last_name
-                point_total = total_points[0]['point_total']
-                point_change = driver.point_change
-                reason = driver.reason
-                date = driver.date_time
-                new_dict = {'first_name':first_name,'last_name':last_name,'point_total':point_total,'point_change':point_change,'reason':reason,'date':date}
-                driver_list.append(new_dict)
-            
-            return render(request, 'tracking.html', {'driver_list': driver_list,'sponsor_name':sponsor_name})    
 
 def driverSales(request):
     import json
