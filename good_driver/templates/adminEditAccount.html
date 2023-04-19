@@ -1,3 +1,98 @@
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+  <title>Edit Any Account</title>
+</head>
+
+<style>
+  body {
+      background-color: rgb(15, 15, 15);
+      color: white;
+  }
+  .btn-primary {
+      color: #f4f6f8;
+      background-color: rgb(128, 15, 194);
+      border-color: rgb(228, 114, 8)
+  }
+
+  .btn-primary:hover {
+      color: #f4f6f8;
+      background-color: rgb(228, 114, 8);
+      border-color: rgb(228, 114, 8)
+  }
+
+  .btn-primary:focus,
+  .btn-primary.focus {
+      box-shadow: 0 0 0 .2rem rgba(91, 194, 194, 0.5)
+  }
+
+  .btn-primary.disabled,
+  .btn-primary:disabled {
+      color: #f4f6f8;
+      background-color: rgb(128, 15, 194);
+      border-color: rgb(228, 114, 8)
+  }
+
+  .btn-primary:not(:disabled):not(.disabled):active,
+  .btn-primary:not(:disabled):not(.disabled).active,
+  .show>.btn-primary.dropdown-toggle {
+      color: #f4f6f8;
+      background-color: #9cdada;
+      border-color: #2e7c7c
+  }
+
+  .btn-primary:not(:disabled):not(.disabled):active:focus,
+  .btn-primary:not(:disabled):not(.disabled).active:focus,
+  .show>.btn-primary.dropdown-toggle:focus {
+      box-shadow: 0 0 0 .2rem rgba(91, 194, 194, 0.5)
+  }
+
+  .btn-outline-primary {
+      color: rgb(128, 15, 194);
+      background-color: transparent;
+      background-image: none;
+      border-color: rgb(128, 15, 194)
+  }
+
+  .btn-outline-primary:hover {
+      color: #222;
+      background-color: rgb(228, 114, 8);
+      border-color: rgb(128, 15, 194)
+  }
+
+  .btn-outline-primary:focus,
+  .btn-outline-primary.focus {
+      box-shadow: 0 0 0 .2rem rgb(228, 114, 8)
+  }
+
+  .btn-outline-primary.disabled,
+  .btn-outline-primary:disabled {
+      color: rgb(128, 15, 194);
+      background-color: transparent
+  }
+
+  .btn-outline-primary:not(:disabled):not(.disabled):active,
+  .btn-outline-primary:not(:disabled):not(.disabled).active,
+  .show>.btn-outline-primary.dropdown-toggle {
+      color: #f4f6f8;
+      background-color: rgb(228, 114, 8);
+      border-color: rgb(128, 15, 194)
+  }
+
+  .btn-outline-primary:not(:disabled):not(.disabled):active:focus,
+  .btn-outline-primary:not(:disabled):not(.disabled).active:focus,
+  .show>.btn-outline-primary.dropdown-toggle:focus {
+      box-shadow: 0 0 0 .2rem rgb(228, 114, 8)
+  }
+  
+</style>
+
 <body>
   {% include 'top_buttons.html' %}
   <div class="header_padding">
@@ -6,7 +101,7 @@
   <form method="POST">
     {% csrf_token %}
     {{ form1 }}
-    <input type="submit" value="Show User Info" name="showInfo">
+    <input type="submit" class="btn btn-primary" value="Show User Info" name="showInfo">
   </form>
 
   <form method="POST">
@@ -14,7 +109,7 @@
     {{ form2 }}
 
     <input type="text" value="{{ other_email }}" readonly name='email' hidden="hidden">
-    <input type="submit" value="Update Info" name="updateInfo">
+    <input type="submit" class="btn btn-primary" value="Update Info" name="updateInfo">
   </form>
 
     Hi {{ user.email }}!
@@ -42,7 +137,7 @@
   </div>
   {% else %}
     <p>You are not logged in</p>
-    <a class="btn btn-dark" href="../login" role="button">Go To Login</a>
+    <a class="btn btn-primary" href="../login" role="button">Go To Login</a>
   
   {% endif %}
     <div>
