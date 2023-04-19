@@ -50,8 +50,7 @@
 				driver_label.removeAttribute('hidden');
                 //driver_select.empty();
                 for(let i = 0; i < driverList.length; i++){
-                    if(driverList[i]['sponsor'] == val){
-                        if(first) {
+                    if(first) {
                             let opt = document.createElement('option');
                             let optionText = document.createTextNode('All Drivers');
                             opt.appendChild(optionText);
@@ -59,6 +58,7 @@
                             driver_select.appendChild(opt);
                             first = false;
                         }
+                    if(driverList[i]['sponsor'] == val){
                         let opt = document.createElement('option');
                         let optionText = document.createTextNode(driverList[i]['name']);
                         opt.appendChild(optionText);
