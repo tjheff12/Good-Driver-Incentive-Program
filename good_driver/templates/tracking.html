@@ -70,10 +70,27 @@ table{
     <div class="header_padding">
     <h1>Driver Point Tracking Report</h1>
     {% if driver_list %}
+    
+    <h2>Current Points</h2>
     <table>
         <tr>
             <th>Name</th>
             <th>Total Points</th>
+        </tr>
+        {% for entry in points_list %}
+        <tr>
+            <td>{{entry.name}}</td>
+            <td>{{entry.points}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    
+    <br><br>
+    <h2>Point History</h2>
+    <table>
+        <tr>
+            <th>Name</th>
+            
             <th>Point Changes</th>
             <th>Sponsor Name Making the Change</th>
             <th>Date</th>
@@ -82,9 +99,9 @@ table{
         {% for driver in driver_list %}
             <tr>
                 <td>{{driver.first_name}} {{driver.last_name}}</td>
-                <td>{{driver.point_total}}</td>
+                
                 <td>{{driver.point_change}}</td>
-                <td>{{sponsor_name}}</td>
+                <td>{{driver.sponsor_user}}</td>
                 <td>{{driver.date}}</td>
                 <td>{{driver.reason}}</td>
                 

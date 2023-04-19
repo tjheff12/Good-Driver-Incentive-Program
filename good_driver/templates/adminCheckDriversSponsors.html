@@ -1,0 +1,31 @@
+<head>
+    <title>Check a Driver's Sponsors</title>
+    <style>.selection {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin:auto;
+    }</style>
+</head>
+
+<body>
+    {% include 'top_buttons.html' %}
+    <div class="header_padding" style="text-align: center">
+        <br><br><br><br>
+        <h2>Which Driver Would You Like To See</h2>
+        <br>
+        <div class="selection">
+            <form method="POST">
+            {% csrf_token %}
+                <label for="driver_choice">Driver List</label>
+                <select name="driver_choice" id="driver_choice">
+                {% for driver in drivers %} 
+                    <option value = {{driver.id}}>{{driver.name}}</option>
+                {% endfor %}
+                </select>
+                <br><br>
+                <input type="submit" value="Submit" > 
+            </form>
+        </div>
+    </div>
+</body>

@@ -1,0 +1,28 @@
+<head>
+    <title>Check a Driver's Sponsors</title>
+    <style>.selection {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin:auto;
+    }</style>
+</head>
+
+<body>
+    {% include 'top_buttons.html' %}
+    <div class="header_padding" style="text-align: center">
+        {% if sponsor_list %}
+        <br><br><br><br>
+        <h2>{{driver_name}} is a part of these Sponsors:</h2>
+        <br>
+        {% for sponsor in sponsor_list %} 
+            <p>{{sponsor.name}}</p>
+        {% endfor %}
+        {% else %} 
+        <br><br><br><br>
+        <h2>{{driver_name}} is not a part of any Sponsors</h2>
+        {%endif%}
+        <a href="./checkDriversSponsors"><input type="button"  value="Check Another Driver" /></a>
+        
+    </div>
+</body>
