@@ -2,6 +2,8 @@
 <html lang="en">
 
 <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+		integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -21,6 +23,106 @@
     }
 </style>
 
+
+<style>
+    body {
+        background-color: rgb(15, 15, 15);
+        color: white;
+    }
+    .btn-primary {
+        color: #f4f6f8;
+        background-color: rgb(128, 15, 194);
+        border-color: rgb(228, 114, 8);
+    }
+  
+    .btn-primary:hover {
+        color: #f4f6f8;
+        background-color: rgb(228, 114, 8);
+        border-color: rgb(228, 114, 8)
+    }
+  
+    .btn-primary:focus,
+    .btn-primary.focus {
+        box-shadow: 0 0 0 .2rem rgba(91, 194, 194, 0.5)
+    }
+  
+    .btn-primary.disabled,
+    .btn-primary:disabled {
+        color: #f4f6f8;
+        background-color: rgb(128, 15, 194);
+        border-color: rgb(228, 114, 8)
+    }
+  
+    .btn-primary:not(:disabled):not(.disabled):active,
+    .btn-primary:not(:disabled):not(.disabled).active,
+    .show>.btn-primary.dropdown-toggle {
+        color: #f4f6f8;
+        background-color: #9cdada;
+        border-color: #2e7c7c
+    }
+  
+    .btn-primary:not(:disabled):not(.disabled):active:focus,
+    .btn-primary:not(:disabled):not(.disabled).active:focus,
+    .show>.btn-primary.dropdown-toggle:focus {
+        box-shadow: 0 0 0 .2rem rgba(91, 194, 194, 0.5)
+    }
+  
+    .btn-outline-primary {
+        color: rgb(128, 15, 194);
+        background-color: transparent;
+        background-image: none;
+        border-color: rgb(128, 15, 194)
+    }
+  
+    .btn-outline-primary:hover {
+        color: #222;
+        background-color: rgb(228, 114, 8);
+        border-color: rgb(128, 15, 194)
+    }
+  
+    .btn-outline-primary:focus,
+    .btn-outline-primary.focus {
+        box-shadow: 0 0 0 .2rem rgb(228, 114, 8)
+    }
+  
+    .btn-outline-primary.disabled,
+    .btn-outline-primary:disabled {
+        color: rgb(128, 15, 194);
+        background-color: transparent
+    }
+  
+    .btn-outline-primary:not(:disabled):not(.disabled):active,
+    .btn-outline-primary:not(:disabled):not(.disabled).active,
+    .show>.btn-outline-primary.dropdown-toggle {
+        color: #f4f6f8;
+        background-color: rgb(228, 114, 8);
+        border-color: rgb(128, 15, 194)
+    }
+  
+    .btn-outline-primary:not(:disabled):not(.disabled):active:focus,
+    .btn-outline-primary:not(:disabled):not(.disabled).active:focus,
+    .show>.btn-outline-primary.dropdown-toggle:focus {
+        box-shadow: 0 0 0 .2rem rgb(228, 114, 8)
+    }
+  
+    .container   { width:650px; background-color:#222; overflow:hidden;
+                 padding:10px; }
+  
+                 .center-block {
+    display: block;
+    margin-right: auto;
+    margin-left: auto;
+  }
+  
+  .bigger-textBox {
+    width: 500px;
+  }
+  
+  table, th, td {
+  border-color: #5A5A5A;
+}
+    
+  </style>
 
 
 <body>
@@ -46,7 +148,7 @@
             <form method="POST">
                 {% csrf_token %}
                 <input type="text" id="search" name="search" placeholder="Search Catalog">
-                <button type="submit">Go</button>
+                <button class="btn btn-primary" type="submit">Go</button>
             </form>
         </div>
 
@@ -81,11 +183,11 @@
                         {% endif %}
                     </td>
                     <td>{{product.point_cost}}</td>
-                    {% if product.sellingStatus.sellingState == 'Active' and product.point_cost < points and user.is_impersonation == 0 %} <td><button type="submit">Order Item</button></td>
+                    {% if product.sellingStatus.sellingState == 'Active' and product.point_cost < points and user.is_impersonation == 0 %} <td><button class="btn btn-primary" type="submit">Order Item</button></td>
                         {% elif user.is_impersonation == 1 %}
-                        <td><button type="submit" disabled>Orders Disabled for Impersonation Mode</button></td>
+                        <td><button type="submit" class="btn btn-primary" disabled>Orders Disabled for Impersonation Mode</button></td>
                         {% else %}
-                        <td><button type="submit" disabled>Not Enough Points</button></td>
+                        <td><button type="submit" class="btn btn-primary" disabled>Not Enough Points</button></td>
                         {% endif %}
                 </form>
             </tr>

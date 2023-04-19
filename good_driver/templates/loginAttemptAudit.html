@@ -67,8 +67,111 @@ table{
     }
 </script>
 <head>
-
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 </head>
+
+<style>
+    body {
+        background-color: rgb(15, 15, 15);
+        color: white;
+    }
+    .btn-primary {
+        color: #f4f6f8;
+        background-color: rgb(128, 15, 194);
+        border-color: rgb(228, 114, 8);
+        width: 300px;
+    }
+  
+    .btn-primary:hover {
+        color: #f4f6f8;
+        background-color: rgb(228, 114, 8);
+        border-color: rgb(228, 114, 8)
+    }
+  
+    .btn-primary:focus,
+    .btn-primary.focus {
+        box-shadow: 0 0 0 .2rem rgba(91, 194, 194, 0.5)
+    }
+  
+    .btn-primary.disabled,
+    .btn-primary:disabled {
+        color: #f4f6f8;
+        background-color: rgb(128, 15, 194);
+        border-color: rgb(228, 114, 8)
+    }
+  
+    .btn-primary:not(:disabled):not(.disabled):active,
+    .btn-primary:not(:disabled):not(.disabled).active,
+    .show>.btn-primary.dropdown-toggle {
+        color: #f4f6f8;
+        background-color: #9cdada;
+        border-color: #2e7c7c
+    }
+  
+    .btn-primary:not(:disabled):not(.disabled):active:focus,
+    .btn-primary:not(:disabled):not(.disabled).active:focus,
+    .show>.btn-primary.dropdown-toggle:focus {
+        box-shadow: 0 0 0 .2rem rgba(91, 194, 194, 0.5)
+    }
+  
+    .btn-outline-primary {
+        color: rgb(128, 15, 194);
+        background-color: transparent;
+        background-image: none;
+        border-color: rgb(128, 15, 194)
+    }
+  
+    .btn-outline-primary:hover {
+        color: #222;
+        background-color: rgb(228, 114, 8);
+        border-color: rgb(128, 15, 194)
+    }
+  
+    .btn-outline-primary:focus,
+    .btn-outline-primary.focus {
+        box-shadow: 0 0 0 .2rem rgb(228, 114, 8)
+    }
+  
+    .btn-outline-primary.disabled,
+    .btn-outline-primary:disabled {
+        color: rgb(128, 15, 194);
+        background-color: transparent
+    }
+  
+    .btn-outline-primary:not(:disabled):not(.disabled):active,
+    .btn-outline-primary:not(:disabled):not(.disabled).active,
+    .show>.btn-outline-primary.dropdown-toggle {
+        color: #f4f6f8;
+        background-color: rgb(228, 114, 8);
+        border-color: rgb(128, 15, 194)
+    }
+  
+    .btn-outline-primary:not(:disabled):not(.disabled):active:focus,
+    .btn-outline-primary:not(:disabled):not(.disabled).active:focus,
+    .show>.btn-outline-primary.dropdown-toggle:focus {
+        box-shadow: 0 0 0 .2rem rgb(228, 114, 8)
+    }
+  
+    .container   { width:650px; background-color:#222; overflow:hidden;
+                 padding:10px; }
+  
+                 .center-block {
+    display: block;
+    margin-right: auto;
+    margin-left: auto;
+  }
+  
+  .bigger-textBox {
+    width: 500px;
+  }
+  
+  table, th, td {
+  border-color: #5A5A5A;
+}
+    
+  </style>
+
 <body>
     {% include 'top_buttons.html' %}
     <div class="header_padding">
@@ -91,7 +194,7 @@ table{
     </table>
     <br>
     <div style="text-align: center;">
-        <button onclick="exportTableToCSV('{{sponsor_name}} Login Attempt Audit Report.csv')">Download Report</button>
+        <button class="btn btn-primary" onclick="exportTableToCSV('{{sponsor_name}} Login Attempt Audit Report.csv')">Download Report</button>
     </div>
     {% else %}
     

@@ -1,9 +1,111 @@
 {% load static %}
 
 <head>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+		integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   <title>Profile</title>
   <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.ico' %}" />
 </head>
+
+<style>
+  body {
+      background-color: rgb(15, 15, 15);
+      color: white;
+  }
+  .btn-primary {
+      color: #f4f6f8;
+      background-color: rgb(128, 15, 194);
+      border-color: rgb(228, 114, 8)
+  }
+
+  .btn-primary:hover {
+      color: #f4f6f8;
+      background-color: rgb(228, 114, 8);
+      border-color: rgb(228, 114, 8)
+  }
+
+  .btn-primary:focus,
+  .btn-primary.focus {
+      box-shadow: 0 0 0 .2rem rgba(91, 194, 194, 0.5)
+  }
+
+  .btn-primary.disabled,
+  .btn-primary:disabled {
+      color: #f4f6f8;
+      background-color: rgb(128, 15, 194);
+      border-color: rgb(228, 114, 8)
+  }
+
+  .btn-primary:not(:disabled):not(.disabled):active,
+  .btn-primary:not(:disabled):not(.disabled).active,
+  .show>.btn-primary.dropdown-toggle {
+      color: #f4f6f8;
+      background-color: #9cdada;
+      border-color: #2e7c7c
+  }
+
+  .btn-primary:not(:disabled):not(.disabled):active:focus,
+  .btn-primary:not(:disabled):not(.disabled).active:focus,
+  .show>.btn-primary.dropdown-toggle:focus {
+      box-shadow: 0 0 0 .2rem rgba(91, 194, 194, 0.5)
+  }
+
+  .btn-outline-primary {
+      color: rgb(128, 15, 194);
+      background-color: transparent;
+      background-image: none;
+      border-color: rgb(128, 15, 194)
+  }
+
+  .btn-outline-primary:hover {
+      color: #222;
+      background-color: rgb(228, 114, 8);
+      border-color: rgb(128, 15, 194)
+  }
+
+  .btn-outline-primary:focus,
+  .btn-outline-primary.focus {
+      box-shadow: 0 0 0 .2rem rgb(228, 114, 8)
+  }
+
+  .btn-outline-primary.disabled,
+  .btn-outline-primary:disabled {
+      color: rgb(128, 15, 194);
+      background-color: transparent
+  }
+
+  .btn-outline-primary:not(:disabled):not(.disabled):active,
+  .btn-outline-primary:not(:disabled):not(.disabled).active,
+  .show>.btn-outline-primary.dropdown-toggle {
+      color: #f4f6f8;
+      background-color: rgb(228, 114, 8);
+      border-color: rgb(128, 15, 194)
+  }
+
+  .btn-outline-primary:not(:disabled):not(.disabled):active:focus,
+  .btn-outline-primary:not(:disabled):not(.disabled).active:focus,
+  .show>.btn-outline-primary.dropdown-toggle:focus {
+      box-shadow: 0 0 0 .2rem rgb(228, 114, 8)
+  }
+
+  .container   { width:650px; background-color:#222; overflow:hidden;
+               padding:10px; }
+form         { color:#FEFEFE; width:550px; margin:0 auto;
+               background-color:#F62; }
+
+               .center-block {
+  display: block;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.bigger-textBox {
+  width: 500px;
+}
+
+  
+</style>
+
 <script type="text/javascript">
   function ShowEditBox(textBoxID) {
     var textBoxElement = document.getElementById(textBoxID);
@@ -38,60 +140,63 @@
 
 <body>
   {% include 'top_buttons.html' %}
-  <div class="header_padding">
+  <div class="header_padding" style="text-align: center;">
     {% block content %}
 
     {% if user.is_authenticated %}
+    <div class="container">
     Hi {{ user.email }}!
     <br>
-    Your attirbutes are:
+    Your attributes are:
     <br>
-    Username-&ensp;&emsp;&emsp;&emsp;{{user.email}}
+    Username -&nbsp;{{user.email}}
     <br>
     <form action="/user_profile/" method="POST" class="form-horizontal">
       {% csrf_token%}
-      First Name- &nbsp;&ensp;&emsp;&emsp;{{user.first_name}}
-      <a href="#" onclick="ShowEditBox('first_name');">Toggle Edit</a>
-      <input type="text" id="first_name" name="first_name" style="display:none">
+      First Name -&nbsp;{{user.first_name}}
+      <button type="button" class="btn btn-primary" onclick="ShowEditBox('first_name');">Toggle Edit</button>
+      <input type="text" class="center-block" id="first_name" name="first_name" style="display:none">
       <button type="submit" class="btn btn-primary" hidden="hidden">Change First Name</button>
       <br>
-      Last Name- &ensp;&nbsp;&emsp;&emsp;&nbsp;{{user.last_name}}
-      <a href="#" onclick="ShowEditBox('last_name');">Toggle Edit</a>
-      <input type="text" id="last_name" name="last_name" style="display:none">
+      Last Name -&nbsp;{{user.last_name}}
+      <button type="button" class="btn btn-primary" onclick="ShowEditBox('last_name');">Toggle Edit</button>
+      <input type="text" class="center-block" id="last_name" name="last_name" style="display:none">
       <button type="submit" class="btn btn-primary" hidden="hidden">Change Last Name</button>
       <br>
-      Street Address 1- &nbsp;&nbsp;&nbsp;{{user.street_address}}
-      <a href="#" onclick="ShowEditBoxes('street_address', 'city', 'zip_code');">Toggle Edit</a>
-      <input type="text" id="street_address" name="street_address" style="display:none">
+      Street Address 1 -&nbsp;{{user.street_address}}
+      <button type="button" class="btn btn-primary" onclick="ShowEditBoxes('street_address', 'city', 'zip_code');">Toggle Edit</button>
+      <input type="text" class="center-block bigger-textBox" id="street_address" name="street_address" style="display:none">
       <button type="submit" class="btn btn-primary" hidden="hidden">Change Address</button>
       <br>
-      City- &emsp;&emsp;&emsp;&emsp;&emsp;&ensp;{{user.city}}
-      <input type="text" id="city" name="city" style="display:none">
+      City -&nbsp;{{user.city}}
+      <input type="text" class="center-block" id="city" name="city" style="display:none">
       <button type="submit" class="btn btn-primary" hidden="hidden">Change City</button>
       <br>
-      Zip Code- &emsp;&emsp;&emsp;&ensp;{{user.zip_code}}
-      <input type="text" id="zip_code" name="zip_code" style="display:none">
+      Zip Code -&nbsp;{{user.zip_code}}
+      <input type="text" class="center-block" id="zip_code" name="zip_code" style="display:none">
       <button type="submit" class="btn btn-primary" hidden="hidden">Change Zip</button>
       <br>
-      Phone Number- &nbsp;&emsp;{{user.phone_number}}
-      <a href="#" onclick="ShowEditBox('phone_number');">Toggle Edit</a>
-      <input type="text" id="phone_number" name="phone_number" style="display:none">
+      Phone Number -&nbsp;{{user.phone_number}}
+      <button type="button" class="btn btn-primary" onclick="ShowEditBox('phone_number');">Toggle Edit</button>
+      <input type="text" class="center-block" id="phone_number" name="phone_number" style="display:none">
       <button type="submit" class="btn btn-primary" hidden="hidden">Change Phone</button>
       <br>
     </form>
-    User Type-&ensp;&emsp;&emsp;&emsp;{{user.user_type}}
+    User Type -&nbsp;{{user.user_type}}
+  </div>
+  <br>
     <br>
-    <a href="../logout" role="button"><input type="button" class="button" value="Logout" /></a>
+    <a href="../logout" role="button"><input type="button" class="btn btn-primary" value="Logout" /></a>
 
     <br>
     <br>
     {% if user.is_impersonation == 0 and user.user_type == "Sponsor" %}
-    <a href="/user_profile/DriverView" role="button"><input type="button" class="button"
+    <a href="/user_profile/DriverView" role="button"><input type="button" style="background-color:rgb(226, 17, 17);color:white;"
         onclick="this.disabled=true;this.value='Loading...';" value="Impersonate a Driver From Your Organization" /></a>
     {% endif %}
     {% if user.is_impersonation == 0 and user.user_type == "Admin" %}
-    <a href="/user_profile/ChangeView" role="button"><input type="button" class="button"
-        value="Impersonate a Driver or Sponsor" /></a>
+    <a href="/user_profile/ChangeView" role="button"><input type="button" style="background-color:rgb(226, 17, 17);color:white;"
+      onclick="this.disabled=true;this.value='Loading...';" value="Impersonate a Driver or Sponsor" ></a>
     {% endif %}
     <br>
     <br>
