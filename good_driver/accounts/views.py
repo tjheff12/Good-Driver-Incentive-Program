@@ -904,7 +904,7 @@ def pointTracking(request):
     elif request.method == "POST":
         start_date = request.POST.get('start_date')
         end_date = request.POST.get('end_date')
-        current_date = datetime.now().strftime('%Y-%m-%d')
+        current_date = datetime.utcnow().strftime('%Y-%m-%d')
 
         if start_date and end_date and start_date > end_date:
             messages.info(request, 'Start date must before end date')
@@ -1214,7 +1214,7 @@ def audit(request):
         elif request.method == "POST":
             start_date = request.POST.get('start_date')
             end_date = request.POST.get('end_date')
-            current_date = datetime.now().strftime('%Y-%m-%d')
+            current_date = datetime.utcnow().strftime('%Y-%m-%d')
 
             if start_date and end_date and start_date > end_date:
                 messages.info(request, 'Start date must before end date')
@@ -1382,7 +1382,7 @@ def audit(request):
         elif request.method == "POST":
             start_date = request.POST.get('start_date')
             end_date = request.POST.get('end_date')
-            current_date = datetime.now().strftime('%Y-%m-%d')
+            current_date = datetime.utcnow().strftime('%Y-%m-%d')
 
             if start_date and end_date and start_date > end_date:
                 messages.info(request, 'Start date must before end date')
