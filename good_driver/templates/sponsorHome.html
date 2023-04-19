@@ -17,15 +17,15 @@
             <h2 class="title"> Sponsor Interface </h2>
             <a href='/sponsorHome/driverManagement'><input type="button" class="button" value="Driver Management" /></a>
             <!--Link-->
-            <input type="button" class="button" value="Create New Sponsor" />
+            <a href='/home/sponsorPanel'><input type="button" class="button" value="Sponsor Panel" /></a>
             <br>
             <br>
-            <input type="button" class="button" value="Catalog Settings" />
+            <a href='/home/sponsorPanel/sponsorEditOrganization/'><input type="button" class="button" value="Catalog/Organization Settings" /></a>
             <a href='/home/report'><input type="button" class="button" value="Generate Reports" /></a>
             <br>
             <br>
-            <a href='../home/sponsorPanel'><input type="button" class="button" value="Sponsor Panel" /></a>
-            <input type="button" class="button" onclick="window.location.href={% url 'resetPassword' %}"
+            
+            <input type="button" class="logoutButton" onclick="window.location.href={% url 'resetPassword' %}"
                 value="Change Password" />
             <br>
             <br>
