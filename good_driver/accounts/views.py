@@ -1727,6 +1727,9 @@ def catalog_overview(request, sponsor, pageNum=1, search="search"):
             current_points = 0
 
         sponsorMaxPrice = sponsor_obj.maxPrice
+
+        test = test_itunes(search,pageNum,sponsorMaxPrice)
+
         results_tuple = search_ebay_products(search, pageNum, sponsorMaxPrice)
         sponsor_entity = models.Sponsor.objects.get(name=sponsor)
         
@@ -2344,3 +2347,9 @@ def checkDriversSponsors(request):
                 sponsor_list.append({'name':sponsor.sponsor.name})
             print(sponsor_list)
             return render(request, 'adminAllDriversSponsors.html', {'sponsor_list':sponsor_list, 'driver_name':requested_user_name})
+        
+def test_itunes(query, pageNum, sponsorMaxPrice):
+    import requests
+    response = requests.get('https://itunes.apple.com/search?term=' + query + '&limit=5')
+    print(response.json())
+    return 0
