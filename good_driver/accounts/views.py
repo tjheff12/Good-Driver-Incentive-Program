@@ -1705,6 +1705,7 @@ def catalog(request):
     
 def catalog_overview(request, sponsor, pageNum=1, search="search"):
     import math
+    itunes = True
     # We will need to determine what sponsors can choose for filtering the catalog page ex: name, category, price, etc. (or all the above!)
         # this currently just tests it with a simple query for the name of the item (IN SANDBOX MODE)
     if request.method == "GET" and request.user.user_type == "Driver":
@@ -1728,9 +1729,11 @@ def catalog_overview(request, sponsor, pageNum=1, search="search"):
 
         sponsorMaxPrice = sponsor_obj.maxPrice
 
-        test = test_itunes(search,pageNum,sponsorMaxPrice)
+        results_tuple = search_itunes(search,pageNum,sponsorMaxPrice)
+        
+        #print(results_tuple)
 
-        results_tuple = search_ebay_products(search, pageNum, sponsorMaxPrice)
+        #results_tuple = search_ebay_products(search, pageNum, sponsorMaxPrice)
         sponsor_entity = models.Sponsor.objects.get(name=sponsor)
         
         
@@ -1742,18 +1745,28 @@ def catalog_overview(request, sponsor, pageNum=1, search="search"):
             total_pages = results_tuple[1]
             if(productResultsDict != {}):
                 for item in productResultsDict['searchResult']['item']:
-                    item["point_cost"] = math.ceil(float(item['sellingStatus']['currentPrice']['value']) / float(conversion_rate))
+                    if itunes:
+                        print(item)
+                        item["point_cost"] = math.ceil(float(item['trackPrice']) / float(conversion_rate))
                 
+                    else:
+                        item["point_cost"] = math.ceil(float(item['sellingStatus']['currentPrice']['value']) / float(conversion_rate))
+                    
             print(productResultsDict)
-            return render(request, 'catalog_overview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search, 'sponsor':sponsor, 'points':current_points, 'sponsorPointConversion':conversion_rate})
+            if(itunes):
+                return render(request, 'itunes_overview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search, 'sponsor':sponsor, 'points':current_points, 'sponsorPointConversion':conversion_rate})
+            else:
+                return render(request, 'catalog_overview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search, 'sponsor':sponsor, 'points':current_points, 'sponsorPointConversion':conversion_rate})
+             
         except Exception as e:
             print(e)
             productResultsDict = {}
             total_pages = 0
-            return render(request, 'catalog_overview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search
-                                                             , 'points': current_points, 'sponsorPointConversion': conversion_rate, 
-                                                             'sponsor': sponsor})
-    # If a sponsor user decides to use the catalog, they can only access their own
+            if(itunes):
+                return render(request, 'itunes_overview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search, 'sponsor':sponsor, 'points':current_points, 'sponsorPointConversion':conversion_rate})
+            else:
+                return render(request, 'catalog_overview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search, 'sponsor':sponsor, 'points':current_points, 'sponsorPointConversion':conversion_rate})
+             # If a sponsor user decides to use the catalog, they can only access their own
     if request.method == "GET" and request.user.user_type == "Sponsor":
         # Validate that the driver's link with the sponsor is one of their actual sponsors
         sponsor_list_query = models.SponsorUser.objects.select_related('sponsor').filter(user=request.user.user_id)
@@ -1768,17 +1781,19 @@ def catalog_overview(request, sponsor, pageNum=1, search="search"):
         #print(search)
         currSponsorUser = models.SponsorUser.objects.get(user=request.user.user_id)
         sponsorMaxPrice = models.Sponsor.objects.get(sponsor_id=currSponsorUser.sponsor.sponsor_id).maxPrice
-        results_tuple = search_ebay_products(search, pageNum, sponsorMaxPrice)
+        #results_tuple = search_ebay_products(search, pageNum, sponsorMaxPrice)
+        results_tuple = search_itunes(search,pageNum,sponsorMaxPrice)
 
         sponsor_entity = models.Sponsor.objects.get(name=sponsor)
         
         productResultsDict = results_tuple[0]
         
         total_pages = results_tuple[1]
-        return render(request, 'catalog_overview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search
-                                                            , 'pointsAvailable': 0, 'sponsorPointConversion': sponsor_entity.point_value, 
-                                                            'sponsor': sponsor, 'minPointsForADollar': 0})
-
+        if(itunes):
+            return render(request, 'itunes_overview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search, 'sponsor':sponsor, 'points':current_points, 'sponsorPointConversion':conversion_rate})
+        else:
+            return render(request, 'catalog_overview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search, 'sponsor':sponsor, 'points':current_points, 'sponsorPointConversion':conversion_rate})
+            
     elif request.method == "POST":
         
         return redirect('../pageNum=1&&search=' + request.POST['search'])
@@ -2348,8 +2363,12 @@ def checkDriversSponsors(request):
             print(sponsor_list)
             return render(request, 'adminAllDriversSponsors.html', {'sponsor_list':sponsor_list, 'driver_name':requested_user_name})
         
-def test_itunes(query, pageNum, sponsorMaxPrice):
+def search_itunes(query, pageNum, sponsorMaxPrice):
     import requests
-    response = requests.get('https://itunes.apple.com/search?term=' + query + '&limit=5')
-    print(response.json())
-    return 0
+    offset = pageNum * 10
+    total_pages = 200 / offset
+    response = requests.get('https://itunes.apple.com/search?term=' + query + '&limit=10' + '&offset=' + str(offset) + '&explicit=No')
+    reply = response.json()
+    restructure = {'searchResult': {'item':reply['results']}}
+    #print(restructure)
+    return restructure, total_pages
