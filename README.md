@@ -18,6 +18,12 @@ Prerequisite: <b>Must have [Python installed](https://www.python.org/downloads/)
 2.	[mysqlclient](https://pypi.org/project/mysqlclient/)
 3.	[ebaysdk](https://pypi.org/project/ebaysdk/) <b>*</b>
 ---
+## Building the MySQL Database:
+1. Inside of the ```../Database/``` folder, there are 3 .sql scripts for you to run.
+2. In your favorite db connection software (mine is [MySQL Workbench](https://dev.mysql.com/downloads/workbench/)), connect to wherever your empty db is located.
+3. Run the three SQL scripts in this order: CreateTables.sql -> CreateTriggers.sql -> CreateProcedures.sql
+4. Now your database using MySQL is setup, and you're ready to start the program!
+---
 ## Build and Test
 1. Navigate to the ```$ ../good_driver/``` Directory
 2. Run: ```$ python manage.py runserver``` in that directory
