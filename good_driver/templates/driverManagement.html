@@ -112,7 +112,14 @@
 
 <body>
     {% include 'top_buttons.html' %}
-    <div>
+    <div class="header_padding">
+        {% for message in messages %}
+            <div role="alert" class="title" style="color:rgb(255,0,0); text-align: center;">
+                {{message}}
+            </div>
+            {% endfor %} 
+    </div>
+    
         <div class="driverManagement">
             <form method="post">
                 <h2 class="title"> Driver Management </h2>
@@ -124,7 +131,8 @@
                 <br>
                 <a href='allDrivers'><input type="button" class="btn btn-primary" value="Check All Drivers"/></a>
             </form>
+            
         </div>
-    </div>
+        
 </body>
 </html>

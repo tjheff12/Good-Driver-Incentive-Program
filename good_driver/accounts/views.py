@@ -826,28 +826,36 @@ def application(request):
             return redirect(application)
     elif(request.user.user_type == "Sponsor"):
         if request.method == "GET":
-            ##gets sponsor name that the currently logged in user is a part of
-            user_sponsor_obj = models.SponsorUser.objects.get(user_id=request.user.user_id)
-            sponsor_id = getattr(user_sponsor_obj, 'sponsor_id')
-            sponsor_obj = models.Sponsor.objects.get(sponsor_id=sponsor_id)
-            sponsor_name = getattr(sponsor_obj, 'name')
-            
-            ##select related gets the necessary Users objects so the database only needs to be queried once
-            app_list = models.DriverApplication.objects.select_related('driver').filter(sponsor=sponsor_obj,status='Pending')
-            
-            list_of_apps = []
-            for app in app_list:
-                first_name = app.driver.first_name
-                last_name = app.driver.last_name
-                street_address = app.driver.street_address
-                city = app.driver.city
-                zip_code = app.driver.zip_code
-                phone_number = app.driver.phone_number
-                new_dict = {'first_name':first_name,'last_name':last_name,'street_address':street_address,'city':city,'zip_code':zip_code, 'phone_number':phone_number, 'status':app.status, 'reason':app.reason, 'date_time':app.date_time, 'application_id': app.application_id}
-                list_of_apps.append(new_dict)
-            
-            
-            return render(request, 'application.html', {'app_list': list_of_apps, 'sponsor_name':sponsor_name})
+            if models.SponsorUser.objects.filter(user_id=request.user.user_id).exists():
+                ##gets sponsor name that the currently logged in user is a part of
+                user_sponsor_obj = models.SponsorUser.objects.get(user_id=request.user.user_id)
+                sponsor_id = getattr(user_sponsor_obj, 'sponsor_id')
+                sponsor_obj = models.Sponsor.objects.get(sponsor_id=sponsor_id)
+                sponsor_name = getattr(sponsor_obj, 'name')
+                
+                ##select related gets the necessary Users objects so the database only needs to be queried once
+                if models.DriverApplication.objects.select_related('driver').filter(sponsor=sponsor_obj,status='Pending').exists():
+                    app_list = models.DriverApplication.objects.select_related('driver').filter(sponsor=sponsor_obj,status='Pending')
+                    
+                    list_of_apps = []
+                    for app in app_list:
+                        first_name = app.driver.first_name
+                        last_name = app.driver.last_name
+                        street_address = app.driver.street_address
+                        city = app.driver.city
+                        zip_code = app.driver.zip_code
+                        phone_number = app.driver.phone_number
+                        new_dict = {'first_name':first_name,'last_name':last_name,'street_address':street_address,'city':city,'zip_code':zip_code, 'phone_number':phone_number, 'status':app.status, 'reason':app.reason, 'date_time':app.date_time, 'application_id': app.application_id}
+                        list_of_apps.append(new_dict)
+                    
+                    
+                    return render(request, 'application.html', {'app_list': list_of_apps, 'sponsor_name':sponsor_name})
+                else:
+                    messages.info(request, 'There are no current pending applications for your Organization!')
+                    return redirect(driverManagement)
+            else:
+                messages.info(request, 'You are not part of an Organization!')
+                return redirect(driverManagement)
         elif request.method == "POST":
             
             application_obj = models.DriverApplication.objects.select_related('sponsor').get(application_id=request.POST['application_id'])
@@ -1720,7 +1728,6 @@ def catalog_overview(request, sponsor, pageNum=1, search="search"):
 
         sponsorMaxPrice = sponsor_obj.maxPrice
         results_tuple = search_ebay_products(search, pageNum, sponsorMaxPrice)
-
         sponsor_entity = models.Sponsor.objects.get(name=sponsor)
         
         
@@ -1793,7 +1800,7 @@ def search_ebay_products(query, pageNum, sponsorMaxPrice):
                 'pageNumber': pageNum
             }
         })
-        #print(response.reply)
+        print(response.reply)
         if(response.reply.ack == "Failure"):
             return {}, 0
         if(response.reply.searchResult._count == '0'):
