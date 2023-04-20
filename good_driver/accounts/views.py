@@ -1703,7 +1703,7 @@ def catalog(request):
         url = './' + sponsor_model.sponsor.name + '/catalogOverview/pageNum=1'
         return redirect(url)
     
-def catalog_overview(request, sponsor, pageNum=1, search="search"):
+def catalog_overview(request, sponsor, pageNum=1, search=""):
     import math
     itunes = True
     # We will need to determine what sponsors can choose for filtering the catalog page ex: name, category, price, etc. (or all the above!)
@@ -1744,15 +1744,19 @@ def catalog_overview(request, sponsor, pageNum=1, search="search"):
             
             total_pages = results_tuple[1]
             if(productResultsDict != {}):
+
                 for item in productResultsDict['searchResult']['item']:
                     if itunes:
-                        print(item)
-                        item["point_cost"] = math.ceil(float(item['trackPrice']) / float(conversion_rate))
+                        try:
+                            item["point_cost"] = math.ceil(float(item['trackPrice']) / float(conversion_rate))
+                        except:
+                            item["point_cost"] = -1
+                        
                 
                     else:
                         item["point_cost"] = math.ceil(float(item['sellingStatus']['currentPrice']['value']) / float(conversion_rate))
                     
-            print(productResultsDict)
+            #print(productResultsDict)
             if(itunes):
                 return render(request, 'itunes_overview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search, 'sponsor':sponsor, 'points':current_points, 'sponsorPointConversion':conversion_rate})
             else:
@@ -2288,7 +2292,7 @@ def itemForDriver(request):
             print(request.POST)
             return redirect("./itemForDriver/" + request.POST['driver_name'] + "/catalog/pageNum=1")
 
-def sponsor_catalog_overview(request, driver, pageNum=1, search="search"):
+def sponsor_catalog_overview(request, driver, pageNum=1, search=""):
     import math
     # We will need to determine what sponsors can choose for filtering the catalog page ex: name, category, price, etc. (or all the above!)
         # this currently just tests it with a simple query for the name of the item (IN SANDBOX MODE)
@@ -2365,10 +2369,13 @@ def checkDriversSponsors(request):
         
 def search_itunes(query, pageNum, sponsorMaxPrice):
     import requests
-    offset = pageNum * 10
-    total_pages = 200 / offset
-    response = requests.get('https://itunes.apple.com/search?term=' + query + '&limit=10' + '&offset=' + str(offset) + '&explicit=No')
+    offset = (pageNum - 1) * 10
+    total_pages = 1
+    url = 'https://itunes.apple.com/search?term=' + query + '&limit=50'  + '&explicit=no&entity=musicTrack'
+    print(url)
+    response = requests.get(url)
     reply = response.json()
+    #print(reply)
     restructure = {'searchResult': {'item':reply['results']}}
     #print(restructure)
     return restructure, total_pages

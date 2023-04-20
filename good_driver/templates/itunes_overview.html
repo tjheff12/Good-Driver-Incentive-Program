@@ -118,6 +118,13 @@ integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6J
 <body>
     {% include 'top_buttons.html' %}
     <div class="header_padding">
+        <div class="form-group">
+            {% for message in messages %}
+            <div class="alert alert-danger" role="alert" style="text-align:center;color:rgb(255, 255, 255);background-color: green;">
+                {{message}}
+            </div>
+            {% endfor %}
+        </div>
         <div style="text-align: center;">
             <h1>Your Points Available to Spend:
                 {% if points >= 0 %}
@@ -161,15 +168,17 @@ integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6J
                     <td hidden="hidden"><input type="number" class="item_id" name='item_id' value={{product.trackId}}
                             readonly></td>
                     <input hidden="hidden" name="item_name" type="text" value="{{product.trackName}} by {{product.artistName}}">
+                    <input style='border: 0;' type="text" class="price" name='price' value=${{product.trackPrice}} hidden>
                     <td><img src="{{product.artworkUrl100}}" alt="No image provided"></td>
                     <td><a href="{{product.trackViewUrl|safe}}">{{product.trackName}} by {{product.artistName}}</a></td>
-                    <td><input style='border: 0;' type="text" class="price" name='price'
-                            value=${{product.trackPrice}} readonly></td>
+                    <td>${{product.trackPrice}}</td>
                     
                     <td>{{product.point_cost}}</td>
-                    {% if product.point_cost < points and user.is_impersonation == 0 %} <td><button type="submit" class="btn btn-primary">Order Item</button></td>
+                    {% if product.point_cost < points and user.is_impersonation == 0 and product.point_cost >= 0 %} <td><button type="submit" class="btn btn-primary">Order Item</button></td>
                         {% elif user.is_impersonation == 1 %}
                         <td><button type="submit" class="btn btn-primary" disabled>Orders Disabled for Impersonation Mode</button></td>
+                        {% elif product.point_cost < 0 %} 
+                        <td><button type="submit" class="btn btn-primary" style="background-color: red;" disabled>Problem with Itunes Api</button></td>
                         {% else %}
                         <td><button type="submit" class="btn btn-primary" disabled>Not Enough Points</button></td>
                         {% endif %}
@@ -208,13 +217,7 @@ integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6J
             <small><b>**</b> - Orders will be sent to your current Address</small>
         </div>
 
-        <div class="form-group">
-            {% for message in messages %}
-            <div class="alert alert-danger" role="alert" style="color:rgb(255,0,0);">
-                {{message}}
-            </div>
-            {% endfor %}
-        </div>
+        
 
 
     </div>
