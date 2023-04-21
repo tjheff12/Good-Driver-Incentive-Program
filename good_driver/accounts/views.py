@@ -283,7 +283,7 @@ def user_profile(request):
             user.phone_number = phone_num
 
         user.save()
-        return render(request, 'user_profile.html')
+        return redirect(user_profile)
 
     
 def admin_panel(request):
