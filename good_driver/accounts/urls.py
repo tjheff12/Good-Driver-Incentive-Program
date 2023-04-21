@@ -120,6 +120,7 @@ urlpatterns = [
     path('home/sponsorPanel/itemForDriver/<str:driver>/catalog/pageNum=<int:pageNum>&&search=<str:search>/', views.sponsor_catalog_overview, name='sponsor_catalog_overview'),
     path('home/sponsorPanel/itemForDriver/<str:sponsor>/order', views.order_item, name='order_item'),
     path('home/adminPanel/checkDriversSponsors', views.checkDriversSponsors, name='check_drivers_sponsors'),
+    path('home/currentApplications/', views.driverApplications, name='driver_application'),
 
 
 ]

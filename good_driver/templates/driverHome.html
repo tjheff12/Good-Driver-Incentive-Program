@@ -103,24 +103,29 @@
     <div class="sponsorView">
         <form method="post">
             <h2 class="title"> Driver Interface </h2>
-            <input type="button" class="btn btn-primary" onclick="window.location.href={% url 'pointHistory' %}"
-                value="Point History" />
+            <input type="button" class="btn btn-primary" value="Submit Application"
+                onclick="window.location.href='../application'" />
+            <input type="button" class="btn btn-primary" onclick="window.location.href='./currentApplications'" value="Check Applications" />
                 
-            <input type="button" class="btn btn-primary" onclick="window.location.href='orders/'" value="Orders" />
+            
             <br>
             <br>
             <!--input type="button" class="button" onclick="window.location.href='../catalogOverview/pageNum=1/'" value="Catalog"/-->
             <input type="button" class="btn btn-primary" onclick="window.location.href='../catalog/'" value="Catalog">
-           
-            <input type="button" class="btn btn-primary" value="Submit Application"
-                onclick="window.location.href='../application'" />
-            <br>
-            <br>
+            <input type="button" class="btn btn-primary" onclick="window.location.href='orders/'" value="Orders" />
             
+            <br>
+            <br>
+            <input type="button" class="btn btn-primary" onclick="window.location.href={% url 'pointHistory' %}"
+                value="Point History" />
             <input type="button" class="btn btn-primary" onclick="window.location.href={% url 'resetPassword' %}"
                 value="Change Password" />
+            
+
+            <br>
+            <br>
            
-            <input type="button" class="btn btn-primary" value="Logout" onclick="window.location.href = '../logout'" />
+            <input type="button" class="btn btn-primary" style="width: 600px;" value="Logout" onclick="window.location.href = '../logout'" />
         </form>
     </div>
 

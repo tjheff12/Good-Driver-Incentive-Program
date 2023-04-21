@@ -119,7 +119,7 @@
         
         <br><br>
         
-            <a class="btn btn-primary" href="./sponsorAddDriver" role="button">Add A Driver To Your Organization</a>
+            <a class="btn btn-primary" href="./sponsorAddDriver" role="button">Create A Driver For Your Organization</a>
         
         <br><br>
         
@@ -128,6 +128,13 @@
         <br><br>
         <a class="btn btn-primary" href="./itemForDriver" role="button">Buy an item for a driver</a>
 
+    </div>
+    <div>
+        {% for message in messages %}
+        <div role="alert" style="color:rgb(255,0,0); text-align: center;">
+            {{message}}
+        </div>
+        {% endfor %}
     </div>
 </body>
 

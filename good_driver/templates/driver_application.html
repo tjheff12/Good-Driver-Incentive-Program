@@ -143,19 +143,18 @@ table{
         
     {% for application in app_list %}
         <tr>
-            <form method="POST">
-                {% csrf_token %}
-            <td ><input type="number" class="app_id" name='application_id' value={{application.application_id}} readonly></td>
+            
+            <td >{{application.application_id}}</td>
             <td>{{application.sponsor_name}}</td>
             <td>{{application.status}}</td>
             <td>{{application.reason}}</td>
             <td>{{application.date_time}}</td>
-            </form>
+            
         </tr>
     {% endfor %}
 
     {% else %}
-        <h2>There are no pending applications</h2>
+        <h2>You have not submitted any applications</h2>
     {% endif %}
     </table>
     </div>

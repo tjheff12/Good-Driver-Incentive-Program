@@ -271,7 +271,7 @@ table{
     <table>
         <tr>
             <th>Application ID</th>
-            
+            <th>First Name</th>
             <th>Last Name</th>
             <th>Street Address</th>
             <th>City</th>
@@ -286,8 +286,9 @@ table{
         <tr>
             <form method="POST">
                 {% csrf_token %}
-            <td ><input type="number" class="app_id" name='application_id' value={{application.application_id}} readonly></td>
-            
+                <input type="number" class="app_id" name='application_id' value={{application.application_id}} hidden>
+            <td >{{application.application_id}}</td>
+            <td>{{application.first_name}}</td>
             <td>{{application.last_name}}</td>
             <td>{{application.street_address}}</td>
             <td>{{application.city}}</td>

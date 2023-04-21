@@ -501,7 +501,8 @@ def admin_add_driver_to_org(request):
                 new_dict = {'name':first_name+' '+last_name,'user_id':userid,'email':email}
                 
                 driver_list.append(new_dict)
-
+            sponsor_list = sorted(sponsor_list, key=lambda x: x['name'])
+            driver_list = sorted(driver_list, key=lambda x: x['name'])
             return render(request, 'adminAddDriverToOrganization.html', {'sponsor_list': sponsor_list, 'driver_list': driver_list})
         elif request.method == "POST":
             driverIDChosen = request.POST['driver']
@@ -851,14 +852,18 @@ def application(request):
                     
                     return render(request, 'application.html', {'app_list': list_of_apps, 'sponsor_name':sponsor_name})
                 else:
-                    messages.info(request, 'There are no current pending applications for your Organization!')
-                    return redirect(driverManagement)
+                    
+                    return render(request, 'application.html', {'app_list': [], 'sponsor_name':sponsor_name})
             else:
                 messages.info(request, 'You are not part of an Organization!')
                 return redirect(driverManagement)
         elif request.method == "POST":
             
             application_obj = models.DriverApplication.objects.select_related('sponsor').get(application_id=request.POST['application_id'])
+
+            if(request.POST['reason_input'] == ""):
+                messages.info(request, "You must input a reason for the decision")
+                return redirect('.')
             
             if(request.POST['decision'] == "Accept"):
                 new_DriverSponsor = models.DriverSponsor(user=application_obj.driver, sponsor=application_obj.sponsor)
@@ -1300,12 +1305,15 @@ def audit(request):
                 
                 elif request.POST['options'] == "driver_application":
                     for sponsor in sponsor_query:
+                        
                         sponsor_id = sponsor.sponsor_id
                         sponsor_obj = models.Sponsor.objects.get(sponsor_id=sponsor_id)
-                        application_query = models.DriverApplication.objects.select_related('sponsor','driver')
+                        application_query = models.DriverApplication.objects.select_related('sponsor','driver').filter(sponsor=sponsor_obj)
+                        #print(sponsor_obj.name)
                         for app in application_query:
                             driver_app_query = models.ApplicationStateChange.objects.filter(application=app.application_id, date_time__range=(start_date,end_date)).order_by('date_time')
                             for entry in driver_app_query:
+                                
                                 date = entry.date_time
                                 first_name = app.driver.first_name
                                 last_name = app.driver.last_name
@@ -1313,6 +1321,7 @@ def audit(request):
                                 reason = entry.new_reason
                                 new_dict = {'date':date,'first_name':first_name,'last_name':last_name,'status':status,'reason':reason}
                                 driver_list.append(new_dict)
+                        
                     driver_list = sorted(driver_list, key=lambda x: x['date'])
                     return render(request, 'driverApplicationAudit.html', {'driver_list': driver_list})
 
@@ -1370,7 +1379,7 @@ def audit(request):
                     return render(request, 'pointChangeAudit.html', {'driver_list': driver_list})
                 
                 elif request.POST['options'] == "driver_application":
-                    application_query = models.DriverApplication.objects.select_related('sponsor','driver')
+                    application_query = models.DriverApplication.objects.select_related('sponsor','driver').filter(sponsor=sponsor_choice)
                     for app in application_query:
                         driver_app_query = models.ApplicationStateChange.objects.filter(application=app.application_id, date_time__range=(start_date,end_date)).order_by('date_time')
                         for entry in driver_app_query:
@@ -1432,8 +1441,13 @@ def audit(request):
             elif request.POST['options'] == "login_attempt":
                 driver_query = models.DriverSponsor.objects.select_related('user').filter(sponsor=sponsor_obj)
                 for driver in driver_query:
-                    login_query = models.LoginAttempt.objects.filter(user=driver.user, date_time__range=(start_date,end_date)).order_by('date_time')
+                   
+                    user_obj = models.Users.objects.get(email=driver.user)
+                
+                    login_query = models.LoginAttempt.objects.filter(date_time__range=(start_date,end_date),user=user_obj ).order_by('date_time')
+                    
                     for entry in login_query:
+                        print(entry.attempt_id)
                         date = entry.date_time
                         first_name = driver.user.first_name
                         last_name = driver.user.last_name
@@ -1444,7 +1458,7 @@ def audit(request):
                             was_accepted = "False"
                         new_dict = {'date':date,'first_name':first_name,'last_name':last_name,'sponsor_name':sponsor_name,'was_accepted':was_accepted}
                         driver_list.append(new_dict)
-                driver_list = sorted(driver_list, key=lambda x: x['date'])
+                #driver_list = sorted(driver_list, key=lambda x: x['date'])
                 return render(request, 'loginAttemptAudit.html', {'driver_list': driver_list})
             
             elif request.POST['options'] == "point_change":
@@ -1462,7 +1476,7 @@ def audit(request):
                 return render(request, 'pointChangeAudit.html', {'driver_list': driver_list})
             
             elif request.POST['options'] == "driver_application":
-                application_query = models.DriverApplication.objects.select_related('sponsor','driver')
+                application_query = models.DriverApplication.objects.select_related('sponsor','driver').filter(sponsor=sponsor_obj)
                 for app in application_query:
                     driver_app_query = models.ApplicationStateChange.objects.filter(application=app.application_id, date_time__range=(start_date,end_date)).order_by('date_time')
                     for entry in driver_app_query:
@@ -2077,7 +2091,7 @@ def change_view(request):
     if request.method == "GET":
         all_sponsor_query = models.Sponsor.objects.all()
         sponsor_list = []
-        sponsor_list.append({'sponsor_id':-1,'point_value':0.0,'name':"Empty Sponsor"})
+        #sponsor_list.append({'sponsor_id':-1,'point_value':0.0,'name':"Empty Sponsor"})
         
         for sponsor in all_sponsor_query:
             sponsor_id=sponsor.sponsor_id
@@ -2367,7 +2381,7 @@ def checkDriversSponsors(request):
             driver_list = []
             for driver in driver_query:
                 driver_list.append({'name': driver.first_name + " " + driver.last_name, 'id':driver.user_id})
-            
+            driver_list = sorted(driver_list, key=lambda x: x['name'])
             return render(request,'adminCheckDriversSponsors.html', {'drivers':driver_list})
         elif request.method == "POST":
             print(request.POST)

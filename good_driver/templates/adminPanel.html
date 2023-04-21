@@ -131,6 +131,13 @@
             <a href="./checkDriversSponsors" role="button"><button class="btn btn-primary">Check a Driver's Sponsorship</button></a>
         
     </div>
+    <div>
+        {% for message in messages %}
+        <div role="alert" style="color:rgb(255,0,0);">
+            {{message}}
+        </div>
+        {% endfor %}
+    </div>
 </body>
 
 

@@ -127,8 +127,8 @@ class Sponsor(models.Model):
     sponsor_id = models.AutoField(db_column='Sponsor_ID', primary_key=True)  # Field name made lowercase.
     point_value = models.DecimalField(db_column='Point_Value', max_digits=10, decimal_places=2, default=0.01)  # Field name made lowercase.
     name = models.CharField(db_column='Name', max_length=40)  # Field name made lowercase.
-    autoPoints = models.IntegerField(db_column='Auto_Points')
-    maxPrice = models.FloatField(db_column='Max_Price')
+    autoPoints = models.IntegerField(db_column='Auto_Points', default=0)
+    maxPrice = models.FloatField(db_column='Max_Price', default=9999999)
 
     class Meta:
         managed = False
