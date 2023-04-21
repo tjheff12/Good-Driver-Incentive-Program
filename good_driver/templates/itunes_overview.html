@@ -178,7 +178,7 @@ integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6J
                         {% elif user.is_impersonation == 1 %}
                         <td><button type="submit" class="btn btn-primary" disabled>Orders Disabled for Impersonation Mode</button></td>
                         {% elif product.point_cost < 0 %} 
-                        <td><button type="submit" class="btn btn-primary" style="background-color: red;" disabled>Problem with Itunes Api</button></td>
+                        <td><button type="submit" class="btn btn-primary" style="background-color: red;" disabled>Currently Unavailable</button></td>
                         {% else %}
                         <td><button type="submit" class="btn btn-primary" disabled>Not Enough Points</button></td>
                         {% endif %}
@@ -213,8 +213,7 @@ integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6J
         <div style="text-align: center;">
             <br>
             <small><b>*</b> - Set by your Organization, amounts in USD</small>
-            <br>
-            <small><b>**</b> - Orders will be sent to your current Address</small>
+            
         </div>
 
         

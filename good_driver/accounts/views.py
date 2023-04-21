@@ -2294,6 +2294,7 @@ def itemForDriver(request):
 
 def sponsor_catalog_overview(request, driver, pageNum=1, search=""):
     import math
+    itunes = True
     # We will need to determine what sponsors can choose for filtering the catalog page ex: name, category, price, etc. (or all the above!)
         # this currently just tests it with a simple query for the name of the item (IN SANDBOX MODE)
     if request.method == "GET" and request.user.user_type == "Sponsor":
@@ -2313,7 +2314,8 @@ def sponsor_catalog_overview(request, driver, pageNum=1, search=""):
 
         sponsorMaxPrice = sponsor_obj.maxPrice
         print(sponsorMaxPrice)
-        results_tuple = search_ebay_products(search, pageNum, sponsorMaxPrice)
+        #results_tuple = search_ebay_products(search, pageNum, sponsorMaxPrice)
+        results_tuple = search_itunes(search, pageNum, sponsorMaxPrice)
 
         
         
@@ -2326,18 +2328,29 @@ def sponsor_catalog_overview(request, driver, pageNum=1, search=""):
             total_pages = results_tuple[1]
             if(productResultsDict != {}):
                 for item in productResultsDict['searchResult']['item']:
-                    item["point_cost"] = math.ceil(float(item['sellingStatus']['currentPrice']['value']) / float(conversion_rate))
+                    if itunes:
+                        try:
+                            item["point_cost"] = math.ceil(float(item['trackPrice']) / float(conversion_rate))
+                        except:
+                            item["point_cost"] = -1
+                    else:
+                        item["point_cost"] = math.ceil(float(item['sellingStatus']['currentPrice']['value']) / float(conversion_rate))
                 
-            
-            return render(request, 'sponsorCatalogOverview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search, 'driver':driver_name, 'points':current_points, 'sponsorPointConversion':conversion_rate})
+            if itunes:
+                return render(request, 'itunes_overview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search, 'driver':driver_name, 'points':current_points, 'sponsorPointConversion':conversion_rate})
+            else:
+                return render(request, 'sponsorCatalogOverview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search, 'driver':driver_name, 'points':current_points, 'sponsorPointConversion':conversion_rate})
         except Exception as e:
             print(e)
             productResultsDict = {}
             total_pages = 0
-            return render(request, 'sponsorCatalogOverview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search
-                                                             , 'points': current_points, 'sponsorPointConversion': conversion_rate, 
-                                                             'driver': driver_name})
-    # If a sponsor user decides to use the catalog, they can only access their own
+
+            if itunes:
+                return render(request, 'itunes_overview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search, 'driver':driver_name, 'points':current_points, 'sponsorPointConversion':conversion_rate})
+            else:
+                return render(request, 'sponsorCatalogOverview.html', {"product_result_list": productResultsDict, 'pageNum': pageNum, 'totalPages': int(total_pages), 'search':search, 'driver':driver_name, 'points':current_points, 'sponsorPointConversion':conversion_rate})
+       
+   
    
 
     elif request.method == "POST":
@@ -2368,6 +2381,7 @@ def checkDriversSponsors(request):
             return render(request, 'adminAllDriversSponsors.html', {'sponsor_list':sponsor_list, 'driver_name':requested_user_name})
         
 def search_itunes(query, pageNum, sponsorMaxPrice):
+    ##there isn't a way to limit based on sponsorMaxPrice, so that feature is, unfortunately scrapped
     import requests
     offset = (pageNum - 1) * 10
     total_pages = 1
