@@ -9,7 +9,7 @@ Each user has their own curated experience on the platform, with different abili
 
 Our project is integrated directly with <b>AWS services</b> such as <b>EC2</b> (to host the program) and <b>RDS</b> (for our database, specifically using MySQL).
 The project is written in Python, using Django as our web framework.
-We had implemented the <b>eBaySDK</b> for our external API for getting products and information for our custom catalog for drivers.
+We had implemented the <b>eBaySDK</b> and <b>iTunes</b> for our external API(s) for getting products and information for our custom catalog for drivers.
 
 ## Getting Started
 Prerequisite: <b>Must have [Python installed](https://www.python.org/downloads/).</b>
@@ -17,6 +17,7 @@ Prerequisite: <b>Must have [Python installed](https://www.python.org/downloads/)
 1.	[Django](https://docs.djangoproject.com/en/4.2/topics/install/)
 2.	[mysqlclient](https://pypi.org/project/mysqlclient/)
 3.	[ebaysdk](https://pypi.org/project/ebaysdk/) <b>*</b>
+4.  [requests](https://docs.python-requests.org/en/latest/) - For the iTunes API
 ---
 ## Building the MySQL Database:
 1. Inside of the ```../Database/``` folder, there are 3 .sql scripts for you to run.
@@ -33,6 +34,7 @@ Prerequisite: <b>Must have [Python installed](https://www.python.org/downloads/)
 
 If you want to learn more about the packages/APIs used for your own understanding, here are some helpful links:
 - [eBaySDK](https://developer.ebay.com/api-docs/user-guides/static/finding-user-guide-landing.html) - We specifically only used the ```Finding``` Traditional API.
+- [iTunes Search API](https://performance-partners.apple.com/search-api)
 - [mysqlclient](https://docs.djangoproject.com/en/4.2/ref/databases/#mysql-notes)
 - [Django](https://docs.djangoproject.com/en/4.2/)
 ---
