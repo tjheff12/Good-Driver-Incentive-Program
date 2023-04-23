@@ -35,3 +35,10 @@ BEGIN
 END
 $$
 Delimiter ;
+DELIMITER $$
+CREATE PROCEDURE `Good_Driver`.`simulate_refund`()
+BEGIN
+	UPDATE orders SET Status = 'Delivered' where Status = 'Pending' and date_time < DATE_SUB(NOW(),INTERVAL 10 MINUTE);
+END
+$$
+Delimiter ;
