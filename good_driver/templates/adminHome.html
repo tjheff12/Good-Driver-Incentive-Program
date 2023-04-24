@@ -98,6 +98,14 @@
 
 <body>
     {% include 'top_buttons.html' %}
+    {% if messages %}
+            <br><br><br>
+        {% for message in messages %}
+            <div role="alert" style="text-align:center;">
+            <font color="red">{{message}}</font> 
+            </div>
+        {% endfor %}
+    {% endif %}
     <div class="header_padding" style="text-align: center;">
         <form method="post">
             <br>
@@ -118,8 +126,6 @@
             <input type="button" class="btn btn-primary" onclick="window.location.href = '../logout'" value="Logout" />
         </form>
     </div>
-
-
 </body>
 
 </html>

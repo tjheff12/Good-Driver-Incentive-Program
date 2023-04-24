@@ -112,6 +112,14 @@
 
 <body>
     {% include 'top_buttons.html' %}
+    {% if messages %}
+            <br><br><br>
+        {% for message in messages %}
+            <div role="alert" style="text-align:center;">
+            <font color="red">{{message}}</font> 
+            </div>
+        {% endfor %}
+    {% endif %}
     <div class="sponsorView">
         <form method="post">
             <h2 class="title"> Sponsor Interface </h2>
@@ -131,8 +139,6 @@
             <input type="button" class="btn btn-primary" value="Logout" / onclick="window.location.href = '../logout'" />
         </form>
     </div>
-
-
 </body>
 
 </html>

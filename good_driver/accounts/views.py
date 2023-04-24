@@ -145,7 +145,10 @@ def resetPassword(request):
             messages.info(request, 'Error: Both passwords did not match! Please try again.')
             return redirect(resetPassword)
 
-        if request.user.email != username or not models.Users.objects.filter(email=username).exists():
+        if request.user.is_anonymous == False and (request.user.email != username or not models.Users.objects.filter(email=username).exists()):
+            messages.info(request, 'Error: Wrong username! Please try again.')
+            return redirect(resetPassword)
+        elif request.user.is_anonymous == True and not models.Users.objects.filter(email=username).exists():
             messages.info(request, 'Error: Wrong username! Please try again.')
             return redirect(resetPassword)
         
@@ -162,12 +165,23 @@ def resetPassword(request):
                 user.save()
                 pass_change_obj = models.PasswordChanges(user=user, date_time=datetime.datetime.utcnow(), type_of_change=change_type)
                 pass_change_obj.save()
-                messages.info(request, 'Successfully changed your password!')
+                
+                fromAnonymous = False
+                if request.user.is_anonymous:
+                    messages.info(request, 'Successfully changed your password! You are now signed into your account.')
+                    fromAnonymous = True
+                else:
+                    messages.info(request, 'Successfully changed your password!')
 
                 user = backends.CustomAuthBackend.prehashed_auth(username=username, password=hashed_password)
                 if user is not None:
                     auth_login(request, user)
-                return redirect(resetPassword)
+                # If the user was an anonymous user (not signed in), they will be signed in, and will be brought to the home page after changing their password
+                # Otherwise, the user was already signed in, so they will be brought back to the reset password page
+                if fromAnonymous == False:
+                    return redirect(resetPassword)
+                else:
+                    return redirect(home)
             
             else:
                 message = "Error: New password and confirm password do not match"
